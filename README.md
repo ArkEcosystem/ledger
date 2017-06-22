@@ -12,7 +12,7 @@ Under development
 - Install the app `sh rebuild.sh`
 
 ## TODO
-[x] Make derivation path working
-[x] Generate correct address
-[ ] Parse Serialised transactions
-[ ] Sign transaction
+- [x] Make derivation path working
+- [x] Generate correct address
+- [ ] Parse Serialised transactions
+- [ ] Sign transaction
