@@ -14,5 +14,5 @@ Under development
 ## TODO
 - [x] Make derivation path working
 - [x] Generate correct address
-- [ ] Parse Serialised transactions
+- [ ] Parse serialised transactions
 - [ ] Sign transaction

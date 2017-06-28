@@ -1836,26 +1836,21 @@ unsigned int io_seproxyhal_touch_tx_ok(const bagl_element_t *e) {
     cx_ecfp_private_key_t privateKey;
     uint32_t tx = 0;
 
-    os_perso_derive_node_bip32(
-        tmpCtx.transactionContext.curve, tmpCtx.transactionContext.bip32Path,
-        tmpCtx.transactionContext.pathLength, privateKeyData, NULL);
-    cx_ecfp_init_private_key(tmpCtx.transactionContext.curve, privateKeyData,
-                             32, &privateKey);
+    os_perso_derive_node_bip32(tmpCtx.transactionContext.curve, tmpCtx.transactionContext.bip32Path, tmpCtx.transactionContext.pathLength, privateKeyData, NULL);
+    cx_ecfp_init_private_key(tmpCtx.transactionContext.curve, privateKeyData, 32, &privateKey);
     os_memset(privateKeyData, 0, sizeof(privateKeyData));
     if (tmpCtx.transactionContext.curve == CX_CURVE_256K1) {
         cx_sha256_init(&localHash);
-        cx_hash(&localHash.header, CX_LAST, tmpCtx.transactionContext.rawTx, sizeof(tmpCtx.transactionContext.rawTx), finalhash);
-        tx = cx_ecdsa_sign(&privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256,
-                           finalhash, sizeof(finalhash), G_io_apdu_buffer);
+        cx_hash(&localHash.header, CX_LAST, tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, finalhash);
+        tx = cx_ecdsa_sign(&privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256, finalhash, sizeof(finalhash), G_io_apdu_buffer);
         G_io_apdu_buffer[0] = 0x30;
     } else {
-        tx = cx_eddsa_sign(&privateKey, NULL, CX_LAST, CX_SHA512,
-                           tmpCtx.transactionContext.rawTx,
-                           tmpCtx.transactionContext.rawTxLength,
-                           G_io_apdu_buffer);
+        tx = cx_eddsa_sign(&privateKey, NULL, CX_LAST, CX_SHA512, tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, G_io_apdu_buffer);
     }
 
     os_memset(&privateKey, 0, sizeof(privateKey));
+    // os_memmove(G_io_apdu_buffer + tx, tmpCtx.transactionContext.rawTx, sizeof(tmpCtx.transactionContext.rawTx));
+    // tx += sizeof(tmpCtx.transactionContext.rawTx);
     G_io_apdu_buffer[tx++] = 0x90;
     G_io_apdu_buffer[tx++] = 0x00;
 
@@ -2045,8 +2040,9 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
                 volatile unsigned int *tx) {
     UNUSED(tx);
     uint8_t addressLength;
-    uint16_t txlength = sizeof(workBuffer);
     uint32_t i;
+    unsigned char finalhash[32];
+    cx_sha256_t localHash;
 
     if (p1 == P1_FIRST) {
         tmpCtx.transactionContext.pathLength = workBuffer[0];
@@ -2057,14 +2053,12 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
         }
         workBuffer++;
         dataLength--;
-        txlength--;
         for (i = 0; i < tmpCtx.transactionContext.pathLength; i++) {
             tmpCtx.transactionContext.bip32Path[i] =
                 (workBuffer[0] << 24) | (workBuffer[1] << 16) |
                 (workBuffer[2] << 8) | (workBuffer[3]);
             workBuffer += 4;
             dataLength -= 4;
-            txlength -= 4;
         }
         if (((p2 & P2_SECP256K1) == 0) && ((p2 & P2_ED25519) == 0)) {
             THROW(0x6B00);
@@ -2090,20 +2084,28 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     // addressLength = ark_encode_base58(txContent.recipientId, 21, tmpCtx.publicKeyContext.address, sizeof(tmpCtx.publicKeyContext.address));
     tmpCtx.publicKeyContext.address[addressLength] = '\0';
 
+    os_memmove(tmpCtx.transactionContext.rawTx, workBuffer, dataLength);
+    tmpCtx.transactionContext.rawTxLength = dataLength;
+
 #if defined(TARGET_BLUE)
     strcpy(fullAddress, tmpCtx.publicKeyContext.address);
 
 #elif defined(TARGET_NANOS)
     os_memset(addressSummary, 0, sizeof(addressSummary));
-    os_memmove((void *)addressSummary, tmpCtx.publicKeyContext.address, 5);
-    os_memmove((void *)(addressSummary + 5), "...", 3);
-    os_memmove((void *)(addressSummary + 8),
-               tmpCtx.publicKeyContext.address + addressLength - 5, 5);
+    // os_memmove((void *)addressSummary, tmpCtx.publicKeyContext.address, 5);
+    // os_memmove((void *)(addressSummary + 5), "...", 3);
+    // os_memmove((void *)(addressSummary + 8),
+    //            tmpCtx.publicKeyContext.address + addressLength - 5, 5);
+    // cx_sha256_init(&localHash);
+    // cx_hash(&localHash.header, CX_LAST, tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, finalhash);
+    // SPRINTF(addressSummary, "tx: %d %x%x ... %x%x", dataLength, tmpCtx.transactionContext.rawTx[0],tmpCtx.transactionContext.rawTx[1],tmpCtx.transactionContext.rawTx[dataLength-7],tmpCtx.transactionContext.rawTx[dataLength-6]);
+
+    //SPRINTF(addressSummary, "tx: %d %x%x ... %x%x", dataLength, tmpCtx.transactionContext.rawTx[0],tmpCtx.transactionContext.rawTx[1],tmpCtx.transactionContext.rawTx[dataLength-7],tmpCtx.transactionContext.rawTx[dataLength-6]);
+    // os_memmove((void *)addressSummary, "size tx: ", 9);
+    // os_memmove((void *)(addressSummary + 9), dataLength, 4);
 #endif
     // os_memmove(tmpCtx.transactionContext.rawTx, SIGN_PREFIX,
     //            sizeof(SIGN_PREFIX));
-    os_memmove(tmpCtx.transactionContext.rawTx, workBuffer, txlength);
-    tmpCtx.transactionContext.rawTxLength = txlength;
 
 #if defined(TARGET_BLUE)
     ux_step_count = 0;
