@@ -2041,8 +2041,6 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     UNUSED(tx);
     uint8_t addressLength;
     uint32_t i;
-    unsigned char finalhash[32];
-    cx_sha256_t localHash;
 
     if (p1 == P1_FIRST) {
         tmpCtx.transactionContext.pathLength = workBuffer[0];
@@ -2100,7 +2098,7 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     // cx_hash(&localHash.header, CX_LAST, tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, finalhash);
     // SPRINTF(addressSummary, "tx: %d %x%x ... %x%x", dataLength, tmpCtx.transactionContext.rawTx[0],tmpCtx.transactionContext.rawTx[1],tmpCtx.transactionContext.rawTx[dataLength-7],tmpCtx.transactionContext.rawTx[dataLength-6]);
 
-    //SPRINTF(addressSummary, "tx: %d %x%x ... %x%x", dataLength, tmpCtx.transactionContext.rawTx[0],tmpCtx.transactionContext.rawTx[1],tmpCtx.transactionContext.rawTx[dataLength-7],tmpCtx.transactionContext.rawTx[dataLength-6]);
+    SPRINTF(addressSummary, "tx: %d %x%x ... %x%x", dataLength, tmpCtx.transactionContext.rawTx[0],tmpCtx.transactionContext.rawTx[1],tmpCtx.transactionContext.rawTx[dataLength-7],tmpCtx.transactionContext.rawTx[dataLength-6]);
     // os_memmove((void *)addressSummary, "size tx: ", 9);
     // os_memmove((void *)(addressSummary + 9), dataLength, 4);
 #endif
