@@ -88,6 +88,7 @@ union {
     publicKeyContext_t publicKeyContext;
     transactionContext_t transactionContext;
 } tmpCtx;
+
 txContent_t txContent;
 
 volatile uint8_t fidoTransport;
@@ -2041,6 +2042,7 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     UNUSED(tx);
     uint8_t addressLength;
     uint32_t i;
+    unsigned char address[41];
 
     if (p1 == P1_FIRST) {
         tmpCtx.transactionContext.pathLength = workBuffer[0];
@@ -2072,14 +2074,10 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     if (parseTx(workBuffer, dataLength, &txContent) != USTREAM_FINISHED) {
         THROW(0x6A80);
     }
-    ark_print_amount(txContent.amount, fullAmount, sizeof(fullAmount));
-    ark_print_amount(txContent.fee, maxFee, sizeof(maxFee));
+    ark_print_amount(txContent.amount + txContent.fee, fullAmount, sizeof(fullAmount));
 
-
-    addressLength = ark_public_key_to_encoded_base58(
-        txContent.recipientId, 21, tmpCtx.publicKeyContext.address,
-        sizeof(tmpCtx.publicKeyContext.address), 0x17, 1);
-    // addressLength = ark_encode_base58(txContent.recipientId, 21, tmpCtx.publicKeyContext.address, sizeof(tmpCtx.publicKeyContext.address));
+    os_memset(tmpCtx.publicKeyContext.address, 0, sizeof(tmpCtx.publicKeyContext.address));
+    addressLength = ark_public_key_to_encoded_base58(txContent.recipientId, 21, tmpCtx.publicKeyContext.address, sizeof(tmpCtx.publicKeyContext.address), 0x17, 1);
     tmpCtx.publicKeyContext.address[addressLength] = '\0';
 
     os_memmove(tmpCtx.transactionContext.rawTx, workBuffer, dataLength);
@@ -2089,8 +2087,9 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     strcpy(fullAddress, tmpCtx.publicKeyContext.address);
 
 #elif defined(TARGET_NANOS)
-    os_memset(addressSummary, 0, sizeof(addressSummary));
-    // os_memmove((void *)addressSummary, tmpCtx.publicKeyContext.address, 5);
+    os_memset(addressSummary, 0, addressLength);
+    //os_memmove((void *)addressSummary, tmpCtx.publicKeyContext.address, addressLength);
+    SPRINTF(addressSummary, "%d / %x -> %s", addressLength, txContent.recipientId[0], tmpCtx.publicKeyContext.address);
     // os_memmove((void *)(addressSummary + 5), "...", 3);
     // os_memmove((void *)(addressSummary + 8),
     //            tmpCtx.publicKeyContext.address + addressLength - 5, 5);
@@ -2098,7 +2097,7 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     // cx_hash(&localHash.header, CX_LAST, tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, finalhash);
     // SPRINTF(addressSummary, "tx: %d %x%x ... %x%x", dataLength, tmpCtx.transactionContext.rawTx[0],tmpCtx.transactionContext.rawTx[1],tmpCtx.transactionContext.rawTx[dataLength-7],tmpCtx.transactionContext.rawTx[dataLength-6]);
 
-    SPRINTF(addressSummary, "tx: %d %x%x ... %x%x", dataLength, tmpCtx.transactionContext.rawTx[0],tmpCtx.transactionContext.rawTx[1],tmpCtx.transactionContext.rawTx[dataLength-7],tmpCtx.transactionContext.rawTx[dataLength-6]);
+    //SPRINTF(addressSummary, "to %d %x%x ... %x%x", txContent.timestamp, tmpCtx.transactionContext.rawTx[0],tmpCtx.transactionContext.rawTx[1],tmpCtx.transactionContext.rawTx[dataLength-7],tmpCtx.transactionContext.rawTx[dataLength-6]);
     // os_memmove((void *)addressSummary, "size tx: ", 9);
     // os_memmove((void *)(addressSummary + 9), dataLength, 4);
 #endif
@@ -2111,7 +2110,7 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
 #elif defined(TARGET_NANOS)
     ux_step = 0;
     // "confirm", amount, address, [sourcetag], [destinationtag], fees
-    ux_step_count = 4;
+    ux_step_count = 3;
     // if (txContent.sourceTagPresent) {
     //     ux_step_count++;
     // }

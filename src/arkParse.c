@@ -218,18 +218,15 @@ parserStatus_e parseTxInternal(uint8_t *data, uint32_t length,
                                txContent_t *context) {
     parserStatus_e result = USTREAM_FAULT;
 
-    // context.type = data[0];
-    // parse_uint32(&context.timestamp, data + 1);
-
     // TODO: testing
-    context->type = 0;
-    context->timestamp = 0;
-    //parse_uint32(&context->timestamp, data + 1);
-    //os_memmove(context->senderPublicKey, data + 5, 33);
+    context->type      = data[0];
+    context->timestamp = (uint32_t)data[4] << 24 | (uint32_t)data[3] << 16 | (uint32_t)data[2] << 8 | (uint32_t)data[1];
     os_memmove(context->recipientId, data + 38, 21);
-    //os_memmove(context->vendorField, data + 59, 64);
-    context->amount = 1232000000;
-    context->fee = 10000000;
+    os_memmove(context->vendorField, data + 59, 64);
+    context->amount    = (uint64_t)data[130] << 56 | (uint64_t)data[129] << 48 | (uint64_t)data[128] << 40 | (uint64_t)data[127] << 32 | (uint64_t)data[126] << 24 | (uint64_t)data[125] << 16 | (uint64_t)data[124] << 8 | (uint64_t)data[123];
+    context->fee       = (uint64_t)data[138] << 56 | (uint64_t)data[137] << 48 | (uint64_t)data[136] << 40 | (uint64_t)data[135] << 32 | (uint64_t)data[134] << 24 | (uint64_t)data[133] << 16 | (uint64_t)data[132] << 8 | (uint64_t)data[131];
+
+    //processUint32(data, length, context, &offset);
 //     while (offset != length) {
 //         if (offset > length) {
 //             goto error;

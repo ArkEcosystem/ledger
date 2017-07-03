@@ -63,6 +63,23 @@ unsigned short ark_public_key_to_encoded_base58(unsigned char WIDE *in,
     return ark_encode_base58(tmpBuffer, 24 + versionSize, out, outlen);
 }
 
+unsigned short ark_address_to_encoded_base58(unsigned char WIDE *in,
+                                                unsigned short inlen,
+                                                unsigned char *out,
+                                                unsigned short outlen) {
+    unsigned char tmpBuffer[inlen+4];
+    unsigned char checksumBuffer[32];
+    cx_sha256_t hash;
+
+    cx_sha256_init(&hash);
+    cx_hash(&hash.header, CX_LAST, in, inlen, checksumBuffer);
+    cx_sha256_init(&hash);
+    cx_hash(&hash.header, CX_LAST, checksumBuffer, 32, checksumBuffer);
+
+    os_memmove(tmpBuffer + inlen, checksumBuffer, 4);
+    return ark_encode_base58(tmpBuffer, inlen + 4, out, outlen);
+}
+
 unsigned short ark_decode_base58_address(unsigned char WIDE *in,
                                          unsigned short inlen,
                                          unsigned char *out,
@@ -211,7 +228,7 @@ unsigned short ark_print_amount(uint64_t amount, uint8_t *out,
     }
     tmp[i] = '\0';
     strcpy(tmp2, "ARK ");
-    adjustDecimals(tmp, i, tmp2 + 4, 25, 6);
+    adjustDecimals(tmp, i, tmp2 + 4, 25, 8);
     if (strlen(tmp2) < outlen - 1) {
         strcpy(out, tmp2);
     } else {

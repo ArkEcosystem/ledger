@@ -31,7 +31,7 @@ typedef struct txContent_t {
     uint8_t type;
     uint32_t timestamp;
     uint8_t senderPublicKey[33];
-    uint8_t recipientId[21];
+    unsigned char recipientId[21];
     uint8_t vendorField[64];
     uint64_t amount;
     uint64_t fee;
