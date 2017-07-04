@@ -31,10 +31,12 @@ typedef struct txContent_t {
     uint8_t type;
     uint32_t timestamp;
     uint8_t senderPublicKey[33];
-    unsigned char recipientId[21];
+    uint8_t recipientId[21];
     uint8_t vendorField[64];
     uint64_t amount;
     uint64_t fee;
+    uint8_t asset[200];
+    uint8_t assetlength;
 } txContent_t;
 
 parserStatus_e parseTx(uint8_t *data, uint32_t length, txContent_t *context);

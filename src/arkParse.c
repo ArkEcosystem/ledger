@@ -17,250 +17,76 @@
 
 #include "arkParse.h"
 
-#define STI_UINT16 0x01
-#define STI_UINT32 0x02
-#define STI_AMOUNT 0x06
-#define STI_VL 0x07
-#define STI_ACCOUNT 0x08
-
-#define ARK_UINT16_TRANSACTION_TYPE 0x02
-#define ARK_UINT32_FLAGS 0x02
-#define ARK_UINT32_SOURCE_TAG 0x03
-#define ARK_UINT32_SEQUENCE 0x04
-#define ARK_UINT32_LAST_LEDGER_SEQUENCE 0x1B
-#define ARK_UINT32_DESTINATION_TAG 0x0E
-#define ARK_AMOUNT_AMOUNT 0x01
-#define ARK_AMOUNT_FEES 0x08
-#define ARK_VL_SIGNING_PUB_KEY 0x03
-#define ARK_ACCOUNT_ACCOUNT 0x01
-#define ARK_ACCOUNT_DESTINATION 0x03
-
-void parse_ark_amount(uint64_t *value, uint8_t *data) {
-    *value = ((uint64_t)data[7]) | ((uint64_t)data[6] << 8) |
-             ((uint64_t)data[5] << 16) | ((uint64_t)data[4] << 24) |
-             ((uint64_t)data[3] << 32) | ((uint64_t)data[2] << 40) |
-             ((uint64_t)data[1] << 48) | ((uint64_t)data[0] << 56);
-    *value -= (uint64_t)0x4000000000000000;
-}
-
-void parse_uint32(uint32_t *value, uint8_t *data) {
-    *value = ((uint32_t)data[3]) | ((uint32_t)data[2] << 8) |
-             ((uint32_t)data[1] << 16) | ((uint32_t)data[0] << 24);
-}
-
-// parserStatus_e processUint16(uint8_t *data, uint32_t length,
-//                              txContent_t *context, uint32_t *offsetParam) {
-//     parserStatus_e result = USTREAM_FAULT;
-//     uint32_t offset = *offsetParam;
-//     uint8_t fieldId = data[offset] & 0x0f;
-//     if ((offset + 1 + 2) > length) {
-//         result = USTREAM_PROCESSING;
-//         goto error;
-//     }
-//     switch (fieldId) {
-//     case ARK_UINT16_TRANSACTION_TYPE:
-//         if ((data[offset + 1] != 0x00) || (data[offset + 2] != 0x00)) {
-//             goto error;
-//         }
-//         break;
-//     default:
-//         goto error;
-//     }
-//     *offsetParam = offset + 1 + 2;
-//     result = USTREAM_FINISHED;
-// error:
-//     return result;
-// }
-//
-// parserStatus_e processUint32(uint8_t *data, uint32_t length,
-//                              txContent_t *context, uint32_t *offsetParam) {
-//     parserStatus_e result = USTREAM_FAULT;
-//     uint32_t offset = *offsetParam;
-//     uint8_t fieldId = data[offset] & 0x0f;
-//     if ((offset + 1 + 4) > length) {
-//         result = USTREAM_PROCESSING;
-//         goto error;
-//     }
-//     switch (fieldId) {
-//     case 0: {
-//         uint8_t fieldId2 = data[offset + 1];
-//         if ((offset + 4) > length) {
-//             result = USTREAM_PROCESSING;
-//             goto error;
-//         }
-//         offset++;
-//         switch (fieldId2) {
-//         case ARK_UINT32_LAST_LEDGER_SEQUENCE:
-//             break;
-//         default:
-//             goto error;
-//         }
-//     }
-//
-//     case ARK_UINT32_FLAGS:
-//         break;
-//     case ARK_UINT32_SEQUENCE:
-//         break;
-//     case ARK_UINT32_SOURCE_TAG:
-//         parse_uint32(&context->sourceTag, data + offset + 1);
-//         context->sourceTagPresent = 1;
-//         break;
-//     case ARK_UINT32_DESTINATION_TAG:
-//         parse_uint32(&context->destinationTag, data + offset + 1);
-//         context->destinationTagPresent = 1;
-//         break;
-//     default:
-//         goto error;
-//     }
-//     *offsetParam = offset + 1 + 4;
-//     result = USTREAM_FINISHED;
-// error:
-//     return result;
-// }
-//
-// parserStatus_e processAmount(uint8_t *data, uint32_t length,
-//                              txContent_t *context, uint32_t *offsetParam) {
-//     parserStatus_e result = USTREAM_FAULT;
-//     uint32_t offset = *offsetParam;
-//     uint8_t fieldId = data[offset] & 0x0f;
-//     if ((offset + 1 + 8) > length) {
-//         result = USTREAM_PROCESSING;
-//         goto error;
-//     }
-//     switch (fieldId) {
-//     case ARK_AMOUNT_AMOUNT:
-//         parse_ark_amount(&context->amount, data + offset + 1);
-//         break;
-//     case ARK_AMOUNT_FEES:
-//         parse_ark_amount(&context->fees, data + offset + 1);
-//         break;
-//     default:
-//         goto error;
-//     }
-//     *offsetParam = offset + 1 + 8;
-//     result = USTREAM_FINISHED;
-// error:
-//     return result;
-// }
-//
-// parserStatus_e processVl(uint8_t *data, uint32_t length, txContent_t *context,
-//                          uint32_t *offsetParam) {
-//     parserStatus_e result = USTREAM_FAULT;
-//     uint32_t offset = *offsetParam;
-//     uint8_t fieldId = data[offset] & 0x0f;
-//     uint8_t dataLength = data[offset + 1];
-//     if ((offset + 1) > length) {
-//         result = USTREAM_PROCESSING;
-//         goto error;
-//     }
-//     if ((offset + 1 + dataLength) > length) {
-//         result = USTREAM_PROCESSING;
-//         goto error;
-//     }
-//     offset += 1 + 1;
-//     switch (fieldId) {
-//     case ARK_VL_SIGNING_PUB_KEY:
-//         if (dataLength != 33) {
-//             goto error;
-//         }
-//         // TODO : check key
-//         break;
-//
-//     default:
-//         goto error;
-//     }
-//     *offsetParam = offset + dataLength;
-//     result = USTREAM_FINISHED;
-// error:
-//     return result;
-// }
-//
-// parserStatus_e processAccount(uint8_t *data, uint32_t length,
-//                               txContent_t *context, uint32_t *offsetParam) {
-//     parserStatus_e result = USTREAM_FAULT;
-//     uint32_t offset = *offsetParam;
-//     uint8_t fieldId = data[offset] & 0x0f;
-//     uint8_t dataLength = data[offset + 1];
-//     if ((offset + 1) > length) {
-//         result = USTREAM_PROCESSING;
-//         goto error;
-//     }
-//     if ((offset + 1 + dataLength) > length) {
-//         result = USTREAM_PROCESSING;
-//         goto error;
-//     }
-//     offset += 1 + 1;
-//     switch (fieldId) {
-//     case ARK_ACCOUNT_ACCOUNT:
-//         if (dataLength != 20) {
-//             goto error;
-//         }
-//         os_memmove(context->account, data + offset, 20);
-//         break;
-//
-//     case ARK_ACCOUNT_DESTINATION:
-//         if (dataLength != 20) {
-//             goto error;
-//         }
-//         os_memmove(context->destination, data + offset, 20);
-//         break;
-//
-//     default:
-//         goto error;
-//     }
-//     *offsetParam = offset + dataLength;
-//     result = USTREAM_FINISHED;
-// error:
-//     return result;
-// }
-
-parserStatus_e parseTxInternal(uint8_t *data, uint32_t length,
-                               txContent_t *context) {
-    parserStatus_e result = USTREAM_FAULT;
-
-    // TODO: testing
+parserStatus_e parseTxInternal(uint8_t *data, uint32_t length, txContent_t *context) {
+    // type: byte / 0
     context->type      = data[0];
+
+    // timestamp: LE int / 1..4
+    // TODO: what about sign
     context->timestamp = (uint32_t)data[4] << 24 | (uint32_t)data[3] << 16 | (uint32_t)data[2] << 8 | (uint32_t)data[1];
+
+    // senderPublicKey / 5..37
+    os_memmove(context->senderPublicKey, data + 5, 33);
+
+    // recipientId (destination address): decoded base58check / 38..58
     os_memmove(context->recipientId, data + 38, 21);
+
+    // vendorField: 64 bytes hex / 59..122
     os_memmove(context->vendorField, data + 59, 64);
+
+    // amount: LE long / 123..130
+    // TODO: what about sign
     context->amount    = (uint64_t)data[130] << 56 | (uint64_t)data[129] << 48 | (uint64_t)data[128] << 40 | (uint64_t)data[127] << 32 | (uint64_t)data[126] << 24 | (uint64_t)data[125] << 16 | (uint64_t)data[124] << 8 | (uint64_t)data[123];
+
+    // fee: LE long / 131..138
+    // TODO: what about sign
     context->fee       = (uint64_t)data[138] << 56 | (uint64_t)data[137] << 48 | (uint64_t)data[136] << 40 | (uint64_t)data[135] << 32 | (uint64_t)data[134] << 24 | (uint64_t)data[133] << 16 | (uint64_t)data[132] << 8 | (uint64_t)data[131];
 
-    //processUint32(data, length, context, &offset);
-//     while (offset != length) {
-//         if (offset > length) {
-//             goto error;
-//         }
-//         uint8_t dataType = data[offset] >> 4;
-//         switch (dataType) {
-//         case STI_UINT16:
-//             result = processUint16(data, length, context, &offset);
-//             break;
-//         case STI_UINT32:
-//             result = processUint32(data, length, context, &offset);
-//             break;
-//         case STI_AMOUNT:
-//             result = processAmount(data, length, context, &offset);
-//             break;
-//         case STI_VL:
-//             result = processVl(data, length, context, &offset);
-//             break;
-//         case STI_ACCOUNT:
-//             result = processAccount(data, length, context, &offset);
-//             break;
-//         default:
-//             goto error;
-//         }
-//         if (result != USTREAM_FINISHED) {
-//             goto error;
-//         }
-//         result = USTREAM_FAULT;
-//     }
-//     result = USTREAM_FINISHED;
-// error:
-//     return result;
-    result = USTREAM_FINISHED;
-    return result;
+    // asset, meaning depending on type:
+    context->assetlength = length-139;
+
+    // 0: transfer -> no asset
+    if(context->type == 0){
+      if(context->assetlength != 0) return USTREAM_FAULT;
+    }
+    // 1: second signature -> publicKey (of the secondsignature) 139..171
+    else if(context->type == 1){
+      if(context->assetlength != 33) return USTREAM_FAULT;
+      os_memmove(context->asset, data + 139, 33);
+    }
+    // 2: delegate registration -> username serialized in utf8
+    else if(context->type == 2){
+      if(context->assetlength > 40) return USTREAM_FAULT;
+      os_memmove(context->asset, data + 139, context->assetlength);
+    }
+    // 3: vote -> publicKeys serialized in utf8 (for instance "+0345.....")
+    else if(context->type == 3){
+      // context->assetlength should be a multiple of (33*2 + 1) = 67
+      if(context->assetlength % 67 != 0) return USTREAM_FAULT;
+      // TODO: context->asset[i*67] should be utf8 of "+" or "-"
+      os_memmove(context->asset, data + 139, context->assetlength);
+    }
+    // 4: multisignature registration -> min, lifetime, keys in utf8 :(
+    else if(context->type == 4){
+      // (context->assetlength - 2) should a multiple of 33*2
+      // context->assetlength >= 2 + 66*2 = 134
+      if(context->assetlength < 134 || context->assetlength % 66 != 2) return USTREAM_FAULT;
+      os_memmove(context->asset, data + 139, context->assetlength);
+      // TODO:
+      // min = context->asset[0];
+      // lifetime = context->asset[1];
+      // os_memmove(keys, context->asset + 2, context->assetlength - 2);
+    }
+    // 5: ipfs -> no asset
+    else if(context->type == 5){
+      if(context->assetlength > 0) return USTREAM_FAULT;
+    }
+    // unknown type : no fail for future compatibility
+    else {
+      return USTREAM_FINISHED;
+    }
+
+    return USTREAM_FINISHED;
 }
 
 parserStatus_e parseTx(uint8_t *data, uint32_t length, txContent_t *context) {
