@@ -21,6 +21,11 @@
 
 #define MAX_BIP32_PATH 10
 
+#define VENDOR_FIELD_LENGTH 64
+
+#define OPERATION_TYPE_TRANSFER 0x00
+#define OPERATION_TYPE_VOTE 0x03
+
 typedef enum parserStatus_e {
     USTREAM_PROCESSING,
     USTREAM_FINISHED,
@@ -28,14 +33,15 @@ typedef enum parserStatus_e {
 } parserStatus_e;
 
 typedef struct txContent_t {
-    uint8_t type;
+    uint8_t type;    
+    uint8_t voteSize;
     uint32_t timestamp;
     uint8_t senderPublicKey[33];
     uint8_t recipientId[21];
-    uint8_t vendorField[64];
+    uint32_t vendorFieldOffset;
     uint64_t amount;
     uint64_t fee;
-    uint8_t asset[200];
+    uint32_t assetOffset;
     uint8_t assetlength;
 } txContent_t;
 

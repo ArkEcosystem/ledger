@@ -121,6 +121,7 @@ unsigned short ark_compress_public_key(cx_ecfp_public_key_t *publicKey,
     } else {
         THROW(EXCEPTION);
     }
+    return 33;
 }
 
 #if 0

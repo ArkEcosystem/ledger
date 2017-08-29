@@ -31,8 +31,9 @@ parserStatus_e parseTxInternal(uint8_t *data, uint32_t length, txContent_t *cont
     // recipientId (destination address): decoded base58check / 38..58
     os_memmove(context->recipientId, data + 38, 21);
 
+    context->vendorFieldOffset = 59;
     // vendorField: 64 bytes hex / 59..122
-    os_memmove(context->vendorField, data + 59, 64);
+    //os_memmove(context->vendorField, data + 59, 64);
 
     // amount: LE long / 123..130
     // TODO: what about sign
@@ -44,34 +45,36 @@ parserStatus_e parseTxInternal(uint8_t *data, uint32_t length, txContent_t *cont
 
     // asset, meaning depending on type:
     context->assetlength = length-139;
-
+    context->assetOffset = 139;
+    
     // 0: transfer -> no asset
     if(context->type == 0){
       if(context->assetlength != 0) return USTREAM_FAULT;
     }
     // 1: second signature -> publicKey (of the secondsignature) 139..171
     else if(context->type == 1){
-      if(context->assetlength != 33) return USTREAM_FAULT;
-      os_memmove(context->asset, data + 139, 33);
+      if(context->assetlength != 33) return USTREAM_FAULT;      
+      //os_memmove(context->asset, data + 139, 33);
     }
     // 2: delegate registration -> username serialized in utf8
     else if(context->type == 2){
       if(context->assetlength > 40) return USTREAM_FAULT;
-      os_memmove(context->asset, data + 139, context->assetlength);
+      //os_memmove(context->asset, data + 139, context->assetlength);
     }
     // 3: vote -> publicKeys serialized in utf8 (for instance "+0345.....")
     else if(context->type == 3){
       // context->assetlength should be a multiple of (33*2 + 1) = 67
       if(context->assetlength % 67 != 0) return USTREAM_FAULT;
+      context->voteSize = (context->assetlength / 67);
       // TODO: context->asset[i*67] should be utf8 of "+" or "-"
-      os_memmove(context->asset, data + 139, context->assetlength);
+      //os_memmove(context->asset, data + 139, context->assetlength);
     }
     // 4: multisignature registration -> min, lifetime, keys in utf8 :(
     else if(context->type == 4){
       // (context->assetlength - 2) should a multiple of 33*2
       // context->assetlength >= 2 + 66*2 = 134
-      if(context->assetlength < 134 || context->assetlength % 66 != 2) return USTREAM_FAULT;
-      os_memmove(context->asset, data + 139, context->assetlength);
+      if(context->assetlength < 134 || context->assetlength % 66 != 2) return USTREAM_FAULT;
+      //os_memmove(context->asset, data + 139, context->assetlength);
       // TODO:
       // min = context->asset[0];
       // lifetime = context->asset[1];

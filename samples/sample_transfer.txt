@@ -1,0 +1,20 @@
+{
+  "type":0,
+  "amount":5523490234,
+  "fee":10000000,
+  "recipientId":"AUexKjGtgsSpVzPLs6jNMM6vJ6znEVTQWK",
+  "timestamp":13893522,
+  "vendorField":"this is a test",
+  "senderPublicKey":"02e012f0a7cac12a74bdc17d844cbc9f637177b470019c32a53cef94c7a56e2ea9"
+}
+
+bytes: 0092ffd30002e012f0a7cac12a74bdc17d844cbc9f637177b470019c32a53cef94c7a56e2ea9178d4aa08afea30cfc61acd261306c67a87c3e1c2e74686973206973206120746573740000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000bac53949010000008096980000000000
+
+vendorfield can be safely igored
+
+display:
+- confirm transfer
+- to AUexKjGtgsSpVzPLs6jNMM6vJ6znEVTQWK
+- amount 55.23490234
+- fee 0.1
+
