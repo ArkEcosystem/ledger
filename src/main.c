@@ -434,7 +434,7 @@ unsigned int ui_approval_prepro(const bagl_element_t *element) {
                             strcpy(fullAmount, "Transfer");
                             goto display_transfer;
                         case 1: // Destination
-                            addressLength = ark_public_key_to_encoded_base58(txContent.recipientId, 21, fullAddress, sizeof(fullAddress), 0x17, 1);
+                            addressLength = ark_public_key_to_encoded_base58(txContent.recipientId, 21, fullAddress, sizeof(fullAddress), txContent.recipientId[0], 1);
                             fullAddress[addressLength] = '\0';
                             goto display_transfer;
                         case 2: // Amount
