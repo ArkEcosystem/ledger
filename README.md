@@ -14,11 +14,11 @@ Under development
 ## TODO
 - [x] Make derivation path working
 - [x] Generate correct address
-- [ ] Parse serialized transactions
-  - [ ] Type 1
-  - [ ] Type 2
+- [-] Parse serialized transactions
+  - [x] Type 1
+  - [x] Type 2
   - [ ] Type 3
   - [ ] Type 4
   - [ ] Type 5
 - [x] Sign transaction
-- [ ] Make network agnostic
+- [x] Make network agnostic
