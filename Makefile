@@ -60,6 +60,8 @@ DEFINES   += U2F_MAX_MESSAGE_SIZE=264 #257+5+2
 DEFINES   += UNUSED\(x\)=\(void\)x
 DEFINES   += APPVERSION=\"$(APPVERSION)\"
 
+DEFINES   += CX_COMPLIANCE_141
+
 ##############
 #  Compiler  #
 ##############
