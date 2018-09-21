@@ -1,9 +1,13 @@
-# Ark Ledger
-Ark wallet application for Ledger Blue and Nano S
+# ARK Ledger
+
+> Ark wallet application for Ledger Blue and Nano S
+
+[![License: MIT](https://badgen.now.sh/badge/license/MIT/green)](https://opensource.org/licenses/MIT)
 
 Under development
 
 ## Install Development Environment
+
 - Install ledger vagrant https://github.com/fix/ledger-vagrant
 - Clone this repo under `apps/`
 - Connect to the vagrant machine `vagrant ssh`
@@ -12,6 +16,7 @@ Under development
 - Install the app `sh ./rebuild.sh` (ie. build, delete and load app on ledger)
 
 ## TODO
+
 - [x] Make derivation path working
 - [x] Generate correct address
 - [-] Parse serialized transactions
@@ -27,6 +32,12 @@ Under development
 
 If you discover a security vulnerability within this application, please send an e-mail to security@ark.io. All security vulnerabilities will be promptly addressed.
 
+## Credits
+
+- [FX Thoorens](https://github.com/fix)
+- [Juan A. Martín](https://github.com/j-a-m-l)
+- [All Contributors](../../contributors)
+
 ## License
 
-The MIT License (MIT)
+[MIT](LICENSE) © [ArkEcosystem](https://ark.io)
