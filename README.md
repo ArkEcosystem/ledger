@@ -34,8 +34,7 @@ If you discover a security vulnerability within this application, please send an
 
 ## Credits
 
-- [FX Thoorens](https://github.com/fix)
-- [Juan A. Martín](https://github.com/j-a-m-l)
+- [Joshua Noack](https://github.com/supaiku0)
 - [All Contributors](../../contributors)
 
 ## License
