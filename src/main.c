@@ -584,10 +584,18 @@ unsigned int io_seproxyhal_touch_tx_ok(const bagl_element_t *e) {
     if (tmpCtx.transactionContext.curve == CX_CURVE_256K1) {
         cx_sha256_init(&localHash);
         cx_hash(&localHash.header, CX_LAST, tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, finalhash);
+#if CX_APILEVEL >= 8
+        tx = cx_ecdsa_sign(&privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256, finalhash, sizeof(finalhash), G_io_apdu_buffer, NULL);
+#else        
         tx = cx_ecdsa_sign(&privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256, finalhash, sizeof(finalhash), G_io_apdu_buffer);
         G_io_apdu_buffer[0] = 0x30;
+#endif        
     } else {
+#if CX_APILEVEL >= 8
+        tx = cx_eddsa_sign(&privateKey, CX_LAST, CX_SHA512, tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, NULL, 0, G_io_apdu_buffer, NULL);
+#else        
         tx = cx_eddsa_sign(&privateKey, NULL, CX_LAST, CX_SHA512, tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, G_io_apdu_buffer);
+#endif        
     }
 
     os_memset(&privateKey, 0, sizeof(privateKey));

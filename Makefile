@@ -21,11 +21,11 @@ endif
 include $(BOLOS_SDK)/Makefile.defines
 
 APPNAME = Ark
-APP_LOAD_PARAMS=--appFlags 0x40 --curve secp256k1 $(COMMON_LOAD_PARAMS)
+APP_LOAD_PARAMS=--appFlags 0x40 --curve secp256k1 --path "44'/111'" --path "44'/1'" $(COMMON_LOAD_PARAMS)
 
 APPVERSION_M=0
 APPVERSION_N=1
-APPVERSION_P=0
+APPVERSION_P=2
 APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 
 #prepare hsm generation
