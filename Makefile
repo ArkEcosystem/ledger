@@ -95,3 +95,7 @@ include $(BOLOS_SDK)/Makefile.rules
 
 #add dependency on custom makefile filename
 dep/%.d: %.c Makefile.genericwallet
+
+
+listvariants:
+	@echo VARIANTS COIN ark
