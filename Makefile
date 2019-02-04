@@ -25,7 +25,7 @@ APP_LOAD_PARAMS=--appFlags 0x40 --curve secp256k1 --path "44'/111'" --path "44'/
 
 APPVERSION_M=0
 APPVERSION_N=1
-APPVERSION_P=2
+APPVERSION_P=4
 APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 
 #prepare hsm generation
@@ -51,12 +51,13 @@ DEFINES   += HAVE_BAGL HAVE_SPRINTF
 DEFINES   += PRINTF\(...\)=
 DEFINES   += HAVE_IO_USB HAVE_L4_USBLIB IO_USB_MAX_ENDPOINTS=6 IO_HID_EP_LENGTH=64 HAVE_USB_APDU
 DEFINES   += LEDGER_MAJOR_VERSION=$(APPVERSION_M) LEDGER_MINOR_VERSION=$(APPVERSION_N) LEDGER_PATCH_VERSION=$(APPVERSION_P)
+DEFINES += CX_COMPLIANCE_141
 
 # U2F
-DEFINES   += HAVE_U2F
+DEFINES   += HAVE_U2F HAVE_IO_U2F
 DEFINES   += USB_SEGMENT_SIZE=64
 DEFINES   += BLE_SEGMENT_SIZE=32 #max MTU, min 20
-DEFINES   += U2F_MAX_MESSAGE_SIZE=264 #257+5+2
+DEFINES   += U2F_PROXY_MAGIC=\"w0w\"
 DEFINES   += UNUSED\(x\)=\(void\)x
 DEFINES   += APPVERSION=\"$(APPVERSION)\"
 
@@ -81,7 +82,7 @@ include $(BOLOS_SDK)/Makefile.glyphs
 
 ### computed variables
 APP_SOURCE_PATH  += src
-SDK_SOURCE_PATH  += lib_stusb
+SDK_SOURCE_PATH  += lib_stusb lib_stusb_impl lib_u2f
 
 
 load: all
@@ -95,3 +96,8 @@ include $(BOLOS_SDK)/Makefile.rules
 
 #add dependency on custom makefile filename
 dep/%.d: %.c Makefile.genericwallet
+
+
+listvariants:
+	@echo VARIANTS COIN ark
+
