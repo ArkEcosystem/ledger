@@ -210,7 +210,7 @@ bool adjustDecimals(char *src, uint32_t srcLength, char *target,
     return true;
 }
 
-unsigned short ark_print_amount(uint64_t amount, uint8_t *out,
+unsigned short ark_print_amount(uint64_t amount, char *out,
                                 uint32_t outlen) {
     char tmp[20];
     char tmp2[25];
