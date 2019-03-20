@@ -1,3 +1,5 @@
+#!/bin/sh
+
 make clean
 make
 make delete
