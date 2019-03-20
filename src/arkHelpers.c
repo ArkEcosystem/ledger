@@ -18,6 +18,7 @@
 #include "arkHelpers.h"
 #include "arkBase58.h"
 #include <stdbool.h>
+#include <string.h>
 
 void ark_public_key_hash160(unsigned char WIDE *in, unsigned short inlen,
                             unsigned char *out) {
