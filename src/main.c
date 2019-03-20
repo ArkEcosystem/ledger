@@ -244,20 +244,20 @@ unsigned int ui_address_nanos_button(unsigned int button_mask,
 
 #if defined(TARGET_NANOS)
 
-const char * const ui_approval_transfer[][2] = {
+volatile char *ui_approval_transfer[][2] = {
     {"Operation", fullAmount},
     {"To", fullAddress},
     {"Amount", fullAmount},
     {"Fees", fullAmount},
 };
 
-const char * const ui_approval_vote1[][2] = {
+volatile char *ui_approval_vote1[][2] = {
     {"Operation", fullAmount},
     {"Vote", fullAddress},
     {"Fees", fullAmount},
 };
 
-const char * const ui_approval_vote2[][2] = {
+volatile char *ui_approval_vote2[][2] = {
     {"Operation", fullAmount},
     {"Vote 1", fullAddress},
     {"Vote 2", fullAddress},
@@ -360,19 +360,19 @@ unsigned int ui_approval_prepro(const bagl_element_t *element) {
                 if (txContent.type == OPERATION_TYPE_TRANSFER) {
                     switch(display) {
                         case 0: // Operation
-                            strcpy(fullAmount, "Transfer");
+                            strcpy((char *)fullAmount, "Transfer");
                             goto display_transfer;
                         case 1: // Destination
-                            addressLength = ark_public_key_to_encoded_base58(txContent.recipientId, 21, fullAddress, sizeof(fullAddress), txContent.recipientId[0], 1);
+                            addressLength = ark_public_key_to_encoded_base58(txContent.recipientId, 21, (unsigned char *)fullAddress, sizeof(fullAddress), txContent.recipientId[0], 1);
                             fullAddress[addressLength] = '\0';
                             goto display_transfer;
                         case 2: // Amount
-                            ark_print_amount(txContent.amount, fullAmount, sizeof(fullAmount));
+                            ark_print_amount(txContent.amount, (char *)fullAmount, sizeof(fullAmount));
                             goto display_transfer;
                         case 3: // fees
-                            ark_print_amount(txContent.fee, fullAmount, sizeof(fullAmount));
+                            ark_print_amount(txContent.fee, (char *)fullAmount, sizeof(fullAmount));
                             display_transfer:
-                            tmp_element.text = ui_approval_transfer[display][(element->component.userid)>>4];
+                            tmp_element.text = (char *)ui_approval_transfer[display][(element->component.userid)>>4];
                             break;
                     }
                 }
@@ -380,16 +380,16 @@ unsigned int ui_approval_prepro(const bagl_element_t *element) {
                 if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 1)) {
                     switch(display) {
                         case 0: // Operation
-                            strcpy(fullAmount, "1 vote");
+                            strcpy((char *)fullAmount, "1 vote");
                             goto display_vote1;
                         case 1: // Vote
-                            os_memmove(fullAddress, tmpCtx.transactionContext.rawTx + txContent.assetOffset, 67);
+                            os_memmove((void *)fullAddress, tmpCtx.transactionContext.rawTx + txContent.assetOffset, 67);
                             fullAddress[67] = '\0';
                             goto display_vote1;
                         case 2: // fees
-                            ark_print_amount(txContent.fee, fullAmount, sizeof(fullAmount));
+                            ark_print_amount(txContent.fee, (char *)fullAmount, sizeof(fullAmount));
                             display_vote1:
-                            tmp_element.text = ui_approval_vote1[display][(element->component.userid)>>4];
+                            tmp_element.text = (char *)ui_approval_vote1[display][(element->component.userid)>>4];
                             break;                    
                     }
                 }
@@ -397,20 +397,20 @@ unsigned int ui_approval_prepro(const bagl_element_t *element) {
                 if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 2)) {
                     switch(display) {
                         case 0: // Operation
-                            strcpy(fullAmount, "2 votes");
+                            strcpy((char *)fullAmount, "2 votes");
                             goto display_vote2;
                         case 1: // Vote 1
-                            os_memmove(fullAddress, tmpCtx.transactionContext.rawTx + txContent.assetOffset, 67);
+                            os_memmove((void *)fullAddress, tmpCtx.transactionContext.rawTx + txContent.assetOffset, 67);
                             fullAddress[67] = '\0';
                             goto display_vote2;
                         case 2: // Vote 2
-                            os_memmove(fullAddress, tmpCtx.transactionContext.rawTx + txContent.assetOffset + 67, 67);
+                            os_memmove((void *)fullAddress, tmpCtx.transactionContext.rawTx + txContent.assetOffset + 67, 67);
                             fullAddress[67] = '\0';
                             goto display_vote2;                            
                         case 3: // fees
-                            ark_print_amount(txContent.fee, fullAmount, sizeof(fullAmount));
+                            ark_print_amount(txContent.fee, (char *)fullAmount, sizeof(fullAmount));
                             display_vote2:
-                            tmp_element.text = ui_approval_vote2[display][(element->component.userid)>>4];
+                            tmp_element.text = (char *)ui_approval_vote2[display][(element->component.userid)>>4];
                             break;                    
                     }
                 }
@@ -580,7 +580,7 @@ unsigned short io_exchange_al(unsigned char channel, unsigned short tx_len) {
 
 uint32_t set_result_get_publicKey() {
     uint32_t tx = 0;
-    uint32_t addressLength = strlen(tmpCtx.publicKeyContext.address);
+    uint32_t addressLength = strlen((char *)tmpCtx.publicKeyContext.address);
     G_io_apdu_buffer[tx++] = 33;
     ark_compress_public_key(&tmpCtx.publicKeyContext.publicKey,
                             G_io_apdu_buffer + tx, 33);
@@ -654,7 +654,7 @@ void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer,
         *tx = set_result_get_publicKey();
         THROW(0x9000);
     } else {
-        os_memset(fullAddress, 0, sizeof(fullAddress));
+        os_memset((void *)fullAddress, 0, sizeof(fullAddress));
         os_memmove((void *)fullAddress, tmpCtx.publicKeyContext.address, 5);
         os_memmove((void *)(fullAddress + 5), "...", 3);
         os_memmove((void *)(fullAddress + 8),
@@ -679,9 +679,9 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
                 uint16_t dataLength, volatile unsigned int *flags,
                 volatile unsigned int *tx) {
     UNUSED(tx);
-    uint8_t addressLength;
+    //uint8_t addressLength;
     uint32_t i;
-    unsigned char address[41];
+    //unsigned char address[41];
     bool last = (p1 & P1_LAST);
     p1 &= 0x7F;
 
