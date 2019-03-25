@@ -219,21 +219,24 @@ const bagl_element_t ui_address_nanos[] = {
 };
 
 const bagl_element_t *ui_address_prepro(const bagl_element_t *element) {
-    if (element->component.userid > 0) {
-        unsigned int display = (ux_step == element->component.userid - 1);
-        if (display) {
-            switch (element->component.userid) {
-            case 1:
-                UX_CALLBACK_SET_INTERVAL(2000);
-                break;
-            case 2:
-                UX_CALLBACK_SET_INTERVAL(MAX(
-                    3000, 1000 + bagl_label_roundtrip_duration_ms(element, 7)));
-                break;
-            }
-        }
-        return display ? element : NULL;
+    if (element->component.userid <= 0) {
+        return element;
     }
+
+    if (ux_step != element->component.userid - 1) {
+        return NULL;
+    }
+
+    switch (element->component.userid) {
+    case 1:
+        UX_CALLBACK_SET_INTERVAL(2000);
+        break;
+    case 2:
+        UX_CALLBACK_SET_INTERVAL(MAX(
+            3000, 1000 + bagl_label_roundtrip_duration_ms(element, 7)));
+        break;
+    }
+
     return element;
 }
 
@@ -340,88 +343,93 @@ const bagl_element_t ui_approval_nanos[] = {
 };
 
 const bagl_element_t *ui_approval_prepro(const bagl_element_t *element) {
-    unsigned int display = 1;
+    unsigned int display;
     uint32_t addressLength;
 
+    if (element->component.userid <= 0) {
+        return element;
+    }
 
-    if (element->component.userid > 0) {
-        // display the meta element when at least bigger
-        display = (ux_step == element->component.userid - 1) || (element->component.userid >= 0x02 && ux_step >= 1);
+    // display the meta element when at least bigger
+    display = (ux_step == element->component.userid - 1) ||
+      (element->component.userid >= 0x02 && ux_step >= 1);
 
-        if (display) {
-            switch (element->component.userid) {
-            case 0x01:
-                UX_CALLBACK_SET_INTERVAL(2000);
-                break;
-            case 0x02:
-            case 0x12:
-                os_memmove(&tmp_element, element, sizeof(bagl_element_t));
-                display = ux_step - 1;
-                if (txContent.type == OPERATION_TYPE_TRANSFER) {
-                    switch(display) {
-                        case 0: // Operation
-                            strcpy((char *)fullAmount, "Transfer");
-                            goto display_transfer;
-                        case 1: // Destination
-                            addressLength = ark_public_key_to_encoded_base58(txContent.recipientId, 21, (unsigned char *)fullAddress, sizeof(fullAddress), txContent.recipientId[0], 1);
-                            fullAddress[addressLength] = '\0';
-                            goto display_transfer;
-                        case 2: // Amount
-                            ark_print_amount(txContent.amount, (char *)fullAmount, sizeof(fullAmount));
-                            goto display_transfer;
-                        case 3: // fees
-                            ark_print_amount(txContent.fee, (char *)fullAmount, sizeof(fullAmount));
-                            display_transfer:
-                            tmp_element.text = (char *)ui_approval_transfer[display][(element->component.userid)>>4];
-                            break;
-                    }
-                }
-                else
-                if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 1)) {
-                    switch(display) {
-                        case 0: // Operation
-                            strcpy((char *)fullAmount, "1 vote");
-                            goto display_vote1;
-                        case 1: // Vote
-                            os_memmove((void *)fullAddress, tmpCtx.transactionContext.rawTx + txContent.assetOffset, 67);
-                            fullAddress[67] = '\0';
-                            goto display_vote1;
-                        case 2: // fees
-                            ark_print_amount(txContent.fee, (char *)fullAmount, sizeof(fullAmount));
-                            display_vote1:
-                            tmp_element.text = (char *)ui_approval_vote1[display][(element->component.userid)>>4];
-                            break;                    
-                    }
-                }
-                else
-                if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 2)) {
-                    switch(display) {
-                        case 0: // Operation
-                            strcpy((char *)fullAmount, "2 votes");
-                            goto display_vote2;
-                        case 1: // Vote 1
-                            os_memmove((void *)fullAddress, tmpCtx.transactionContext.rawTx + txContent.assetOffset, 67);
-                            fullAddress[67] = '\0';
-                            goto display_vote2;
-                        case 2: // Vote 2
-                            os_memmove((void *)fullAddress, tmpCtx.transactionContext.rawTx + txContent.assetOffset + 67, 67);
-                            fullAddress[67] = '\0';
-                            goto display_vote2;                            
-                        case 3: // fees
-                            ark_print_amount(txContent.fee, (char *)fullAmount, sizeof(fullAmount));
-                            display_vote2:
-                            tmp_element.text = (char *)ui_approval_vote2[display][(element->component.userid)>>4];
-                            break;                    
-                    }
-                }
+    if (!display) {
+        return NULL;
+    }
 
-                UX_CALLBACK_SET_INTERVAL(MAX(
-                    3000, 1000 + bagl_label_roundtrip_duration_ms(&tmp_element, 7)));
-                return &tmp_element;
+    switch (element->component.userid) {
+    case 0x01:
+        UX_CALLBACK_SET_INTERVAL(2000);
+        return element;
+    case 0x02:
+    case 0x12:
+        os_memmove(&tmp_element, element, sizeof(bagl_element_t));
+        display = ux_step - 1;
+        if (txContent.type == OPERATION_TYPE_TRANSFER) {
+            switch (display) {
+                case 0: // Operation
+                    strcpy((char *)fullAmount, "Transfer");
+                    goto display_transfer;
+                case 1: // Destination
+                    addressLength = ark_public_key_to_encoded_base58(txContent.recipientId, 21, (unsigned char *)fullAddress, sizeof(fullAddress), txContent.recipientId[0], 1);
+                    fullAddress[addressLength] = '\0';
+                    goto display_transfer;
+                case 2: // Amount
+                    ark_print_amount(txContent.amount, (char *)fullAmount, sizeof(fullAmount));
+                    goto display_transfer;
+                case 3: // fees
+                    ark_print_amount(txContent.fee, (char *)fullAmount, sizeof(fullAmount));
+                    display_transfer:
+                    tmp_element.text = (char *)ui_approval_transfer[display][(element->component.userid)>>4];
+                    break;
             }
         }
+        else
+        if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 1)) {
+            switch(display) {
+                case 0: // Operation
+                    strcpy((char *)fullAmount, "1 vote");
+                    goto display_vote1;
+                case 1: // Vote
+                    os_memmove((void *)fullAddress, tmpCtx.transactionContext.rawTx + txContent.assetOffset, 67);
+                    fullAddress[67] = '\0';
+                    goto display_vote1;
+                case 2: // fees
+                    ark_print_amount(txContent.fee, (char *)fullAmount, sizeof(fullAmount));
+                    display_vote1:
+                    tmp_element.text = (char *)ui_approval_vote1[display][(element->component.userid)>>4];
+                    break;
+            }
+        }
+        else
+        if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 2)) {
+            switch(display) {
+                case 0: // Operation
+                    strcpy((char *)fullAmount, "2 votes");
+                    goto display_vote2;
+                case 1: // Vote 1
+                    os_memmove((void *)fullAddress, tmpCtx.transactionContext.rawTx + txContent.assetOffset, 67);
+                    fullAddress[67] = '\0';
+                    goto display_vote2;
+                case 2: // Vote 2
+                    os_memmove((void *)fullAddress, tmpCtx.transactionContext.rawTx + txContent.assetOffset + 67, 67);
+                    fullAddress[67] = '\0';
+                    goto display_vote2;
+                case 3: // fees
+                    ark_print_amount(txContent.fee, (char *)fullAmount, sizeof(fullAmount));
+                    display_vote2:
+                    tmp_element.text = (char *)ui_approval_vote2[display][(element->component.userid)>>4];
+                    break;
+            }
+        }
+
+        UX_CALLBACK_SET_INTERVAL(MAX(
+            3000, 1000 + bagl_label_roundtrip_duration_ms(&tmp_element, 7)));
+        return &tmp_element;
     }
-    return display ? element : NULL;
+
+    return element;
 }
 
 
