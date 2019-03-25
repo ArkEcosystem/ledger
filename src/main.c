@@ -218,7 +218,7 @@ const bagl_element_t ui_address_nanos[] = {
      NULL},
 };
 
-unsigned int ui_address_prepro(const bagl_element_t *element) {
+const bagl_element_t *ui_address_prepro(const bagl_element_t *element) {
     if (element->component.userid > 0) {
         unsigned int display = (ux_step == element->component.userid - 1);
         if (display) {
@@ -232,9 +232,9 @@ unsigned int ui_address_prepro(const bagl_element_t *element) {
                 break;
             }
         }
-        return display;
+        return display ? element : NULL;
     }
-    return 1;
+    return element;
 }
 
 unsigned int ui_address_nanos_button(unsigned int button_mask,
@@ -339,7 +339,7 @@ const bagl_element_t ui_approval_nanos[] = {
      NULL},
 };
 
-unsigned int ui_approval_prepro(const bagl_element_t *element) {
+const bagl_element_t *ui_approval_prepro(const bagl_element_t *element) {
     unsigned int display = 1;
     uint32_t addressLength;
 
@@ -421,7 +421,7 @@ unsigned int ui_approval_prepro(const bagl_element_t *element) {
             }
         }
     }
-    return display;
+    return display ? element : NULL;
 }
 
 
