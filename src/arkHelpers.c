@@ -18,6 +18,7 @@
 #include "arkHelpers.h"
 #include "arkBase58.h"
 #include <stdbool.h>
+#include <string.h>
 
 void ark_public_key_hash160(unsigned char WIDE *in, unsigned short inlen,
                             unsigned char *out) {
@@ -209,10 +210,13 @@ bool adjustDecimals(char *src, uint32_t srcLength, char *target,
     return true;
 }
 
-unsigned short ark_print_amount(uint64_t amount, uint8_t *out,
+unsigned short ark_print_amount(uint64_t amount, char *out,
                                 uint32_t outlen) {
-    char tmp[20];
-    char tmp2[25];
+    const size_t uint64MaxChars = 20; // 18446744073709551615
+    const char* prefix = "ARK ";
+    const size_t prefixLen = 4;
+    char tmp[uint64MaxChars + 1];
+    char tmp2[sizeof(tmp) + prefixLen];
     uint32_t numDigits = 0, i;
     uint64_t base = 1;
     while (base <= amount) {
@@ -228,8 +232,8 @@ unsigned short ark_print_amount(uint64_t amount, uint8_t *out,
         base /= 10;
     }
     tmp[i] = '\0';
-    strcpy(tmp2, "ARK ");
-    adjustDecimals(tmp, i, tmp2 + 4, 25, 8);
+    strcpy(tmp2, prefix);
+    adjustDecimals(tmp, i, tmp2 + prefixLen, sizeof(tmp2) - prefixLen, 8);
     if (strlen(tmp2) < outlen - 1) {
         strcpy(out, tmp2);
     } else {

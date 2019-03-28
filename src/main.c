@@ -26,18 +26,6 @@
 
 #include "glyphs.h"
 
-#ifdef HAVE_U2F
-
-#include "u2f_service.h"
-#include "u2f_transport.h"
-
-volatile unsigned char u2fMessageBuffer[U2F_MAX_MESSAGE_SIZE];
-
-extern void USB_power_U2F(unsigned char enabled, unsigned char fido);
-extern bool fidoActivated;
-
-#endif
-
 bagl_element_t tmp_element;
 unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
@@ -111,13 +99,6 @@ volatile bool dataPresent;
 
 bagl_element_t tmp_element;
 
-#ifdef HAVE_U2F
-
-volatile u2f_service_t u2fService;
-
-#endif
-
-unsigned int io_seproxyhal_touch_settings(const bagl_element_t *e);
 unsigned int io_seproxyhal_touch_exit(const bagl_element_t *e);
 unsigned int io_seproxyhal_touch_tx_ok(const bagl_element_t *e);
 unsigned int io_seproxyhal_touch_tx_cancel(const bagl_element_t *e);
@@ -131,14 +112,6 @@ ux_state_t ux;
 unsigned int ux_step;
 unsigned int ux_step_count;
 
-typedef struct internalStorage_t {
-    uint8_t fidoTransport;
-    uint8_t initialized;
-} internalStorage_t;
-
-WIDE internalStorage_t N_storage_real;
-#define N_storage (*(WIDE internalStorage_t *)PIC(&N_storage_real))
-
 const unsigned char hex_digits[] = {'0', '1', '2', '3', '4', '5', '6', '7',
                                     '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
@@ -150,19 +123,6 @@ void array_hexstr(char *strbuf, const void *bin, unsigned int len) {
     }
     *strbuf = 0; // EOS
 }
-
-#ifdef HAVE_U2F
-
-void u2f_proxy_response(u2f_service_t *service, unsigned int tx) {
-    os_memset(service->messageBuffer, 0, 5);
-    os_memmove(service->messageBuffer + 5, G_io_apdu_buffer, tx);
-    service->messageBuffer[tx + 5] = 0x90;
-    service->messageBuffer[tx + 6] = 0x00;
-    u2f_send_fragmented_response(service, U2F_CMD_MSG, service->messageBuffer,
-                                 tx + 7, true);
-}
-
-#endif
 
 const bagl_element_t *ui_menu_item_out_over(const bagl_element_t *e) {
     // the selection rectangle is after the none|touchable
@@ -182,36 +142,6 @@ const bagl_element_t *ui_menu_item_out_over(const bagl_element_t *e) {
 #if defined(TARGET_NANOS)
 
 const ux_menu_entry_t menu_main[];
-const ux_menu_entry_t menu_settings[];
-const ux_menu_entry_t menu_settings_browser[];
-
-// change the setting
-void menu_settings_browser_change(unsigned int enabled) {
-    fidoTransport = enabled;
-    nvm_write(&N_storage.fidoTransport, (void *)&fidoTransport,
-              sizeof(uint8_t));
-    USB_power_U2F(0, 0);
-    USB_power_U2F(1, N_storage.fidoTransport);
-    // go back to the menu entry
-    UX_MENU_DISPLAY(1, menu_settings, NULL);
-}
-
-// show the currently activated entry
-void menu_settings_browser_init(unsigned int ignored) {
-    UNUSED(ignored);
-    UX_MENU_DISPLAY(N_storage.fidoTransport ? 1 : 0, menu_settings_browser,
-                    NULL);
-}
-
-const ux_menu_entry_t menu_settings_browser[] = {
-    {NULL, menu_settings_browser_change, 0, NULL, "No", NULL, 0, 0},
-    {NULL, menu_settings_browser_change, 1, NULL, "Yes", NULL, 0, 0},
-    UX_MENU_END};
-
-const ux_menu_entry_t menu_settings[] = {
-    {NULL, menu_settings_browser_init, 0, NULL, "Browser support", NULL, 0, 0},
-    {menu_main, NULL, 1, &C_icon_back, "Back", NULL, 61, 40},
-    UX_MENU_END};
 
 const ux_menu_entry_t menu_about[] = {
     {NULL, NULL, 0, NULL, "Version", APPVERSION, 0, 0},
@@ -220,7 +150,6 @@ const ux_menu_entry_t menu_about[] = {
 
 const ux_menu_entry_t menu_main[] = {
     {NULL, NULL, 0, &C_icon_ark, "Use wallet to", "view accounts", 33, 12},
-    {menu_settings, NULL, 0, NULL, "Settings", NULL, 0, 0},
     {menu_about, NULL, 0, NULL, "About", NULL, 0, 0},
     {NULL, os_sched_exit, 0, &C_icon_dashboard, "Quit app", NULL, 50, 29},
     UX_MENU_END};
@@ -303,23 +232,26 @@ const bagl_element_t ui_address_nanos[] = {
      NULL},
 };
 
-unsigned int ui_address_prepro(const bagl_element_t *element) {
-    if (element->component.userid > 0) {
-        unsigned int display = (ux_step == element->component.userid - 1);
-        if (display) {
-            switch (element->component.userid) {
-            case 1:
-                UX_CALLBACK_SET_INTERVAL(2000);
-                break;
-            case 2:
-                UX_CALLBACK_SET_INTERVAL(MAX(
-                    3000, 1000 + bagl_label_roundtrip_duration_ms(element, 7)));
-                break;
-            }
-        }
-        return display;
+const bagl_element_t *ui_address_prepro(const bagl_element_t *element) {
+    if (element->component.userid <= 0) {
+        return element;
     }
-    return 1;
+
+    if (ux_step != element->component.userid - 1) {
+        return NULL;
+    }
+
+    switch (element->component.userid) {
+    case 1:
+        UX_CALLBACK_SET_INTERVAL(2000);
+        break;
+    case 2:
+        UX_CALLBACK_SET_INTERVAL(MAX(
+            3000, 1000 + bagl_label_roundtrip_duration_ms(element, 7)));
+        break;
+    }
+
+    return element;
 }
 
 unsigned int ui_address_nanos_button(unsigned int button_mask,
@@ -329,20 +261,20 @@ unsigned int ui_address_nanos_button(unsigned int button_mask,
 
 #if defined(TARGET_NANOS)
 
-const char * const ui_approval_transfer[][2] = {
+volatile char *ui_approval_transfer[][2] = {
     {"Operation", fullAmount},
     {"To", fullAddress},
     {"Amount", fullAmount},
     {"Fees", fullAmount},
 };
 
-const char * const ui_approval_vote1[][2] = {
+volatile char *ui_approval_vote1[][2] = {
     {"Operation", fullAmount},
     {"Vote", fullAddress},
     {"Fees", fullAmount},
 };
 
-const char * const ui_approval_vote2[][2] = {
+volatile char *ui_approval_vote2[][2] = {
     {"Operation", fullAmount},
     {"Vote 1", fullAddress},
     {"Vote 2", fullAddress},
@@ -424,89 +356,94 @@ const bagl_element_t ui_approval_nanos[] = {
      NULL},
 };
 
-unsigned int ui_approval_prepro(const bagl_element_t *element) {
-    unsigned int display = 1;
+const bagl_element_t *ui_approval_prepro(const bagl_element_t *element) {
+    unsigned int display;
     uint32_t addressLength;
 
+    if (element->component.userid <= 0) {
+        return element;
+    }
 
-    if (element->component.userid > 0) {
-        // display the meta element when at least bigger
-        display = (ux_step == element->component.userid - 1) || (element->component.userid >= 0x02 && ux_step >= 1);
+    // display the meta element when at least bigger
+    display = (ux_step == element->component.userid - 1) ||
+      (element->component.userid >= 0x02 && ux_step >= 1);
 
-        if (display) {
-            switch (element->component.userid) {
-            case 0x01:
-                UX_CALLBACK_SET_INTERVAL(2000);
-                break;
-            case 0x02:
-            case 0x12:
-                os_memmove(&tmp_element, element, sizeof(bagl_element_t));
-                display = ux_step - 1;
-                if (txContent.type == OPERATION_TYPE_TRANSFER) {
-                    switch(display) {
-                        case 0: // Operation
-                            strcpy(fullAmount, "Transfer");
-                            goto display_transfer;
-                        case 1: // Destination
-                            addressLength = ark_public_key_to_encoded_base58(txContent.recipientId, 21, fullAddress, sizeof(fullAddress), txContent.recipientId[0], 1);
-                            fullAddress[addressLength] = '\0';
-                            goto display_transfer;
-                        case 2: // Amount
-                            ark_print_amount(txContent.amount, fullAmount, sizeof(fullAmount));
-                            goto display_transfer;
-                        case 3: // fees
-                            ark_print_amount(txContent.fee, fullAmount, sizeof(fullAmount));
-                            display_transfer:
-                            tmp_element.text = ui_approval_transfer[display][(element->component.userid)>>4];
-                            break;
-                    }
-                }
-                else
-                if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 1)) {
-                    switch(display) {
-                        case 0: // Operation
-                            strcpy(fullAmount, "1 vote");
-                            goto display_vote1;
-                        case 1: // Vote
-                            os_memmove(fullAddress, tmpCtx.transactionContext.rawTx + txContent.assetOffset, 67);
-                            fullAddress[67] = '\0';
-                            goto display_vote1;
-                        case 2: // fees
-                            ark_print_amount(txContent.fee, fullAmount, sizeof(fullAmount));
-                            display_vote1:
-                            tmp_element.text = ui_approval_vote1[display][(element->component.userid)>>4];
-                            break;                    
-                    }
-                }
-                else
-                if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 2)) {
-                    switch(display) {
-                        case 0: // Operation
-                            strcpy(fullAmount, "2 votes");
-                            goto display_vote2;
-                        case 1: // Vote 1
-                            os_memmove(fullAddress, tmpCtx.transactionContext.rawTx + txContent.assetOffset, 67);
-                            fullAddress[67] = '\0';
-                            goto display_vote2;
-                        case 2: // Vote 2
-                            os_memmove(fullAddress, tmpCtx.transactionContext.rawTx + txContent.assetOffset + 67, 67);
-                            fullAddress[67] = '\0';
-                            goto display_vote2;                            
-                        case 3: // fees
-                            ark_print_amount(txContent.fee, fullAmount, sizeof(fullAmount));
-                            display_vote2:
-                            tmp_element.text = ui_approval_vote2[display][(element->component.userid)>>4];
-                            break;                    
-                    }
-                }
+    if (!display) {
+        return NULL;
+    }
 
-                UX_CALLBACK_SET_INTERVAL(MAX(
-                    3000, 1000 + bagl_label_roundtrip_duration_ms(&tmp_element, 7)));
-                return &tmp_element;
+    switch (element->component.userid) {
+    case 0x01:
+        UX_CALLBACK_SET_INTERVAL(2000);
+        return element;
+    case 0x02:
+    case 0x12:
+        os_memmove(&tmp_element, element, sizeof(bagl_element_t));
+        display = ux_step - 1;
+        if (txContent.type == OPERATION_TYPE_TRANSFER) {
+            switch (display) {
+                case 0: // Operation
+                    strcpy((char *)fullAmount, "Transfer");
+                    goto display_transfer;
+                case 1: // Destination
+                    addressLength = ark_public_key_to_encoded_base58(txContent.recipientId, 21, (unsigned char *)fullAddress, sizeof(fullAddress), txContent.recipientId[0], 1);
+                    fullAddress[addressLength] = '\0';
+                    goto display_transfer;
+                case 2: // Amount
+                    ark_print_amount(txContent.amount, (char *)fullAmount, sizeof(fullAmount));
+                    goto display_transfer;
+                case 3: // fees
+                    ark_print_amount(txContent.fee, (char *)fullAmount, sizeof(fullAmount));
+                    display_transfer:
+                    tmp_element.text = (char *)ui_approval_transfer[display][(element->component.userid)>>4];
+                    break;
             }
         }
+        else
+        if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 1)) {
+            switch(display) {
+                case 0: // Operation
+                    strcpy((char *)fullAmount, "1 vote");
+                    goto display_vote1;
+                case 1: // Vote
+                    os_memmove((void *)fullAddress, tmpCtx.transactionContext.rawTx + txContent.assetOffset, 67);
+                    fullAddress[67] = '\0';
+                    goto display_vote1;
+                case 2: // fees
+                    ark_print_amount(txContent.fee, (char *)fullAmount, sizeof(fullAmount));
+                    display_vote1:
+                    tmp_element.text = (char *)ui_approval_vote1[display][(element->component.userid)>>4];
+                    break;
+            }
+        }
+        else
+        if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 2)) {
+            switch(display) {
+                case 0: // Operation
+                    strcpy((char *)fullAmount, "2 votes");
+                    goto display_vote2;
+                case 1: // Vote 1
+                    os_memmove((void *)fullAddress, tmpCtx.transactionContext.rawTx + txContent.assetOffset, 67);
+                    fullAddress[67] = '\0';
+                    goto display_vote2;
+                case 2: // Vote 2
+                    os_memmove((void *)fullAddress, tmpCtx.transactionContext.rawTx + txContent.assetOffset + 67, 67);
+                    fullAddress[67] = '\0';
+                    goto display_vote2;
+                case 3: // fees
+                    ark_print_amount(txContent.fee, (char *)fullAmount, sizeof(fullAmount));
+                    display_vote2:
+                    tmp_element.text = (char *)ui_approval_vote2[display][(element->component.userid)>>4];
+                    break;
+            }
+        }
+
+        UX_CALLBACK_SET_INTERVAL(MAX(
+            3000, 1000 + bagl_label_roundtrip_duration_ms(&tmp_element, 7)));
+        return &tmp_element;
     }
-    return display;
+
+    return element;
 }
 
 
@@ -594,11 +531,12 @@ const bagl_element_t ui_sign_message_nanos[] = {
      NULL},
 };
 
-unsigned int ui_sign_message_prepro(const bagl_element_t *element) {
+const bagl_element_t *ui_sign_message_prepro(const bagl_element_t *element) {
     if (element->component.userid > 0) {
-        unsigned int display = (ux_step == element->component.userid - 1);
-        if (display) {
-            switch (element->component.userid) {
+        if (ux_step != element->component.userid - 1) {
+            return NULL;
+        }
+        switch (element->component.userid) {
             case 1:
                 UX_CALLBACK_SET_INTERVAL(2000);
                 break;
@@ -606,11 +544,10 @@ unsigned int ui_sign_message_prepro(const bagl_element_t *element) {
                 UX_CALLBACK_SET_INTERVAL(MAX(
                     3000, 1000 + bagl_label_roundtrip_duration_ms(element, 7)));
                 break;
-            }
         }
-        return display;
+        return element;
     }
-    return 1;
+    return element;
 }
 
 unsigned int ui_sign_message_nanos_button(unsigned int button_mask,
@@ -637,17 +574,8 @@ unsigned int io_seproxyhal_touch_address_ok(const bagl_element_t *e) {
     uint32_t tx = set_result_get_publicKey();
     G_io_apdu_buffer[tx++] = 0x90;
     G_io_apdu_buffer[tx++] = 0x00;
-#ifdef HAVE_U2F
-    if (fidoActivated) {
-        u2f_proxy_response((u2f_service_t *)&u2fService, tx);
-    } else {
-        // Send back the response, do not restart the event loop
-        io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
-    }
-#else  // HAVE_U2F
     // Send back the response, do not restart the event loop
     io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
-#endif // HAVE_U2F
     // Display back the original UX
     ui_idle();
     return 0; // do not redraw the widget
@@ -656,17 +584,8 @@ unsigned int io_seproxyhal_touch_address_ok(const bagl_element_t *e) {
 unsigned int io_seproxyhal_touch_address_cancel(const bagl_element_t *e) {
     G_io_apdu_buffer[0] = 0x69;
     G_io_apdu_buffer[1] = 0x85;
-#ifdef HAVE_U2F
-    if (fidoActivated) {
-        u2f_proxy_response((u2f_service_t *)&u2fService, 2);
-    } else {
-        // Send back the response, do not restart the event loop
-        io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, 2);
-    }
-#else  // HAVE_U2F
     // Send back the response, do not restart the event loop
     io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, 2);
-#endif // HAVE_U2F
     // Display back the original UX
     ui_idle();
     return 0; // do not redraw the widget
@@ -722,17 +641,8 @@ unsigned int io_seproxyhal_touch_tx_ok(const bagl_element_t *e) {
     G_io_apdu_buffer[tx++] = 0x90;
     G_io_apdu_buffer[tx++] = 0x00;
 
-#ifdef HAVE_U2F
-    if (fidoActivated) {
-        u2f_proxy_response((u2f_service_t *)&u2fService, tx);
-    } else {
-        // Send back the response, do not restart the event loop
-        io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
-    }
-#else  // HAVE_U2F
     // Send back the response, do not restart the event loop
     io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
-#endif // HAVE_U2F
     // Display back the original UX
     ui_idle();
 
@@ -742,17 +652,8 @@ unsigned int io_seproxyhal_touch_tx_ok(const bagl_element_t *e) {
 unsigned int io_seproxyhal_touch_tx_cancel(const bagl_element_t *e) {
     G_io_apdu_buffer[0] = 0x69;
     G_io_apdu_buffer[1] = 0x85;
-#ifdef HAVE_U2F
-    if (fidoActivated) {
-        u2f_proxy_response((u2f_service_t *)&u2fService, 2);
-    } else {
-        // Send back the response, do not restart the event loop
-        io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, 2);
-    }
-#else  // HAVE_U2F
     // Send back the response, do not restart the event loop
     io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, 2);
-#endif // HAVE_U2F
     // Display back the original UX
     ui_idle();
     return 0; // do not redraw the widget
@@ -809,18 +710,9 @@ unsigned int io_seproxyhal_touch_sign_message_ok(const bagl_element_t *e) {
     G_io_apdu_buffer[tx++] = 0x90;
     G_io_apdu_buffer[tx++] = 0x00;
 
-#ifdef HAVE_U2F
-    if (fidoActivated) {
-        u2f_proxy_response((u2f_service_t *)&u2fService, tx);
-    } else {
-        // Send back the response, do not restart the event loop
-        io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
-    }
-#else  // HAVE_U2F
     // Send back the response, do not restart the event loop
     io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, tx);
 
-#endif // HAVE_U2F
     // Display back the original UX
     ui_idle();
 
@@ -830,17 +722,8 @@ unsigned int io_seproxyhal_touch_sign_message_ok(const bagl_element_t *e) {
 unsigned int io_seproxyhal_touch_sign_message_cancel(const bagl_element_t *e) {
     G_io_apdu_buffer[0] = 0x69;
     G_io_apdu_buffer[1] = 0x85;
-#ifdef HAVE_U2F
-    if (fidoActivated) {
-        u2f_proxy_response((u2f_service_t *)&u2fService, 2);
-    } else {
-        // Send back the response, do not restart the event loop
-        io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, 2);
-    }
-#else  // HAVE_U2F
     // Send back the response, do not restart the event loop
     io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, 2);
-#endif // HAVE_U2F
     // Display back the original UX
     ui_idle();
     return 0; // do not redraw the widget
@@ -894,7 +777,7 @@ unsigned short io_exchange_al(unsigned char channel, unsigned short tx_len) {
 
 uint32_t set_result_get_publicKey() {
     uint32_t tx = 0;
-    uint32_t addressLength = strlen(tmpCtx.publicKeyContext.address);
+    uint32_t addressLength = strlen((char *)tmpCtx.publicKeyContext.address);
     G_io_apdu_buffer[tx++] = 33;
     ark_compress_public_key(&tmpCtx.publicKeyContext.publicKey,
                             G_io_apdu_buffer + tx, 33);
@@ -968,7 +851,7 @@ void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer,
         *tx = set_result_get_publicKey();
         THROW(0x9000);
     } else {
-        os_memset(fullAddress, 0, sizeof(fullAddress));
+        os_memset((void *)fullAddress, 0, sizeof(fullAddress));
         os_memmove((void *)fullAddress, tmpCtx.publicKeyContext.address, 5);
         os_memmove((void *)(fullAddress + 5), "...", 3);
         os_memmove((void *)(fullAddress + 8),
@@ -993,9 +876,9 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
                 uint16_t dataLength, volatile unsigned int *flags,
                 volatile unsigned int *tx) {
     UNUSED(tx);
-    uint8_t addressLength;
+    //uint8_t addressLength;
     uint32_t i;
-    unsigned char address[41];
+    //unsigned char address[41];
     bool last = (p1 & P1_LAST);
     p1 &= 0x7F;
 
@@ -1146,8 +1029,8 @@ void handleSignMessage(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     if (!last) {
         THROW(0x9000);
     } else {
-        os_memset(fullMessage, 0, sizeof(fullMessage));
-        os_memmove(fullMessage, tmpCtx.messageContext.rawMessage, tmpCtx.messageContext.rawMessageLength);
+        os_memset((void *)fullMessage, 0, sizeof(fullMessage));
+        os_memmove((void *)fullMessage, tmpCtx.messageContext.rawMessage, tmpCtx.messageContext.rawMessageLength);
         fullMessage[tmpCtx.messageContext.rawMessageLength] = '\0';
     }
 
@@ -1398,26 +1281,7 @@ __attribute__((section(".boot"))) int main(void) {
             TRY {
                 io_seproxyhal_init();
 
-                if (N_storage.initialized != 0x01) {
-                    internalStorage_t storage;
-                    storage.fidoTransport = 0x00;
-                    storage.initialized = 0x01;
-                    nvm_write(&N_storage, (void *)&storage,
-                              sizeof(internalStorage_t));
-                }
-
-#ifdef HAVE_U2F
-                os_memset((unsigned char *)&u2fService, 0, sizeof(u2fService));
-                u2fService.inputBuffer = G_io_apdu_buffer;
-                u2fService.outputBuffer = G_io_apdu_buffer;
-                u2fService.messageBuffer = (uint8_t *)u2fMessageBuffer;
-                u2fService.messageBufferSize = U2F_MAX_MESSAGE_SIZE;
-                u2f_initialize_service((u2f_service_t *)&u2fService);
-
-                USB_power_U2F(1, N_storage.fidoTransport);
-#else  // HAVE_U2F
-                USB_power_U2F(1, 0);
-#endif // HAVE_U2F
+                USB_power(1);
 
                 ui_idle();
 
