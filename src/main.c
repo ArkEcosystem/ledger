@@ -93,7 +93,15 @@ unsigned int io_seproxyhal_touch_tx_cancel(const bagl_element_t *e);
 unsigned int io_seproxyhal_touch_address_ok(const bagl_element_t *e);
 unsigned int io_seproxyhal_touch_address_cancel(const bagl_element_t *e);
 void ui_idle(void);
+
+#ifdef TARGET_NANOX
+#include "ux.h"
+ux_state_t G_ux;
+bolos_ux_params_t G_ux_params;
+#else // TARGET_NANOX
 ux_state_t ux;
+#endif // TARGET_NANOX
+
 // display stepped screens
 unsigned int ux_step;
 unsigned int ux_step_count;
@@ -431,9 +439,150 @@ unsigned int ui_approval_nanos_button(unsigned int button_mask,
 
 #endif // #if defined(TARGET_NANOS)
 
+
+#if defined(TARGET_NANOX)
+
+//////////////////////////////////////////////////////////////////////
+UX_STEP_NOCB(
+    ux_idle_flow_1_step, 
+    pnn, 
+    {
+      &C_icon,
+      "Application",
+      "is ready",
+    });
+UX_STEP_NOCB(
+    ux_idle_flow_3_step, 
+    bn, 
+    {
+      "Version",
+      APPVERSION,
+    });
+UX_STEP_VALID(
+    ux_idle_flow_4_step,
+    pb,
+    os_sched_exit(-1),
+    {
+      &C_icon_dashboard_x,
+      "Quit",
+    });
+UX_FLOW(ux_idle_flow,
+  &ux_idle_flow_1_step,
+  &ux_idle_flow_3_step,
+  &ux_idle_flow_4_step
+);
+
+//////////////////////////////////////////////////////////////////////
+
+UX_STEP_NOCB(
+    ux_display_public_flow_5_step, 
+    bnnn_paging, 
+    {
+      .title = "Address",
+      .text = (char *)fullAddress,
+    });
+UX_STEP_VALID(
+    ux_display_public_flow_6_step, 
+    pb, 
+    io_seproxyhal_touch_address_ok(NULL),
+    {
+      &C_icon_validate_14,
+      "Approve",
+    });
+UX_STEP_VALID(
+    ux_display_public_flow_7_step, 
+    pb, 
+    io_seproxyhal_touch_address_cancel(NULL),
+    {
+      &C_icon_crossmark,
+      "Reject",
+    });
+
+UX_FLOW(ux_display_public_flow,
+  &ux_display_public_flow_5_step,
+  &ux_display_public_flow_6_step,
+  &ux_display_public_flow_7_step
+);
+
+//////////////////////////////////////////////////////////////////////
+
+uint8_t title1[15], title2[15], title3[15];
+uint8_t operation[15], var1[68], var2[68], var3[68];
+
+UX_STEP_NOCB(ux_confirm_full_flow_1_step, 
+    pnn, 
+    {
+      &C_icon_eye,
+      "Review operation:",
+      operation,
+    });
+UX_STEP_NOCB(
+    ux_confirm_full_flow_2_step, 
+    bnnn_paging, 
+    {
+      .title = title1,
+      .text = var1
+    });
+UX_STEP_NOCB(
+    ux_confirm_full_flow_3_step, 
+    bnnn_paging, 
+    {
+      .title = title2,
+      .text = var2,
+    });
+UX_STEP_NOCB(
+    ux_confirm_full_flow_4_step, 
+    bnnn_paging, 
+    {
+      .title = title3,
+      .text = var3,
+    });
+UX_STEP_VALID(
+    ux_confirm_full_flow_5_step, 
+    pb, 
+    io_seproxyhal_touch_tx_ok(NULL),
+    {
+      &C_icon_validate_14,
+      "Accept",
+    });
+UX_STEP_VALID(
+    ux_confirm_full_flow_6_step, 
+    pb, 
+    io_seproxyhal_touch_tx_cancel(NULL),
+    {
+      &C_icon_crossmark,
+      "Reject",
+    });
+UX_FLOW(ux_confirm_full_flow_2var,
+  &ux_confirm_full_flow_1_step,
+  &ux_confirm_full_flow_2_step,
+  &ux_confirm_full_flow_3_step,
+  &ux_confirm_full_flow_5_step,
+  &ux_confirm_full_flow_6_step
+);
+UX_FLOW(ux_confirm_full_flow_3var,
+  &ux_confirm_full_flow_1_step,
+  &ux_confirm_full_flow_2_step,
+  &ux_confirm_full_flow_3_step,
+  &ux_confirm_full_flow_4_step,
+  &ux_confirm_full_flow_5_step,
+  &ux_confirm_full_flow_6_step
+);
+
+//////////////////////////////////////////////////////////////////////
+
+#endif //TARGET_NANOX
+
+
 void ui_idle(void) {
 #if defined(TARGET_NANOS)
     UX_MENU_DISPLAY(0, menu_main, NULL);
+#elif defined(TARGET_NANOX)
+    // reserve a display stack slot if none yet
+    if(G_ux.stack_count == 0) {
+        ux_stack_push();
+    }
+    ux_flow_init(0, ux_idle_flow, NULL);
 #endif // #if TARGET_ID
 }
 
@@ -488,22 +637,30 @@ unsigned int io_seproxyhal_touch_tx_ok(const bagl_element_t *e) {
     cx_sha256_t localHash;
     cx_ecfp_private_key_t privateKey;
     uint32_t tx = 0;
+    
+    if(tmpCtx.transactionContext.curve == CX_CURVE_Ed25519){
+        os_perso_derive_node_bip32_seed_key(HDW_ED25519_SLIP10, CX_CURVE_Ed25519, tmpCtx.transactionContext.bip32Path, 
+        tmpCtx.transactionContext.pathLength, privateKeyData, NULL, NULL, 0);
+    }
+    else {
+        os_perso_derive_node_bip32(CX_CURVE_256K1, tmpCtx.transactionContext.bip32Path, 
+        tmpCtx.transactionContext.pathLength, privateKeyData, NULL);
+    }
 
-    os_perso_derive_node_bip32(tmpCtx.transactionContext.curve, tmpCtx.transactionContext.bip32Path, tmpCtx.transactionContext.pathLength, privateKeyData, NULL);
     cx_ecfp_init_private_key(tmpCtx.transactionContext.curve, privateKeyData, 32, &privateKey);
     os_memset(privateKeyData, 0, sizeof(privateKeyData));
     if (tmpCtx.transactionContext.curve == CX_CURVE_256K1) {
         cx_sha256_init(&localHash);
-        cx_hash(&localHash.header, CX_LAST, tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, finalhash);
+        cx_hash(&localHash.header, CX_LAST, tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, finalhash, 32);
 #if CX_APILEVEL >= 8
-        tx = cx_ecdsa_sign(&privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256, finalhash, sizeof(finalhash), G_io_apdu_buffer, NULL);
+        tx = cx_ecdsa_sign(&privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256, finalhash, sizeof(finalhash), G_io_apdu_buffer, 80, NULL);
 #else        
         tx = cx_ecdsa_sign(&privateKey, CX_RND_RFC6979 | CX_LAST, CX_SHA256, finalhash, sizeof(finalhash), G_io_apdu_buffer);
         G_io_apdu_buffer[0] = 0x30;
 #endif        
     } else {
 #if CX_APILEVEL >= 8
-        tx = cx_eddsa_sign(&privateKey, CX_LAST, CX_SHA512, tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, NULL, 0, G_io_apdu_buffer, NULL);
+        tx = cx_eddsa_sign(&privateKey, CX_LAST, CX_SHA512, tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, NULL, 0, G_io_apdu_buffer, 80, NULL);
 #else        
         tx = cx_eddsa_sign(&privateKey, NULL, CX_LAST, CX_SHA512, tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, G_io_apdu_buffer);
 #endif        
@@ -634,11 +791,16 @@ void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer,
         dataBuffer += 4;
     }
     tmpCtx.publicKeyContext.getChaincode = (p2Chain == P2_CHAINCODE);
-    os_perso_derive_node_bip32(curve, bip32Path, bip32PathLength,
-                               privateKeyData,
-                               (tmpCtx.publicKeyContext.getChaincode
-                                    ? tmpCtx.publicKeyContext.chainCode
-                                    : NULL));
+
+    if(curve == CX_CURVE_Ed25519){
+        os_perso_derive_node_bip32_seed_key(HDW_ED25519_SLIP10, CX_CURVE_Ed25519, bip32Path, bip32PathLength, privateKeyData, 
+        (tmpCtx.publicKeyContext.getChaincode ? tmpCtx.publicKeyContext.chainCode : NULL), NULL, 0);
+    }
+    else {
+        os_perso_derive_node_bip32(CX_CURVE_256K1, bip32Path, bip32PathLength, privateKeyData, 
+        (tmpCtx.publicKeyContext.getChaincode ? tmpCtx.publicKeyContext.chainCode : NULL));
+    }
+
     cx_ecfp_init_private_key(curve, privateKeyData, 32, &privateKey);
     cx_ecfp_generate_pair(curve, &tmpCtx.publicKeyContext.publicKey,
                           &privateKey, 1);
@@ -662,13 +824,11 @@ void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer,
 
 // prepare for a UI based reply
 #if defined(TARGET_NANOS)
-#if 0
-        snprintf(fullAddress, sizeof(fullAddress), " 0x%.*s ", 40,
-                 tmpCtx.publicKeyContext.address);
-#endif
         ux_step = 0;
         ux_step_count = 2;
         UX_DISPLAY(ui_address_nanos, ui_address_prepro);
+#elif defined(TARGET_NANOX)
+        ux_flow_init(0, ux_display_public_flow, NULL);
 #endif // #if TARGET
 
         *flags |= IO_ASYNCH_REPLY;
@@ -734,25 +894,6 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     if (parseTx(tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, &txContent) != USTREAM_FINISHED) {        
         THROW(0x6A80);
     }
-    //ark_print_amount(txContent.amount + txContent.fee, fullAmount, sizeof(fullAmount));
-
-#if defined(TARGET_NANOS)
-    //os_memset(addressSummary, 0, addressLength);
-    //os_memmove((void *)addressSummary, tmpCtx.publicKeyContext.address, addressLength);
-    //SPRINTF(addressSummary, "%d / %x -> %s", addressLength, txContent.recipientId[0], tmpCtx.publicKeyContext.address);
-    // os_memmove((void *)(addressSummary + 5), "...", 3);
-    // os_memmove((void *)(addressSummary + 8),
-    //            tmpCtx.publicKeyContext.address + addressLength - 5, 5);
-    // cx_sha256_init(&localHash);
-    // cx_hash(&localHash.header, CX_LAST, tmpCtx.transactionContext.rawTx, tmpCtx.transactionContext.rawTxLength, finalhash);
-    // SPRINTF(addressSummary, "tx: %d %x%x ... %x%x", dataLength, tmpCtx.transactionContext.rawTx[0],tmpCtx.transactionContext.rawTx[1],tmpCtx.transactionContext.rawTx[dataLength-7],tmpCtx.transactionContext.rawTx[dataLength-6]);
-
-    //SPRINTF(addressSummary, "to %d %x%x ... %x%x", txContent.timestamp, tmpCtx.transactionContext.rawTx[0],tmpCtx.transactionContext.rawTx[1],tmpCtx.transactionContext.rawTx[dataLength-7],tmpCtx.transactionContext.rawTx[dataLength-6]);
-    // os_memmove((void *)addressSummary, "size tx: ", 9);
-    // os_memmove((void *)(addressSummary + 9), dataLength, 4);
-#endif
-    // os_memmove(tmpCtx.transactionContext.rawTx, SIGN_PREFIX,
-    //            sizeof(SIGN_PREFIX));
 
 #if defined(TARGET_NANOS)
     ux_step = 0;
@@ -760,21 +901,53 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     if (txContent.type == OPERATION_TYPE_TRANSFER) {
         ux_step_count = 5;
     }
-    else
-    if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 1)) {    
+    else if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 1)) {    
         ux_step_count = 4;
     }
-    else
-    if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 2)) {    
+    else if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 2)) {    
         ux_step_count = 5;
-    }        
-    // if (txContent.sourceTagPresent) {
-    //     ux_step_count++;
-    // }
-    // if (txContent.destinationTagPresent) {
-    //     ux_step_count++;
-    // }
+    }
+    else {
+        THROW(0x6888);
+    }
     UX_DISPLAY(ui_approval_nanos, ui_approval_prepro);
+
+#elif defined(TARGET_NANOX)
+    if (txContent.type == OPERATION_TYPE_TRANSFER) {
+        strcpy(operation, "Transfer");
+        strcpy(title1, "To");
+        strcpy(title2, "Amount");
+        strcpy(title3, "Fees");
+        addressLength = ark_public_key_to_encoded_base58(txContent.recipientId, 21, var1, sizeof(var1), txContent.recipientId[0], 1);
+        var1[addressLength] = '\0';
+        ark_print_amount(txContent.amount, var2, sizeof(var2));
+        ark_print_amount(txContent.fee, var3, sizeof(var3));
+        ux_flow_init(0, ux_confirm_full_flow_3var, NULL);
+    }
+    else if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 1)) {    
+        strcpy(operation, "1 vote");
+        strcpy(title1, "Vote");
+        strcpy(title2, "Fees");
+        os_memmove(var1, tmpCtx.transactionContext.rawTx + txContent.assetOffset, 67);
+        var1[67] = '\0';
+        ark_print_amount(txContent.fee, var2, sizeof(var2));
+        ux_flow_init(0, ux_confirm_full_flow_2var, NULL);
+    }
+    else if ((txContent.type == OPERATION_TYPE_VOTE) && (txContent.voteSize == 2)) {    
+        strcpy(operation, "2 votes");
+        strcpy(title1, "Vote 1");
+        strcpy(title2, "Vote 2");
+        strcpy(title3, "Fees");
+        os_memmove(var1, tmpCtx.transactionContext.rawTx + txContent.assetOffset, 67);
+        var1[67] = '\0';
+        os_memmove(var2, tmpCtx.transactionContext.rawTx + txContent.assetOffset + 67, 67);
+        var2[67] = '\0';
+        ark_print_amount(txContent.fee, var3, sizeof(var3));
+        ux_flow_init(0, ux_confirm_full_flow_3var, NULL);
+    }
+    else {
+        THROW(0x6888);
+    }
 #endif // #if TARGET
 
     *flags |= IO_ASYNCH_REPLY;
@@ -833,6 +1006,9 @@ void handleApdu(volatile unsigned int *flags, volatile unsigned int *tx) {
                 break;
             }
         }
+        CATCH(EXCEPTION_IO_RESET) {
+            THROW(EXCEPTION_IO_RESET);
+        }
         CATCH_OTHER(e) {
             switch (e & 0xF000) {
             case 0x6000:
@@ -888,7 +1064,12 @@ void sample_main(void) {
                     THROW(0x6982);
                 }
 
+                PRINTF("New APDU received:\n%.*H\n", rx, G_io_apdu_buffer);
+
                 handleApdu(&flags, &tx);
+            }
+            CATCH(EXCEPTION_IO_RESET) {
+                THROW(EXCEPTION_IO_RESET);
             }
             CATCH_OTHER(e) {
                 switch (e & 0xF000) {
@@ -1009,17 +1190,25 @@ __attribute__((section(".boot"))) int main(void) {
             TRY {
                 io_seproxyhal_init();
 
+                USB_power(0);
                 USB_power(1);
 
                 ui_idle();
+
+#ifdef HAVE_BLE
+                BLE_power(0, NULL);
+                BLE_power(1, "Nano X");
+#endif // HAVE_BLE
 
                 sample_main();
             }
             CATCH(EXCEPTION_IO_RESET) {
                 // reset IO and UX
+                CLOSE_TRY;
                 continue;
             }
             CATCH_ALL {
+                CLOSE_TRY;
                 break;
             }
             FINALLY {

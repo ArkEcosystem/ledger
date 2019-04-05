@@ -27,7 +27,7 @@ void ark_public_key_hash160(unsigned char WIDE *in, unsigned short inlen,
     } u;
 
     cx_ripemd160_init(&u.riprip);
-    cx_hash(&u.riprip.header, CX_LAST, in, inlen, out);
+    cx_hash(&u.riprip.header, CX_LAST, in, inlen, out, 32);
 }
 
 unsigned short ark_public_key_to_encoded_base58(unsigned char WIDE *in,
@@ -55,9 +55,9 @@ unsigned short ark_public_key_to_encoded_base58(unsigned char WIDE *in,
     }
 
     cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, tmpBuffer, 20 + versionSize, checksumBuffer);
+    cx_hash(&hash.header, CX_LAST, tmpBuffer, 20 + versionSize, checksumBuffer, 32);
     cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, checksumBuffer, 32, checksumBuffer);
+    cx_hash(&hash.header, CX_LAST, checksumBuffer, 32, checksumBuffer, 32);
 
     os_memmove(tmpBuffer + 20 + versionSize, checksumBuffer, 4);
     return ark_encode_base58(tmpBuffer, 24 + versionSize, out, outlen);
@@ -72,9 +72,9 @@ unsigned short ark_address_to_encoded_base58(unsigned char WIDE *in,
     cx_sha256_t hash;
 
     cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, in, inlen, checksumBuffer);
+    cx_hash(&hash.header, CX_LAST, in, inlen, checksumBuffer, 32);
     cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, checksumBuffer, 32, checksumBuffer);
+    cx_hash(&hash.header, CX_LAST, checksumBuffer, 32, checksumBuffer, 32);
 
     os_memmove(tmpBuffer + inlen, checksumBuffer, 4);
     return ark_encode_base58(tmpBuffer, inlen + 4, out, outlen);
@@ -90,9 +90,9 @@ unsigned short ark_decode_base58_address(unsigned char WIDE *in,
 
     // Compute hash to verify address
     cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, out, outlen - 4, hashBuffer);
+    cx_hash(&hash.header, CX_LAST, out, outlen - 4, hashBuffer, 32);
     cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, hashBuffer, 32, hashBuffer);
+    cx_hash(&hash.header, CX_LAST, hashBuffer, 32, hashBuffer, 32);
 
     if (os_memcmp(out + outlen - 4, hashBuffer, 4)) {
         THROW(INVALID_CHECKSUM);
