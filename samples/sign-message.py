@@ -51,11 +51,13 @@ bip32path = bytes((
     "00000000"   #  0  ->  0
     ).decode("hex"))
 
-# The maximum length of a chunk to sign is 255 - len(bip32path). This is because
-# the length of "bip32path + chunk to sign" must fit in 1 byte (max 255).
-maxChunkLen = 255 - len(bip32path)
-
-messageToSign = "aaaaaaa010aaaaaaa020aaaaaaa030aaaaaaa040aaaaaaa050aaaaaaa060aaaaaaa070aaaaaaa080aaaaaaa090aaaaaaa100aaaaaaa110aaaaaaa120aaaaaaa130aaaaaaa140aaaaaaa150aaaaaaa160aaaaaaa170aaaaaaa180aaaaaaa190aaaaaaa200aaaaaaa210aaaaaaa220aaaaaaa230aaaaaaa240aaaaaaa250aaaaaaa260aaaaaaa270aaaaaaa280aaaaaaa290aaaaaaa300"
+# The maximum length of the message to sign is 132 characters. This is because
+# the Ledger confirmation display cannot show longer messages - after some
+# scrolling of the message, everything would become messed up, characters
+# drawn on top of each other and on top of the "ok" and "cancel" buttons.
+# Furthermore the Ledger device would become unresponsive and would have to
+# be restarted.
+messageToSign = "aabbccddeeffgghhiijjkkllmmnnooppqq"
 
 try:
     dongle = getDongle(True)
@@ -79,34 +81,19 @@ try:
 
     print "address: " + str(addressBytes)
 
-    offset = 0
-    while offset <> len(messageToSign):
-        if len(messageToSign) - offset > maxChunkLen:
-            chunk = messageToSign[offset : offset + maxChunkLen]
-        else:
-            chunk = messageToSign[offset :]
-
-        if offset + len(chunk) == len(messageToSign):
-            p1 = p1_last
-        else:
-            p1 = p1_first
-
-        offset += len(chunk)
-
-        signature = dongle.exchange(
-                cla +
-                ins_sign_message +
-                chr(p1) +
-                chr(p2_no_chaincode | p2_secp256k1) +
-                chr(len(bip32path) + len(chunk)) +
-                bip32path +
-                bytes(chunk)
-                )
+    signature = dongle.exchange(
+            cla +
+            ins_sign_message +
+            chr(p1_last) +
+            chr(p2_no_chaincode | p2_secp256k1) +
+            chr(len(bip32path) + len(messageToSign)) +
+            bip32path +
+            bytes(messageToSign)
+            )
 
     print "signature: " + str(signature).encode('hex')
     publicKey = PublicKey(bytes(publicKeyBytes), raw=True)
     signature = publicKey.ecdsa_deserialize(bytes(signature))
-    #if publicKey.ecdsa_verify(bytes(chunk), signature):
     if publicKey.ecdsa_verify(bytes(messageToSign), signature):
         print "verified successfully"
     else:

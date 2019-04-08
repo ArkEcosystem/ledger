@@ -67,7 +67,7 @@ ui_idle() and always append chunks at rawMessageLength.
 #define OFFSET_CDATA 5
 
 #define MAX_RAW_TX 300
-#define MAX_RAW_MESSAGE 300
+#define MAX_RAW_MESSAGE 132
 
 typedef struct publicKeyContext_t {
     cx_ecfp_public_key_t publicKey;
@@ -579,7 +579,6 @@ unsigned int ui_sign_message_nanos_button(unsigned int button_mask,
 
 void ui_idle(void) {
 #if defined(TARGET_NANOS)
-    os_memset(&tmpCtx, 0x0, sizeof(tmpCtx));
     UX_MENU_DISPLAY(0, menu_main, NULL);
 #endif // #if TARGET_ID
 }
@@ -1003,6 +1002,10 @@ void handleSignMessage(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
                 volatile unsigned int *tx) {
     UNUSED(tx);
 
+    if (p1 != P1_LAST) {
+        THROW(0x6a81);
+    }
+
     tmpCtx.messageContext.pathLength = workBuffer[0];
     if ((tmpCtx.messageContext.pathLength < 0x01) ||
         (tmpCtx.messageContext.pathLength > MAX_BIP32_PATH)) {
@@ -1011,6 +1014,7 @@ void handleSignMessage(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     }
     workBuffer++;
     dataLength--;
+
     for (uint32_t i = 0; i < tmpCtx.messageContext.pathLength; i++) {
         tmpCtx.messageContext.bip32Path[i] =
             (workBuffer[0] << 24) | (workBuffer[1] << 16) |
@@ -1018,6 +1022,7 @@ void handleSignMessage(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
         workBuffer += 4;
         dataLength -= 4;
     }
+
     if ((p2 & P2_SECP256K1) == 0 && (p2 & P2_ED25519) == 0) {
         THROW(0x6b01);
     }
@@ -1026,16 +1031,12 @@ void handleSignMessage(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     }
     tmpCtx.messageContext.curve = (p2 & P2_ED25519) != 0 ? CX_CURVE_Ed25519 : CX_CURVE_256K1;
 
-    if ((tmpCtx.messageContext.rawMessageLength + dataLength) > MAX_RAW_MESSAGE) {
+    if (dataLength > MAX_RAW_MESSAGE) {
         THROW(0x6a81);
     }
 
-    os_memmove(tmpCtx.messageContext.rawMessage + tmpCtx.messageContext.rawMessageLength, workBuffer, dataLength);
-    tmpCtx.messageContext.rawMessageLength += dataLength;
-
-    if (p1 != P1_LAST) {
-        THROW(0x9000);
-    }
+    os_memmove(tmpCtx.messageContext.rawMessage, workBuffer, dataLength);
+    tmpCtx.messageContext.rawMessageLength = dataLength;
 
     os_memset((void *)fullMessage, 0, sizeof(fullMessage));
     os_memmove((void *)fullMessage, tmpCtx.messageContext.rawMessage, tmpCtx.messageContext.rawMessageLength);
