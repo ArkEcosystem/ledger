@@ -42,6 +42,17 @@ uint32_t set_result_get_publicKey(void);
 #define P1_NON_CONFIRM 0x00
 #define P2_NO_CHAINCODE 0x00
 #define P2_CHAINCODE 0x01
+/* Choosing P1_FIRST to be 0x00 has the problem that it is not possible to distinguish
+Case1 from Case2:
+Case1 (a single chunk): p1==P1_LAST
+Case2 (a few chunks): p1==P1_FIRST, p1==P1_MORE, p1==P1_MORE, ..., p1==P1_LAST
+When we receive a chunk with p1==P1_LAST we can't tell if this is the first chunk
+from Case1 or the last chunk from Case2. Because we append all chunks in a buffer,
+we need to be able to tell if this is the first chunk or not - so that we know
+whether to put the chunk in the beginning of the buffer or append at position
+rawMessageLength. To workaround this issue we reset rawMessageLength to 0 in
+ui_idle() and always append chunks at rawMessageLength.
+*/
 #define P1_FIRST 0x00
 #define P1_MORE 0x01
 #define P1_LAST 0x80
