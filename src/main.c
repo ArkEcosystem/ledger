@@ -758,10 +758,9 @@ unsigned int ui_sign_message_nanos_button(unsigned int button_mask,
         io_seproxyhal_touch_sign_message_cancel(NULL);
         break;
 
-    case BUTTON_EVT_RELEASED | BUTTON_RIGHT: {
+    case BUTTON_EVT_RELEASED | BUTTON_RIGHT:
         io_seproxyhal_touch_sign_message_ok(NULL);
         break;
-    }
     }
     return 0;
 }
@@ -859,6 +858,7 @@ void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer,
     cx_ecfp_init_private_key(curve, privateKeyData, 32, &privateKey);
     cx_ecfp_generate_pair(curve, &tmpCtx.publicKeyContext.publicKey,
                           &privateKey, 1);
+
     os_memset(&privateKey, 0, sizeof(privateKey));
     os_memset(privateKeyData, 0, sizeof(privateKeyData));
     ark_compress_public_key(&tmpCtx.publicKeyContext.publicKey, privateKeyData,
