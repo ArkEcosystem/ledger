@@ -579,6 +579,7 @@ unsigned int ui_sign_message_nanos_button(unsigned int button_mask,
 
 void ui_idle(void) {
 #if defined(TARGET_NANOS)
+    os_memset(&tmpCtx, 0x0, sizeof(tmpCtx));
     UX_MENU_DISPLAY(0, menu_main, NULL);
 #endif // #if TARGET_ID
 }
@@ -1001,58 +1002,44 @@ void handleSignMessage(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
                 uint16_t dataLength, volatile unsigned int *flags,
                 volatile unsigned int *tx) {
     UNUSED(tx);
-    bool last = (p1 & P1_LAST);
-    uint32_t i;
-    p1 &= 0x7F;
-    if (p1 == P1_FIRST) {
-        tmpCtx.messageContext.pathLength = workBuffer[0];
-        if ((tmpCtx.messageContext.pathLength < 0x01) ||
-            (tmpCtx.messageContext.pathLength > MAX_BIP32_PATH)) {
-            PRINTF("Invalid path\n");
-            THROW(0x6a85);
-        }
-        workBuffer++;
-        dataLength--;
-        for (i = 0; i < tmpCtx.messageContext.pathLength; i++) {
-            tmpCtx.messageContext.bip32Path[i] =
-                (workBuffer[0] << 24) | (workBuffer[1] << 16) |
-                (workBuffer[2] << 8) | (workBuffer[3]);
-            workBuffer += 4;
-            dataLength -= 4;
-        }
-        if (((p2 & P2_SECP256K1) == 0) && ((p2 & P2_ED25519) == 0)) {
-            THROW(0x6B01);
-        }
-        if (((p2 & P2_SECP256K1) != 0) && ((p2 & P2_ED25519) != 0)) {
-            THROW(0x6B02);
-        }
-        tmpCtx.messageContext.curve =
-            (((p2 & P2_ED25519) != 0) ? CX_CURVE_Ed25519 : CX_CURVE_256K1);
-    } else 
-    if (p1 != P1_MORE) {
-        THROW(0x6B03);
+
+    tmpCtx.messageContext.pathLength = workBuffer[0];
+    if ((tmpCtx.messageContext.pathLength < 0x01) ||
+        (tmpCtx.messageContext.pathLength > MAX_BIP32_PATH)) {
+        PRINTF("Invalid path\n");
+        THROW(0x6a85);
+    }
+    workBuffer++;
+    dataLength--;
+    for (uint32_t i = 0; i < tmpCtx.messageContext.pathLength; i++) {
+        tmpCtx.messageContext.bip32Path[i] =
+            (workBuffer[0] << 24) | (workBuffer[1] << 16) |
+            (workBuffer[2] << 8) | (workBuffer[3]);
+        workBuffer += 4;
+        dataLength -= 4;
+    }
+    if ((p2 & P2_SECP256K1) == 0 && (p2 & P2_ED25519) == 0) {
+        THROW(0x6b01);
+    }
+    if ((p2 & P2_SECP256K1) != 0 && (p2 & P2_ED25519) != 0) {
+        THROW(0x6b02);
+    }
+    tmpCtx.messageContext.curve = (p2 & P2_ED25519) != 0 ? CX_CURVE_Ed25519 : CX_CURVE_256K1;
+
+    if ((tmpCtx.messageContext.rawMessageLength + dataLength) > MAX_RAW_MESSAGE) {
+        THROW(0x6a81);
     }
 
-    if (p1 == P1_FIRST) {
-        tmpCtx.messageContext.rawMessageLength = dataLength;
-        os_memmove(tmpCtx.messageContext.rawMessage, workBuffer, dataLength);
-    }
-    else
-    if (p1 == P1_MORE) {
-        if ((tmpCtx.messageContext.rawMessageLength + dataLength) > MAX_RAW_MESSAGE) {
-            THROW(0x6A81);
-        }
-        os_memmove(tmpCtx.messageContext.rawMessage + tmpCtx.messageContext.rawMessageLength, workBuffer, dataLength);
-        tmpCtx.messageContext.rawMessageLength += dataLength;
-    }
+    os_memmove(tmpCtx.messageContext.rawMessage + tmpCtx.messageContext.rawMessageLength, workBuffer, dataLength);
+    tmpCtx.messageContext.rawMessageLength += dataLength;
 
-    if (!last) {
+    if (p1 != P1_LAST) {
         THROW(0x9000);
-    } else {
-        os_memset((void *)fullMessage, 0, sizeof(fullMessage));
-        os_memmove((void *)fullMessage, tmpCtx.messageContext.rawMessage, tmpCtx.messageContext.rawMessageLength);
-        fullMessage[tmpCtx.messageContext.rawMessageLength] = '\0';
     }
+
+    os_memset((void *)fullMessage, 0, sizeof(fullMessage));
+    os_memmove((void *)fullMessage, tmpCtx.messageContext.rawMessage, tmpCtx.messageContext.rawMessageLength);
+    fullMessage[tmpCtx.messageContext.rawMessageLength] = '\0';
 
 #if defined(TARGET_NANOS)
     ux_step = 0;
