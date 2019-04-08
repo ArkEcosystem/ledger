@@ -469,8 +469,17 @@ unsigned int ui_approval_nanos_button(unsigned int button_mask,
 
 
 const bagl_element_t ui_sign_message_nanos[] = {
-    // type                               userid    x    y   w    h  str rad
-    // fill      fg        bg      fid iid  txt   touchparams...       ]
+    // {
+    //     {type, userid, x, y, width, height, stroke, radius, fill, fgcolor, bgcolor,
+    //      font_id, icon_id},
+    //     text,
+    //     touch_area_brim,
+    //     overfgcolor,
+    //     overbgcolor,
+    //     tap,
+    //     out,
+    //     over,
+    // },
     {{BAGL_RECTANGLE, 0x00, 0, 0, 128, 32, 0, 0, BAGL_FILL, 0x000000, 0xFFFFFF,
       0, 0},
      NULL,
