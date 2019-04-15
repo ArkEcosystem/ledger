@@ -169,78 +169,210 @@ const ux_menu_entry_t menu_main[] = {
 
 
 #if defined(TARGET_NANOS)
+
+/* Dummy macros for readability. */
+#define _B_FIELD_TYPE(a) (a)
+#define _B_FIELD_USERID(a) (a)
+#define _B_FIELD_X(a) (a)
+#define _B_FIELD_Y(a) (a)
+#define _B_FIELD_WIDTH(a) (a)
+#define _B_FIELD_HEIGHT(a) (a)
+#define _B_FIELD_STROKE(a) (a)
+#define _B_FIELD_RADIUS(a) (a)
+#define _B_FIELD_FILL(a) (a)
+#define _B_FIELD_FGCOLOR(a) (a)
+#define _B_FIELD_BGCOLOR(a) (a)
+#define _B_FIELD_FONTID(a) (a)
+#define _B_FIELD_ICONID(a) (a)
+#define _B_FIELD_TEXT(a) (a)
+#define _B_FIELD_TOUCH_AREA_BRIM(a) (a)
+#define _B_FIELD_OVERFGCOLOR(a) (a)
+#define _B_FIELD_OVERBGCOLOR(a) (a)
+#define _B_FIELD_TAP(a) (a)
+#define _B_FIELD_OUT(a) (a)
+#define _B_FIELD_OVER(a) (a)
+
+/* When scrolling a long text, how much time to wait at the beginning and end of
+the scroll. This macro takes the number of milliseconds and produces a number in
+unit "100ms", as used by the SDK. For example, the SDK interprets 10 as "10 times
+100ms" (== 1000ms == 1sec). */
+#define _B_SCROLL_WAIT_MS(ms) ((ms) / 100)
+
+#define _B_CLEAN_SCREEN { \
+  { \
+    _B_FIELD_TYPE(BAGL_RECTANGLE), \
+    _B_FIELD_USERID(0x00), \
+    _B_FIELD_X(0), \
+    _B_FIELD_Y(0), \
+    _B_FIELD_WIDTH(128), \
+    _B_FIELD_HEIGHT(32), \
+    _B_FIELD_STROKE(0), \
+    _B_FIELD_RADIUS(0), \
+    _B_FIELD_FILL(BAGL_FILL), \
+    _B_FIELD_FGCOLOR(0x000000), \
+    _B_FIELD_BGCOLOR(0xFFFFFF), \
+    _B_FIELD_FONTID(0), \
+    _B_FIELD_ICONID(0) \
+  }, \
+  _B_FIELD_TEXT(NULL), \
+  _B_FIELD_TOUCH_AREA_BRIM(0), \
+  _B_FIELD_OVERFGCOLOR(0), \
+  _B_FIELD_OVERBGCOLOR(0), \
+  _B_FIELD_TAP(NULL), \
+  _B_FIELD_OUT(NULL), \
+  _B_FIELD_OVER(NULL) \
+}
+
+#define _B_ICON(iconid, userid, x, y, w, h) { \
+  { \
+    _B_FIELD_TYPE(BAGL_ICON), \
+    _B_FIELD_USERID(userid), \
+    _B_FIELD_X(x), \
+    _B_FIELD_Y(y), \
+    _B_FIELD_WIDTH(w), \
+    _B_FIELD_HEIGHT(h), \
+    _B_FIELD_STROKE(0), \
+    _B_FIELD_RADIUS(0), \
+    _B_FIELD_FILL(0), \
+    _B_FIELD_FGCOLOR(0xFFFFFF), \
+    _B_FIELD_BGCOLOR(0x000000), \
+    _B_FIELD_FONTID(0), \
+    _B_FIELD_ICONID(iconid) \
+  }, \
+  _B_FIELD_TEXT(NULL), \
+  _B_FIELD_TOUCH_AREA_BRIM(0), \
+  _B_FIELD_OVERFGCOLOR(0), \
+  _B_FIELD_OVERBGCOLOR(0), \
+  _B_FIELD_TAP(NULL), \
+  _B_FIELD_OUT(NULL), \
+  _B_FIELD_OVER(NULL) \
+}
+
+#define _B_ICON_LEFT(iconid, userid) \
+  _B_ICON( \
+      _B_FIELD_ICONID(iconid), \
+      _B_FIELD_USERID(userid), \
+      _B_FIELD_X(3), \
+      _B_FIELD_Y(12), \
+      _B_FIELD_WIDTH(7), \
+      _B_FIELD_HEIGHT(7) \
+  )
+
+#define _B_ICON_RIGHT(iconid, userid) \
+  _B_ICON( \
+      _B_FIELD_ICONID(iconid), \
+      _B_FIELD_USERID(userid), \
+      _B_FIELD_X(117), \
+      _B_FIELD_Y(13), \
+      _B_FIELD_WIDTH(8), \
+      _B_FIELD_HEIGHT(6) \
+  )
+
+#define _B_ICON_CROSS(userid) \
+  _B_ICON_LEFT( \
+      _B_FIELD_ICONID(BAGL_GLYPH_ICON_CROSS), \
+      _B_FIELD_USERID(userid) \
+  )
+
+#define _B_ICON_CHECK(userid) \
+  _B_ICON_RIGHT( \
+      _B_FIELD_ICONID(BAGL_GLYPH_ICON_CHECK), \
+      _B_FIELD_USERID(userid) \
+  )
+
+#define _B_LABELINE(userid, x, y, w, h, stroke, fontid, iconid, text) { \
+  { \
+    _B_FIELD_TYPE(BAGL_LABELINE), \
+    _B_FIELD_USERID(userid), \
+    _B_FIELD_X(x), \
+    _B_FIELD_Y(y), \
+    _B_FIELD_WIDTH(w), \
+    _B_FIELD_HEIGHT(h), \
+    _B_FIELD_STROKE(stroke), \
+    _B_FIELD_RADIUS(0), \
+    _B_FIELD_FILL(0), \
+    _B_FIELD_FGCOLOR(0xFFFFFF), \
+    _B_FIELD_BGCOLOR(0x000000), \
+    _B_FIELD_FONTID(fontid), \
+    _B_FIELD_ICONID(iconid) \
+  }, \
+  _B_FIELD_TEXT(text), \
+  _B_FIELD_TOUCH_AREA_BRIM(0), \
+  _B_FIELD_OVERFGCOLOR(0), \
+  _B_FIELD_OVERBGCOLOR(0), \
+  _B_FIELD_TAP(NULL), \
+  _B_FIELD_OUT(NULL), \
+  _B_FIELD_OVER(NULL) \
+}
+
+#define _B_LABELINE_REGULAR(userid, y, text) \
+  _B_LABELINE( \
+    _B_FIELD_USERID(userid), \
+    _B_FIELD_X(0), \
+    _B_FIELD_Y(y), \
+    _B_FIELD_WIDTH(128), \
+    _B_FIELD_HEIGHT(32), \
+    _B_FIELD_STROKE(0), \
+    _B_FIELD_FONTID(BAGL_FONT_OPEN_SANS_REGULAR_11px | BAGL_FONT_ALIGNMENT_CENTER), \
+    _B_FIELD_ICONID(0), \
+    _B_FIELD_TEXT(text) \
+  )
+
+#define _B_LABELINE_UPPER_REGULAR(userid, text) \
+  _B_LABELINE_REGULAR( \
+    _B_FIELD_USERID(userid), \
+    _B_FIELD_Y(12), \
+    _B_FIELD_TEXT(text) \
+  )
+
+#define _B_LABELINE_BOLD(userid, y, text) \
+  _B_LABELINE( \
+    _B_FIELD_USERID(userid), \
+    _B_FIELD_X(0), \
+    _B_FIELD_Y(y), \
+    _B_FIELD_WIDTH(128), \
+    _B_FIELD_HEIGHT(32), \
+    _B_FIELD_STROKE(0), \
+    _B_FIELD_FONTID(BAGL_FONT_OPEN_SANS_EXTRABOLD_11px | BAGL_FONT_ALIGNMENT_CENTER), \
+    _B_FIELD_ICONID(0), \
+    _B_FIELD_TEXT(text) \
+  )
+
+#define _B_LABELINE_UPPER_BOLD(userid, text) \
+  _B_LABELINE_BOLD( \
+    _B_FIELD_USERID(userid), \
+    _B_FIELD_Y(12), \
+    _B_FIELD_TEXT(text) \
+  )
+
+#define _B_LABELINE_LOWER_BOLD(userid, text) \
+  _B_LABELINE_BOLD( \
+    _B_FIELD_USERID(userid), \
+    _B_FIELD_Y(26), \
+    _B_FIELD_TEXT(text) \
+  )
+
 const bagl_element_t ui_address_nanos[] = {
-    // type                               userid    x    y   w    h  str rad
-    // fill      fg        bg      fid iid  txt   touchparams...       ]
-    {{BAGL_RECTANGLE, 0x00, 0, 0, 128, 32, 0, 0, BAGL_FILL, 0x000000, 0xFFFFFF,
-      0, 0},
-     NULL,
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
+    _B_CLEAN_SCREEN,
 
-    {{BAGL_ICON, 0x00, 3, 12, 7, 7, 0, 0, 0, 0xFFFFFF, 0x000000, 0,
-      BAGL_GLYPH_ICON_CROSS},
-     NULL,
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
-    {{BAGL_ICON, 0x00, 117, 13, 8, 6, 0, 0, 0, 0xFFFFFF, 0x000000, 0,
-      BAGL_GLYPH_ICON_CHECK},
-     NULL,
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
+    _B_ICON_CROSS(_B_FIELD_USERID(0x00)),
+    _B_ICON_CHECK(_B_FIELD_USERID(0x00)),
 
-    //{{BAGL_ICON                           , 0x01,  31,   9,  14,  14, 0, 0, 0
-    //, 0xFFFFFF, 0x000000, 0, BAGL_GLYPH_ICON_EYE_BADGE  }, NULL, 0, 0, 0,
-    // NULL, NULL, NULL },
-    {{BAGL_LABELINE, 0x01, 0, 12, 128, 32, 0, 0, 0, 0xFFFFFF, 0x000000,
-      BAGL_FONT_OPEN_SANS_EXTRABOLD_11px | BAGL_FONT_ALIGNMENT_CENTER, 0},
-     "Confirm",
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
-    {{BAGL_LABELINE, 0x01, 0, 26, 128, 32, 0, 0, 0, 0xFFFFFF, 0x000000,
-      BAGL_FONT_OPEN_SANS_EXTRABOLD_11px | BAGL_FONT_ALIGNMENT_CENTER, 0},
-     "address",
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
+    _B_LABELINE_UPPER_BOLD(_B_FIELD_USERID(0x01), _B_FIELD_TEXT("Confirm")),
+    _B_LABELINE_LOWER_BOLD(_B_FIELD_USERID(0x01), _B_FIELD_TEXT("address")),
 
-    {{BAGL_LABELINE, 0x02, 0, 12, 128, 32, 0, 0, 0, 0xFFFFFF, 0x000000,
-      BAGL_FONT_OPEN_SANS_REGULAR_11px | BAGL_FONT_ALIGNMENT_CENTER, 0},
-     "Address",
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
-    {{BAGL_LABELINE, 0x02, 23, 26, 82, 12, 0x80 | 10, 0, 0, 0xFFFFFF, 0x000000,
-      BAGL_FONT_OPEN_SANS_EXTRABOLD_11px | BAGL_FONT_ALIGNMENT_CENTER, 26},
-     (char *)fullAddress,
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
+    _B_LABELINE_UPPER_REGULAR(_B_FIELD_USERID(0x02), _B_FIELD_TEXT("Address")),
+    _B_LABELINE(
+      _B_FIELD_USERID(0x02),
+      _B_FIELD_X(23),
+      _B_FIELD_Y(26),
+      _B_FIELD_WIDTH(82),
+      _B_FIELD_HEIGHT(12),
+      _B_FIELD_STROKE(BAGL_STROKE_FLAG_ONESHOT | _B_SCROLL_WAIT_MS(1000)),
+      _B_FIELD_FONTID(BAGL_FONT_OPEN_SANS_EXTRABOLD_11px | BAGL_FONT_ALIGNMENT_CENTER),
+      _B_FIELD_ICONID(BAGL_GLYPH_ICON_EYE_BADGE),
+      _B_FIELD_TEXT((char *)fullAddress)
+    ),
 };
 
 const bagl_element_t *ui_address_prepro(const bagl_element_t *element) {
@@ -294,77 +426,27 @@ volatile char *ui_approval_vote2[][2] = {
 
 
 const bagl_element_t ui_approval_nanos[] = {
-    // type                               userid    x    y   w    h  str rad
-    // fill      fg        bg      fid iid  txt   touchparams...       ]
-    {{BAGL_RECTANGLE, 0x00, 0, 0, 128, 32, 0, 0, BAGL_FILL, 0x000000, 0xFFFFFF,
-      0, 0},
-     NULL,
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
+    _B_CLEAN_SCREEN,
 
-    {{BAGL_ICON, 0x00, 3, 12, 7, 7, 0, 0, 0, 0xFFFFFF, 0x000000, 0,
-      BAGL_GLYPH_ICON_CROSS},
-     NULL,
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
-    {{BAGL_ICON, 0x00, 117, 13, 8, 6, 0, 0, 0, 0xFFFFFF, 0x000000, 0,
-      BAGL_GLYPH_ICON_CHECK},
-     NULL,
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
+    _B_ICON_CROSS(_B_FIELD_USERID(0x00)),
 
-    //{{BAGL_ICON                           , 0x01,  21,   9,  14,  14, 0, 0, 0
-    //, 0xFFFFFF, 0x000000, 0, BAGL_GLYPH_ICON_TRANSACTION_BADGE  }, NULL, 0, 0,
-    //0, NULL, NULL, NULL },
-    {{BAGL_LABELINE, 0x01, 0, 12, 128, 32, 0, 0, 0, 0xFFFFFF, 0x000000,
-      BAGL_FONT_OPEN_SANS_EXTRABOLD_11px | BAGL_FONT_ALIGNMENT_CENTER, 0},
-     "Confirm",
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
-    {{BAGL_LABELINE, 0x01, 0, 26, 128, 32, 0, 0, 0, 0xFFFFFF, 0x000000,
-      BAGL_FONT_OPEN_SANS_EXTRABOLD_11px | BAGL_FONT_ALIGNMENT_CENTER, 0},
-     "transaction",
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
+    _B_ICON_CHECK(_B_FIELD_USERID(0x00)),
 
-    {{BAGL_LABELINE, 0x02, 0, 12, 128, 32, 0, 0, 0, 0xFFFFFF, 0x000000,
-      BAGL_FONT_OPEN_SANS_REGULAR_11px | BAGL_FONT_ALIGNMENT_CENTER, 0},
-     NULL, //"Amount",
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
-    {{BAGL_LABELINE, 0x12, 23, 26, 84, 12, 0x80 | 10, 0, 0, 0xFFFFFF, 0x000000,
-      BAGL_FONT_OPEN_SANS_EXTRABOLD_11px | BAGL_FONT_ALIGNMENT_CENTER, 26},
-     NULL, //(char *)fullAmount,
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
+    _B_LABELINE_UPPER_BOLD(_B_FIELD_USERID(0x01), _B_FIELD_TEXT("Confirm")),
+    _B_LABELINE_LOWER_BOLD(_B_FIELD_USERID(0x01), _B_FIELD_TEXT("transaction")),
+
+    _B_LABELINE_UPPER_REGULAR(_B_FIELD_USERID(0x02), _B_FIELD_TEXT(NULL)),
+    _B_LABELINE(
+      _B_FIELD_USERID(0x12),
+      _B_FIELD_X(23),
+      _B_FIELD_Y(26),
+      _B_FIELD_WIDTH(84),
+      _B_FIELD_HEIGHT(12),
+      _B_FIELD_STROKE(BAGL_STROKE_FLAG_ONESHOT | _B_SCROLL_WAIT_MS(1000)),
+      _B_FIELD_FONTID(BAGL_FONT_OPEN_SANS_REGULAR_11px | BAGL_FONT_ALIGNMENT_CENTER),
+      _B_FIELD_ICONID(BAGL_GLYPH_ICON_EYE_BADGE),
+      _B_FIELD_TEXT(NULL)
+    ),
 };
 
 const bagl_element_t *ui_approval_prepro(const bagl_element_t *element) {
@@ -469,86 +551,31 @@ unsigned int ui_approval_nanos_button(unsigned int button_mask,
 
 
 const bagl_element_t ui_sign_message_nanos[] = {
-    // {
-    //     {type, userid, x, y, width, height, stroke, radius, fill, fgcolor, bgcolor,
-    //      font_id, icon_id},
-    //     text,
-    //     touch_area_brim,
-    //     overfgcolor,
-    //     overbgcolor,
-    //     tap,
-    //     out,
-    //     over,
-    // },
-    {{BAGL_RECTANGLE, 0x00, 0, 0, 128, 32, 0, 0, BAGL_FILL, 0x000000, 0xFFFFFF,
-      0, 0},
-     NULL,
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
+    _B_CLEAN_SCREEN,
+    _B_ICON_CROSS(_B_FIELD_USERID(0x00)),
+    _B_ICON_CHECK(_B_FIELD_USERID(0x00)),
 
-    {{BAGL_ICON, 0x00, 3, 12, 7, 7, 0, 0, 0, 0xFFFFFF, 0x000000, 0,
-      BAGL_GLYPH_ICON_CROSS},
-     NULL,
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
-    {{BAGL_ICON, 0x00, 117, 13, 8, 6, 0, 0, 0, 0xFFFFFF, 0x000000, 0,
-      BAGL_GLYPH_ICON_CHECK},
-     NULL,
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
+    _B_LABELINE_UPPER_BOLD(_B_FIELD_USERID(0x01), _B_FIELD_TEXT("Sign")),
+    _B_LABELINE_LOWER_BOLD(_B_FIELD_USERID(0x01), _B_FIELD_TEXT("message")),
 
-    //{{BAGL_ICON                           , 0x01,  31,   9,  14,  14, 0, 0, 0
-    //, 0xFFFFFF, 0x000000, 0, BAGL_GLYPH_ICON_EYE_BADGE  }, NULL, 0, 0, 0,
-    // NULL, NULL, NULL },
-    {{BAGL_LABELINE, 0x01, 0, 12, 128, 32, 0, 0, 0, 0xFFFFFF, 0x000000,
-      BAGL_FONT_OPEN_SANS_EXTRABOLD_11px | BAGL_FONT_ALIGNMENT_CENTER, 0},
-     "Sign",
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
-    {{BAGL_LABELINE, 0x01, 0, 26, 128, 32, 0, 0, 0, 0xFFFFFF, 0x000000,
-      BAGL_FONT_OPEN_SANS_EXTRABOLD_11px | BAGL_FONT_ALIGNMENT_CENTER, 0},
-     "message",
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
+    _B_LABELINE_UPPER_REGULAR(_B_FIELD_USERID(0x02), _B_FIELD_TEXT("Message")),
+    _B_LABELINE(
+      _B_FIELD_USERID(0x02),
+      _B_FIELD_X(23),
+      _B_FIELD_Y(26),
+      _B_FIELD_WIDTH(82),
+      _B_FIELD_HEIGHT(12),
+      _B_FIELD_STROKE(BAGL_STROKE_FLAG_ONESHOT | _B_SCROLL_WAIT_MS(1000)),
+      _B_FIELD_FONTID(BAGL_FONT_OPEN_SANS_EXTRABOLD_11px | BAGL_FONT_ALIGNMENT_CENTER),
+      _B_FIELD_ICONID(BAGL_GLYPH_ICON_EYE_BADGE),
+      _B_FIELD_TEXT((char *)fullMessage)
+    ),
 
-    {{BAGL_LABELINE, 0x02, 0, 12, 128, 32, 0, 0, 0, 0xFFFFFF, 0x000000,
-      BAGL_FONT_OPEN_SANS_REGULAR_11px | BAGL_FONT_ALIGNMENT_CENTER, 0},
-     "Message",
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
-    {{BAGL_LABELINE, 0x02, 23, 26, 82, 12, 0x80 | 10, 0, 0, 0xFFFFFF, 0x000000,
-      BAGL_FONT_OPEN_SANS_EXTRABOLD_11px | BAGL_FONT_ALIGNMENT_CENTER, 26},
-     (char *)fullMessage,
-     0,
-     0,
-     0,
-     NULL,
-     NULL,
-     NULL},
+    _B_LABELINE_UPPER_REGULAR(_B_FIELD_USERID(0x03), _B_FIELD_TEXT("Part 1 of 2")),
+    _B_LABELINE_LOWER_BOLD(_B_FIELD_USERID(0x03), _B_FIELD_TEXT("foo")),
+
+    _B_LABELINE_UPPER_REGULAR(_B_FIELD_USERID(0x04), _B_FIELD_TEXT("Part 2 of 2")),
+    _B_LABELINE_LOWER_BOLD(_B_FIELD_USERID(0x04), _B_FIELD_TEXT("bar")),
 };
 
 const bagl_element_t *ui_sign_message_prepro(const bagl_element_t *element) {
@@ -1043,7 +1070,6 @@ void handleSignMessage(uint8_t p1, uint8_t p2, uint8_t *workBuffer,
     fullMessage[tmpCtx.messageContext.rawMessageLength] = '\0';
 
 #if defined(TARGET_NANOS)
-    ux_step = 0;
     ux_step = 0;
     ux_step_count = 2;
 
