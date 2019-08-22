@@ -30,4 +30,4 @@ unsigned short ark_decode_base58_address(unsigned char WIDE *in,
 unsigned short ark_compress_public_key(cx_ecfp_public_key_t *publicKey,
                                        uint8_t *out, uint32_t outlen);
 
-unsigned short ark_print_amount(uint64_t amount, char *out, uint32_t outlen);
+unsigned short ark_print_amount(uint64_t amount, uint8_t *out, uint32_t outlen);

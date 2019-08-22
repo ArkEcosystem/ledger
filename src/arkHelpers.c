@@ -18,7 +18,6 @@
 #include "arkHelpers.h"
 #include "arkBase58.h"
 #include <stdbool.h>
-#include <string.h>
 
 void ark_public_key_hash160(unsigned char WIDE *in, unsigned short inlen,
                             unsigned char *out) {
@@ -28,7 +27,7 @@ void ark_public_key_hash160(unsigned char WIDE *in, unsigned short inlen,
     } u;
 
     cx_ripemd160_init(&u.riprip);
-    cx_hash(&u.riprip.header, CX_LAST, in, inlen, out);
+    cx_hash(&u.riprip.header, CX_LAST, in, inlen, out, 32);
 }
 
 unsigned short ark_public_key_to_encoded_base58(unsigned char WIDE *in,
@@ -56,9 +55,9 @@ unsigned short ark_public_key_to_encoded_base58(unsigned char WIDE *in,
     }
 
     cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, tmpBuffer, 20 + versionSize, checksumBuffer);
+    cx_hash(&hash.header, CX_LAST, tmpBuffer, 20 + versionSize, checksumBuffer, 32);
     cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, checksumBuffer, 32, checksumBuffer);
+    cx_hash(&hash.header, CX_LAST, checksumBuffer, 32, checksumBuffer, 32);
 
     os_memmove(tmpBuffer + 20 + versionSize, checksumBuffer, 4);
     return ark_encode_base58(tmpBuffer, 24 + versionSize, out, outlen);
@@ -73,9 +72,9 @@ unsigned short ark_address_to_encoded_base58(unsigned char WIDE *in,
     cx_sha256_t hash;
 
     cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, in, inlen, checksumBuffer);
+    cx_hash(&hash.header, CX_LAST, in, inlen, checksumBuffer, 32);
     cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, checksumBuffer, 32, checksumBuffer);
+    cx_hash(&hash.header, CX_LAST, checksumBuffer, 32, checksumBuffer, 32);
 
     os_memmove(tmpBuffer + inlen, checksumBuffer, 4);
     return ark_encode_base58(tmpBuffer, inlen + 4, out, outlen);
@@ -91,9 +90,9 @@ unsigned short ark_decode_base58_address(unsigned char WIDE *in,
 
     // Compute hash to verify address
     cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, out, outlen - 4, hashBuffer);
+    cx_hash(&hash.header, CX_LAST, out, outlen - 4, hashBuffer, 32);
     cx_sha256_init(&hash);
-    cx_hash(&hash.header, CX_LAST, hashBuffer, 32, hashBuffer);
+    cx_hash(&hash.header, CX_LAST, hashBuffer, 32, hashBuffer, 32);
 
     if (os_memcmp(out + outlen - 4, hashBuffer, 4)) {
         THROW(INVALID_CHECKSUM);
@@ -210,13 +209,10 @@ bool adjustDecimals(char *src, uint32_t srcLength, char *target,
     return true;
 }
 
-unsigned short ark_print_amount(uint64_t amount, char *out,
+unsigned short ark_print_amount(uint64_t amount, uint8_t *out,
                                 uint32_t outlen) {
-    const size_t uint64MaxChars = 20; // 18446744073709551615
-    const char* prefix = "ARK ";
-    const size_t prefixLen = 4;
-    char tmp[uint64MaxChars + 1];
-    char tmp2[sizeof(tmp) + prefixLen];
+    char tmp[20];
+    char tmp2[25];
     uint32_t numDigits = 0, i;
     uint64_t base = 1;
     while (base <= amount) {
@@ -232,8 +228,8 @@ unsigned short ark_print_amount(uint64_t amount, char *out,
         base /= 10;
     }
     tmp[i] = '\0';
-    strcpy(tmp2, prefix);
-    adjustDecimals(tmp, i, tmp2 + prefixLen, sizeof(tmp2) - prefixLen, 8);
+    strcpy(tmp2, "ARK ");
+    adjustDecimals(tmp, i, tmp2 + 4, 25, 8);
     if (strlen(tmp2) < outlen - 1) {
         strcpy(out, tmp2);
     } else {
