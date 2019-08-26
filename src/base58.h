@@ -1,6 +1,7 @@
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
+*   (c) ARK Ecosystem
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -15,19 +16,17 @@
 *  limitations under the License.
 ********************************************************************************/
 
+#pragma once
+
 #include "os.h"
 #include "cx.h"
 
-unsigned short ark_public_key_to_encoded_base58(
-    unsigned char WIDE *in, unsigned short inlen, unsigned char *out,
-    unsigned short outlen, unsigned short version, unsigned char alreadyHashed);
+unsigned char base58_decode(unsigned char WIDE *in,
+                            unsigned char length,
+                            unsigned char *out,
+                            unsigned char maxoutlen);
 
-unsigned short ark_decode_base58_address(unsigned char WIDE *in,
-                                         unsigned short inlen,
-                                         unsigned char *out,
-                                         unsigned short outlen);
-
-unsigned short ark_compress_public_key(cx_ecfp_public_key_t *publicKey,
-                                       uint8_t *out, uint32_t outlen);
-
-unsigned short ark_print_amount(uint64_t amount, uint8_t *out, uint32_t outlen);
+unsigned char base58_encode(unsigned char WIDE *in,
+                            unsigned char length,
+                            unsigned char *out,
+                            unsigned char maxoutlen);

@@ -1,6 +1,7 @@
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
+*   (c) ARK Ecosystem
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -15,15 +16,26 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "arkBase58.h"
+#include "base58.h"
+
+#include "global.h"
+
+//////////////////////////////////////////////////////////////////////
+
+#define UINT256_BYTE_LENGTH         256U
+#define BASE58_ALPHABET_LENGTH      58U
+#define BASE58_ENCODE_BUFFER_LENGTH 164U
+#define BASE58_TABLE_LEN            128U
+
+//////////////////////////////////////////////////////////////////////
 
 unsigned char const BASE58TABLE[] = {
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff, 0x0,  0x1,  0x2,  0x3,  0x4,  0x5,  0x6,  0x7,  0x8,  0xff, 0xff,
-    0xff, 0xff, 0xff, 0xff, 0xff, 0x9,  0xa,  0xb,  0xc,  0xd,  0xe,  0xf,
+    0xff,  0x0,  0x1,  0x2,  0x3,  0x4,  0x5,  0x6,  0x7,  0x8, 0xff, 0xff,
+    0xff, 0xff, 0xff, 0xff, 0xff,  0x9,  0xa,  0xb,  0xc,  0xd,  0xe,  0xf,
     0x10, 0xff, 0x11, 0x12, 0x13, 0x14, 0x15, 0xff, 0x16, 0x17, 0x18, 0x19,
     0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0xff, 0xff, 0xff, 0xff, 0xff,
     0xff, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b,
@@ -38,98 +50,126 @@ unsigned char const BASE58ALPHABET[] = {
     'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
   };
 
+//////////////////////////////////////////////////////////////////////
 
-unsigned char ark_decode_base58(unsigned char WIDE *in, unsigned char length,
-                                unsigned char *out, unsigned char maxoutlen) {
-    unsigned char tmp[164];
-    unsigned char buffer[164];
+unsigned char base58_decode(unsigned char WIDE *in,
+                            unsigned char length,
+                            unsigned char *out,
+                            unsigned char maxoutlen) {
+    unsigned char tmp[BASE58_ENCODE_BUFFER_LENGTH];
+    unsigned char buffer[BASE58_ENCODE_BUFFER_LENGTH];
     unsigned char i;
     unsigned char j;
     unsigned char startAt;
-    unsigned char zeroCount = 0;
+    unsigned char zeroCount = 0U;
+
     if (length > sizeof(tmp)) {
         THROW(INVALID_PARAMETER);
     }
+
     os_memmove(tmp, in, length);
-    for (i = 0; i < length; i++) {
-        if (in[i] > 128) {
+    for (i = 0U; i < length; i++) {
+        if (in[i] > BASE58_TABLE_LEN) {
             THROW(EXCEPTION);
         }
+
         tmp[i] = BASE58TABLE[in[i]];
         if (tmp[i] == 0xff) {
             THROW(EXCEPTION);
         }
     }
-    while ((zeroCount < length) && (tmp[zeroCount] == 0)) {
+
+    while ((zeroCount < length) && (tmp[zeroCount] == 0U)) {
         ++zeroCount;
     }
+
     j = length;
     startAt = zeroCount;
     while (startAt < length) {
-        unsigned short remainder = 0;
+        unsigned short remainder = 0U;
         unsigned char divLoop;
+
         for (divLoop = startAt; divLoop < length; divLoop++) {
             unsigned short digit256 = (unsigned short)(tmp[divLoop] & 0xff);
-            unsigned short tmpDiv = remainder * 58 + digit256;
-            tmp[divLoop] = (unsigned char)(tmpDiv / 256);
-            remainder = (tmpDiv % 256);
+            unsigned short tmpDiv = remainder * BASE58_ALPHABET_LENGTH + digit256;
+            tmp[divLoop] = (unsigned char)(tmpDiv / UINT256_BYTE_LENGTH);
+            remainder = (tmpDiv % UINT256_BYTE_LENGTH);
         }
-        if (tmp[startAt] == 0) {
+
+        if (tmp[startAt] == 0U) {
             ++startAt;
         }
+
         buffer[--j] = (unsigned char)remainder;
     }
-    while ((j < length) && (buffer[j] == 0)) {
+
+    while ((j < length) && (buffer[j] == 0U)) {
         ++j;
     }
+
     length = length - (j - zeroCount);
     if (maxoutlen < length) {
         THROW(EXCEPTION_OVERFLOW);
     }
+
     os_memmove(out, buffer + j - zeroCount, length);
     return length;
 }
 
-unsigned char ark_encode_base58(unsigned char WIDE *in, unsigned char length,
-                                unsigned char *out, unsigned char maxoutlen) {
-    unsigned char tmp[164];
-    unsigned char buffer[164];
+//////////////////////////////////////////////////////////////////////
+
+unsigned char base58_encode(unsigned char WIDE *in,
+                            unsigned char length,
+                            unsigned char *out,
+                            unsigned char maxoutlen) {
+    unsigned char tmp[BASE58_ENCODE_BUFFER_LENGTH];
+    unsigned char buffer[BASE58_ENCODE_BUFFER_LENGTH];
     unsigned char j;
     unsigned char startAt;
     unsigned char zeroCount = 0;
+
     if (length > sizeof(tmp)) {
         THROW(INVALID_PARAMETER);
     }
+
     os_memmove(tmp, in, length);
-    while ((zeroCount < length) && (tmp[zeroCount] == 0)) {
+    while ((zeroCount < length) && (tmp[zeroCount] == 0U)) {
         ++zeroCount;
     }
+
     j = 2 * length;
     startAt = zeroCount;
     while (startAt < length) {
-        unsigned short remainder = 0;
+        unsigned short remainder = 0U;
         unsigned char divLoop;
+
         for (divLoop = startAt; divLoop < length; divLoop++) {
             unsigned short digit256 = (unsigned short)(tmp[divLoop] & 0xff);
-            unsigned short tmpDiv = remainder * 256 + digit256;
-            tmp[divLoop] = (unsigned char)(tmpDiv / 58);
-            remainder = (tmpDiv % 58);
+            unsigned short tmpDiv = remainder * UINT256_BYTE_LENGTH + digit256;
+            tmp[divLoop] = (unsigned char)(tmpDiv / BASE58_ALPHABET_LENGTH);
+            remainder = (tmpDiv % BASE58_ALPHABET_LENGTH);
         }
-        if (tmp[startAt] == 0) {
+
+        if (tmp[startAt] == 0U) {
             ++startAt;
         }
+
         buffer[--j] = (unsigned char)BASE58ALPHABET[remainder];
     }
-    while ((j < (2 * length)) && (buffer[j] == BASE58ALPHABET[0])) {
+
+    while ((j < (2U * length)) && (buffer[j] == BASE58ALPHABET[0])) {
         ++j;
     }
-    while (zeroCount-- > 0) {
+
+    while (zeroCount-- > 0U) {
         buffer[--j] = BASE58ALPHABET[0];
     }
-    length = 2 * length - j;
+
+    length = 2U * length - j;
     if (maxoutlen < length) {
         THROW(EXCEPTION_OVERFLOW);
     }
+
     os_memmove(out, (buffer + j), length);
     return length;
 }

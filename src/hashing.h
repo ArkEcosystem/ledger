@@ -1,6 +1,7 @@
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
+*   (c) ARK Ecosystem
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -15,11 +16,23 @@
 *  limitations under the License.
 ********************************************************************************/
 
+#pragma once
+
 #include "os.h"
 #include "cx.h"
 
-unsigned char ark_decode_base58(unsigned char WIDE *in, unsigned char length,
-                                unsigned char *out, unsigned char maxoutlen);
+//////////////////////////////////////////////////////////////////////
 
-unsigned char ark_encode_base58(unsigned char WIDE *in, unsigned char length,
-                                unsigned char *out, unsigned char maxoutlen);
+#define RIPEMD160_HASH_LENGTH 20U
+#define RIPEMD160_TMP_LENGTH  4U
+
+//////////////////////////////////////////////////////////////////////
+
+void public_key_hash160(unsigned char WIDE *in,
+                        unsigned short inlen,
+                        unsigned char *out);
+
+void hash_sha256(cx_sha256_t *ctx,
+                 unsigned char WIDE *in,
+                 unsigned short inlen,
+                 unsigned char *out);

@@ -4,17 +4,17 @@ import argparse
 import struct
 
 def parse_bip32_path(path):
-	if len(path) == 0:
-		return ""
-	result = ""
-	elements = path.split('/')
-	for pathElement in elements:
-		element = pathElement.split('\'')
-		if len(element) == 1:
-			result = result + struct.pack(">I", int(element[0]))			
-		else:
-			result = result + struct.pack(">I", 0x80000000 | int(element[0]))
-	return result
+    if len(path) == 0:
+        return ""
+    result = ""
+    elements = path.split('/')
+    for pathElement in elements:
+        element = pathElement.split('\'')
+        if len(element) == 1:
+            result = result + struct.pack(">I", int(element[0]))
+        else:
+            result = result + struct.pack(">I", 0x80000000 | int(element[0]))
+    return result
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--path', help="BIP 32 path to sign with")
@@ -22,9 +22,9 @@ parser.add_argument('--tx', help="TX to sign, hex encoded")
 args = parser.parse_args()
 
 if args.path == None:
-	args.path="44'/111'/0'/0/0"
+    args.path="44'/111'/0'/0/0"
 if args.tx == None:
-	raise Exception("Missing TX")
+    raise Exception("Missing TX")
 
 args.tx = args.tx.decode('hex')
 
@@ -51,6 +51,4 @@ if data2 != None:
 
 #result = dongle.exchange(bytes("e0040040a0058000002c80000090800000008000000000000000000b207900039f97d5a32fa1a1a0e12920f5ed21fde918a11ebf14cd42b70b4cc3633b027fcf175fa2a273f5a34d65710e67fc2b4bfe50d0d8140a0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e9a435000000008096980000000000".decode('hex')))
 # result = dongle.exchange(bytes("e002004096058000002c80000090800000008000000000000000".decode('hex')))
-
-
 #print "publicKey " + str(result).encode('hex')
