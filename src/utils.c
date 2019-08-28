@@ -19,6 +19,7 @@
 #include "utils.h"
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 
 #include "global.h"
@@ -110,13 +111,13 @@ bool adjustDecimals(char *src,
 unsigned short print_amount(uint64_t amount,
                             uint8_t *out,
                             uint32_t outlen,
-                            char *tokenName,
+                            const char *tokenName,
                             uint8_t tokenNameLength,
                             uint8_t decimals) {
-    uint8_t tmp[UINT64_DEC_MAX_STRING_LENGTH] = { '\0' };
-    uint8_t tmp2[UINT64_STRING_BUFFER_LENGTH] = { '\0' };
-    uint32_t numDigits = 0U, i;
-    uint64_t base = 1U;
+    uint8_t tmp[UINT64_DEC_MAX_STRING_LENGTH + 1];
+    uint8_t tmp2[sizeof(tmp) + tokenNameLength];
+    uint32_t numDigits = 0UL, i;
+    uint64_t base = 1ULL;
 
     while (base <= amount) {
         base *= BASE10_FLAG;
@@ -137,12 +138,11 @@ unsigned short print_amount(uint64_t amount,
     os_memmove(tmp2, tokenName, tokenNameLength);
     adjustDecimals((char *)tmp, i,
                    (char *)tmp2 + UINT64_STRING_BUFFER_OFFSET,
-                   UINT64_STRING_BUFFER_LENGTH,
+                   sizeof(tmp2) - tokenNameLength,
                    decimals);
 
-    const size_t tmp2Len = strlen((char *)tmp2);
-    if (tmp2Len < outlen - 1U) {
-        os_memmove(out, tmp2, tmp2Len);
+    if (sizeof(tmp2) < outlen - 1U) {
+        os_memmove(out, tmp2, sizeof(tmp2));
     } else {
         out[0] = '\0';
     }

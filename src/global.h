@@ -67,7 +67,7 @@
 // Token
 #define TOKEN_DECIMALS      8U
 #define TOKEN_NAME          "ARK "
-#define TOKEN_NAME_LENGTH   5U
+#define TOKEN_NAME_LENGTH   4U
 #define TOKEN_NETWORK_BYTE  0x1e // ARK Mainnet
 
 //////////////////////////////////////////////////////////////////////
@@ -76,4 +76,3 @@
 #define OPERATION_TYPE_TRANSFER 0x00
 #define OPERATION_TYPE_VOTE     0x03
 #define MAX_RAW_TX              300U
-

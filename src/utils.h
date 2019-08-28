@@ -18,13 +18,12 @@
 
 #pragma once
 
-#include "os.h"
+#include <os.h>
 
 //////////////////////////////////////////////////////////////////////
 
 #define BASE10_FLAG                     10U
 #define UINT64_DEC_MAX_STRING_LENGTH    20U
-#define UINT64_STRING_BUFFER_LENGTH     25U
 #define UINT64_STRING_BUFFER_OFFSET     4U
 
 //////////////////////////////////////////////////////////////////////
@@ -32,6 +31,6 @@
 unsigned short print_amount(uint64_t amount,
                             uint8_t *out,
                             uint32_t outlen,
-                            char *tokenName,
+                            const char *tokenName,
                             uint8_t tokenNameLength,
                             uint8_t decimals);
