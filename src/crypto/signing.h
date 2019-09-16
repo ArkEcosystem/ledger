@@ -16,18 +16,32 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_IO_H
-#define ARK_IO_H
+#ifndef ARK_CRYPTO_SIGNING_CONTEXT_H
+#define ARK_CRYPTO_SIGNING_CONTEXT_H
 
-#include <os_io_seproxyhal.h>
+#include <stdint.h>
+
+#include <os.h>
+#include <cx.h>
+
+#include "constants.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t io_event(uint8_t channel);
+typedef struct signing_context_t {
+    cx_curve_t  curve;
+    uint8_t     pathLength;
+    uint32_t    bip32Path[ADDRESS_MAX_BIP32_PATH];
+    uint8_t     data[MAX_RAW_OPERATION];
+    uint32_t    dataLength;
+} SigningContext;
 
-uint16_t io_exchange_al(uint8_t channel, uint16_t tx_len);
+////////////////////////////////////////////////////////////////////////////////
 
-void io_seproxyhal_display(const bagl_element_t *element);
+uint32_t signEcdsa(const cx_ecfp_private_key_t *privateKey,
+                   const uint8_t *hash,
+                   uint8_t *signature,
+                   unsigned int signatureLength);
 
 ////////////////////////////////////////////////////////////////////////////////
 

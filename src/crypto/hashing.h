@@ -16,18 +16,19 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_IO_H
-#define ARK_IO_H
+#ifndef ARK_CRYPTO_HASHING_H
+#define ARK_CRYPTO_HASHING_H
 
-#include <os_io_seproxyhal.h>
+#include <stdint.h>
+
+#include <os.h>
+#include <cx.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t io_event(uint8_t channel);
+void hash160(uint8_t WIDE *in, uint16_t inLength, uint8_t *out);
 
-uint16_t io_exchange_al(uint8_t channel, uint16_t tx_len);
-
-void io_seproxyhal_display(const bagl_element_t *element);
+void hash256(cx_sha256_t *ctx, uint8_t WIDE *in, uint16_t inLength, uint8_t *out);
 
 ////////////////////////////////////////////////////////////////////////////////
 

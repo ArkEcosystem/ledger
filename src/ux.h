@@ -16,18 +16,18 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_IO_H
-#define ARK_IO_H
+#ifndef ARK_UX_H
+#define ARK_UX_H
 
-#include <os_io_seproxyhal.h>
+#include <os.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t io_event(uint8_t channel);
-
-uint16_t io_exchange_al(uint8_t channel, uint16_t tx_len);
-
-void io_seproxyhal_display(const bagl_element_t *element);
+#if defined(TARGET_NANOS)
+    #include "ux/nanos/ux_nanos.h"
+#elif defined(TARGET_NANOX)
+    #include "ux/nanox/ux_nanox.h"
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 

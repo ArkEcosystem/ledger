@@ -16,18 +16,20 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_IO_H
-#define ARK_IO_H
+#ifndef ARK_UI_DISPLAY_CONTEXT_H
+#define ARK_UI_DISPLAY_CONTEXT_H
 
-#include <os_io_seproxyhal.h>
+#include <stdint.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t io_event(uint8_t channel);
+typedef struct display_context_t {
+    uint8_t operation[32];
+    uint8_t title[4][15];
+    uint8_t var[4][72];
+} DisplayContext;
 
-uint16_t io_exchange_al(uint8_t channel, uint16_t tx_len);
-
-void io_seproxyhal_display(const bagl_element_t *element);
+extern DisplayContext displayCtx;
 
 ////////////////////////////////////////////////////////////////////////////////
 

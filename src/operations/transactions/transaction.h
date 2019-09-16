@@ -16,18 +16,28 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_IO_H
-#define ARK_IO_H
+#ifndef ARK_TRANSACTION_H
+#define ARK_TRANSACTION_H
 
-#include <os_io_seproxyhal.h>
+#include <stdbool.h>
+#include <stdint.h>
+
+#include "constants.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t io_event(uint8_t channel);
-
-uint16_t io_exchange_al(uint8_t channel, uint16_t tx_len);
-
-void io_seproxyhal_display(const bagl_element_t *element);
+typedef struct transaction_t {
+    uint8_t     header;
+    uint8_t     version;
+    uint16_t    type;
+    uint8_t     senderPublicKey[PUBLICKEY_COMPRESSED_LENGTH];
+    uint64_t    fee;
+    uint8_t     recipient[ADDRESS_HASH_LENGTH];
+    uint64_t    amount;
+    uint32_t    assetOffset;
+    uint8_t     assetLength;
+    uint8_t     *assetPtr;
+} Transaction;
 
 ////////////////////////////////////////////////////////////////////////////////
 

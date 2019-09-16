@@ -16,18 +16,16 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_IO_H
-#define ARK_IO_H
-
-#include <os_io_seproxyhal.h>
+#ifndef ARK_TRANSACTIONS_STATUS_H
+#define ARK_TRANSACTIONS_STATUS_H
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t io_event(uint8_t channel);
-
-uint16_t io_exchange_al(uint8_t channel, uint16_t tx_len);
-
-void io_seproxyhal_display(const bagl_element_t *element);
+typedef enum stream_status_t {
+    USTREAM_PROCESSING,
+    USTREAM_FINISHED,
+    USTREAM_FAULT
+} StreamStatus;
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -1,7 +1,6 @@
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
-*   (c) ARK Ecosystem
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -16,19 +15,41 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_IO_H
-#define ARK_IO_H
-
-#include <os_io_seproxyhal.h>
+#ifndef ARK_CONSTANTS_H
+#define ARK_CONSTANTS_H
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t io_event(uint8_t channel);
-
-uint16_t io_exchange_al(uint8_t channel, uint16_t tx_len);
-
-void io_seproxyhal_display(const bagl_element_t *element);
+// General
+#define MAX_RAW_OPERATION  300U
 
 ////////////////////////////////////////////////////////////////////////////////
+
+// Hash
+#define HASH_32_LENGTH  32U
+#define HASH_64_LENGTH  64U
+
+////////////////////////////////////////////////////////////////////////////////
+
+// Identities
+#define ADDRESS_LENGTH              34U
+#define ADDRESS_HASH_LENGTH         21U
+#define ADDRESS_MAX_BIP32_PATH      10U
+#define PUBLICKEY_COMPRESSED_LENGTH 33U
+
+////////////////////////////////////////////////////////////////////////////////
+
+// Token
+#define TOKEN_DECIMALS      8U
+#define TOKEN_NAME          "ARK "
+#define TOKEN_NAME_LENGTH   4U
+#define TOKEN_NETWORK_BYTE  0x1e // ARK Mainnet
+
+////////////////////////////////////////////////////////////////////////////////
+
+// Transactions
+#define TRANSACTION_VERSION_LEGACY  0x00
+#define TRANSACTION_VERSION_TYPE_1  0x01
+#define TRANSACTION_VERSION_TYPE_2  0x02
 
 #endif

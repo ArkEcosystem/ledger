@@ -16,18 +16,33 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_IO_H
-#define ARK_IO_H
+#ifndef ARK_CRYPTO_KEYS
+#define ARK_CRYPTO_KEYS
 
-#include <os_io_seproxyhal.h>
+#include <stdbool.h>
+#include <stdint.h>
+
+#include <os.h>
+#include <cx.h>
+
+#include "constants.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t io_event(uint8_t channel);
+typedef struct public_key_context_t {
+    cx_ecfp_public_key_t    data;
+    uint8_t                 address[41];
+    uint8_t                 chainCode[HASH_32_LENGTH];
+    bool                    needsChainCode;
+} PublicKeyContext;
 
-uint16_t io_exchange_al(uint8_t channel, uint16_t tx_len);
+////////////////////////////////////////////////////////////////////////////////
 
-void io_seproxyhal_display(const bagl_element_t *element);
+void compressPublicKey(const cx_ecfp_public_key_t *publicKey,
+                       uint8_t *out,
+                       uint8_t outLength);
+
+uint32_t setPublicKeyContext(PublicKeyContext *ctx, uint8_t *apduBuffer);
 
 ////////////////////////////////////////////////////////////////////////////////
 

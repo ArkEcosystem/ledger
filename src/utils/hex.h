@@ -16,18 +16,14 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_IO_H
-#define ARK_IO_H
+#ifndef ARK_UTILS_HEX_H
+#define ARK_UTILS_HEX_H
 
-#include <os_io_seproxyhal.h>
+#include <stdint.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t io_event(uint8_t channel);
-
-uint16_t io_exchange_al(uint8_t channel, uint16_t tx_len);
-
-void io_seproxyhal_display(const bagl_element_t *element);
+void bytesToHex(char *dest, const uint8_t *src, uint8_t length);
 
 ////////////////////////////////////////////////////////////////////////////////
 

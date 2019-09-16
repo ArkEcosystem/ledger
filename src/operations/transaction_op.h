@@ -16,18 +16,25 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_IO_H
-#define ARK_IO_H
+#ifndef ARK_OPERATIONS_TRANSACTION_H
+#define ARK_OPERATIONS_TRANSACTION_H
 
-#include <os_io_seproxyhal.h>
+#include <stdint.h>
+
+#include <os.h>
+
+#include "transactions/status.h"
+
+#include "transactions/deserializer.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t io_event(uint8_t channel);
-
-uint16_t io_exchange_al(uint8_t channel, uint16_t tx_len);
-
-void io_seproxyhal_display(const bagl_element_t *element);
+void handleTransaction(const uint8_t *buffer, const uint32_t length) {
+    if (deserialize(buffer, length) != USTREAM_FINISHED) {
+        // Deserialization failed
+        THROW(0x6A80);
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 

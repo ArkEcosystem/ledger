@@ -16,18 +16,24 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_IO_H
-#define ARK_IO_H
+#ifndef ARK_UTILS_BASE58_H
+#define ARK_UTILS_BASE58_H
 
-#include <os_io_seproxyhal.h>
+#include <stdint.h>
+
+#include <os.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t io_event(uint8_t channel);
+uint8_t encodeBase58(uint8_t WIDE *in,
+                     uint8_t length,
+                     uint8_t *out,
+                     uint8_t maxoutlen);
 
-uint16_t io_exchange_al(uint8_t channel, uint16_t tx_len);
-
-void io_seproxyhal_display(const bagl_element_t *element);
+uint16_t encodeBase58PublicKey(uint8_t WIDE *in, uint16_t inLength,
+                               uint8_t *out, uint16_t outLength,
+                               uint16_t version,
+                               uint8_t alreadyHashed);
 
 ////////////////////////////////////////////////////////////////////////////////
 

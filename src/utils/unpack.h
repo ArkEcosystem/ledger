@@ -16,18 +16,18 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_IO_H
-#define ARK_IO_H
+#ifndef ARK_UTILS_UNPACK_H
+#define ARK_UTILS_UNPACK_H
 
-#include <os_io_seproxyhal.h>
+#include <os.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t io_event(uint8_t channel);
+#define U8BE(buf, off)  (((uint64_t)(U4BE(buf, off)                     & 0xFFFFFFFF) << 32U)   |   \
+                        ((uint64_t)(U4BE(buf, off + sizeof(uint32_t)))  & 0xFFFFFFFF))
 
-uint16_t io_exchange_al(uint8_t channel, uint16_t tx_len);
-
-void io_seproxyhal_display(const bagl_element_t *element);
+#define U8LE(buf, off)  (((uint64_t)(U4LE(buf, off))                    & 0xFFFFFFFF)           |   \
+                        ((uint64_t)(U4LE(buf, off + sizeof(uint32_t))  & 0xFFFFFFFF) << 32U))
 
 ////////////////////////////////////////////////////////////////////////////////
 

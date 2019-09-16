@@ -16,19 +16,30 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_IO_H
-#define ARK_IO_H
+#include "utils/hex.h"
 
-#include <os_io_seproxyhal.h>
+#include <stdint.h>
 
-////////////////////////////////////////////////////////////////////////////////
-
-uint8_t io_event(uint8_t channel);
-
-uint16_t io_exchange_al(uint8_t channel, uint16_t tx_len);
-
-void io_seproxyhal_display(const bagl_element_t *element);
+#include <os.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif
+static const uint8_t const hexDigits[] = {
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    'a', 'b', 'c', 'd', 'e', 'f'
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
+// Convert Bytes to a Hex string.
+// NULL terminator is added at (hexStringLen + 1)
+void bytesToHex(char *dest, const uint8_t *src, uint8_t length) {
+    while (length--) {
+        *dest++ = hexDigits[(*src >> 0x04) & 0xF];
+        *dest++ = hexDigits[*src & 0xF];
+        ++src;
+    }
+    *dest = '\0';
+}
+
+////////////////////////////////////////////////////////////////////////////////

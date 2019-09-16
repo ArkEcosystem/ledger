@@ -16,18 +16,17 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_IO_H
-#define ARK_IO_H
+#ifndef ARK_UTILS_PRINT_H
+#define ARK_UTILS_PRINT_H
 
-#include <os_io_seproxyhal.h>
+#include <stdint.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t io_event(uint8_t channel);
-
-uint16_t io_exchange_al(uint8_t channel, uint16_t tx_len);
-
-void io_seproxyhal_display(const bagl_element_t *element);
+uint8_t printAmount(uint64_t amount,
+                    uint8_t *out, uint8_t outLength,
+                    const char *tokenName, uint8_t tokenNameLength,
+                    uint8_t decimals);
 
 ////////////////////////////////////////////////////////////////////////////////
 

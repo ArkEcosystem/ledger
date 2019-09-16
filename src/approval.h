@@ -16,18 +16,18 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_IO_H
-#define ARK_IO_H
+#ifndef ARK_APPROVAL_H
+#define ARK_APPROVAL_H
 
 #include <os_io_seproxyhal.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t io_event(uint8_t channel);
+unsigned int ioApprove(const bagl_element_t *e);
 
-uint16_t io_exchange_al(uint8_t channel, uint16_t tx_len);
+unsigned int ioCancel(const bagl_element_t *e);
 
-void io_seproxyhal_display(const bagl_element_t *element);
+unsigned int ioExit(const bagl_element_t *e);
 
 ////////////////////////////////////////////////////////////////////////////////
 
