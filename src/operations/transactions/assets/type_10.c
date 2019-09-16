@@ -1,3 +1,4 @@
+
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
@@ -16,39 +17,41 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_TRANSACTION_H
-#define ARK_TRANSACTION_H
+#include "transactions/assets/type_10.h"
 
-#include <stdbool.h>
 #include <stdint.h>
+
+#include <os.h>
 
 #include "constants.h"
 
-#include "transactions/assets/types.h"
+#include "transactions/status.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct transaction_t {
-    uint8_t     header;
-    uint8_t     version;
-    uint16_t    type;
-    uint8_t     senderPublicKey[PUBLICKEY_COMPRESSED_LENGTH];
-    uint64_t    fee;
-    union {
-        struct {  // v1 or Legacy
-            uint8_t     recipient[ADDRESS_HASH_LENGTH];
-            uint64_t    amount;
-            uint32_t    assetOffset;
-            uint8_t     assetLength;
-            uint8_t     *assetPtr;
-        };
-        struct {  // v2
-            uint8_t     vendorFieldLength;
-            tx_asset_t  asset;
-        };
-    };
-} Transaction;
+// Htlc Refund (Type 10) - 32 Bytes
+//
+// @param HtlcRefund *refund: The Htlc Refund (Type 10) Asset.
+// @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
+// @param uint32_t length: The Asset Length.
+//
+// ---
+// Internals:
+//
+// Lock Transaction Id - 32 Bytes:
+// - os_memmove(refund->id, &buffer[0], 32U);
+//
+// ---
+StreamStatus deserializeHtlcRefund(HtlcRefund *refund,
+                                   const uint8_t *buffer,
+                                   const uint32_t length) {
+    if (length != HASH_32_LENGTH) {
+        return USTREAM_FAULT;
+    }
+
+    os_memmove(refund->id, &buffer[0], HASH_32_LENGTH);
+
+    return USTREAM_FINISHED;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
-
-#endif

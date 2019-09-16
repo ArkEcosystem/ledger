@@ -16,38 +16,25 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_TRANSACTION_H
-#define ARK_TRANSACTION_H
+#ifndef ARK_TRANSACTION_TYPE_2_H
+#define ARK_TRANSACTION_TYPE_2_H
 
-#include <stdbool.h>
 #include <stdint.h>
 
-#include "constants.h"
-
-#include "transactions/assets/types.h"
+#include "operations/status.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct transaction_t {
-    uint8_t     header;
-    uint8_t     version;
-    uint16_t    type;
-    uint8_t     senderPublicKey[PUBLICKEY_COMPRESSED_LENGTH];
-    uint64_t    fee;
-    union {
-        struct {  // v1 or Legacy
-            uint8_t     recipient[ADDRESS_HASH_LENGTH];
-            uint64_t    amount;
-            uint32_t    assetOffset;
-            uint8_t     assetLength;
-            uint8_t     *assetPtr;
-        };
-        struct {  // v2
-            uint8_t     vendorFieldLength;
-            tx_asset_t  asset;
-        };
-    };
-} Transaction;
+typedef struct delegate_registration_asset_t {
+    uint8_t length;         // min: 3, max: 20
+    uint8_t username[20];   // utf8 - 3-20 bytes
+} DelegateRegistrationAsset;
+
+////////////////////////////////////////////////////////////////////////////////
+
+ParserStatus deserializeDelegateRegistration(DelegateRegistrationAsset *registration,
+                                             const uint8_t *buffer,
+                                             const uint32_t length);
 
 ////////////////////////////////////////////////////////////////////////////////
 

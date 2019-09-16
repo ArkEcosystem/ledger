@@ -16,38 +16,28 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_TRANSACTION_H
-#define ARK_TRANSACTION_H
+#ifndef ARK_TRANSACTION_TYPE_6_H
+#define ARK_TRANSACTION_TYPE_6_H
 
-#include <stdbool.h>
 #include <stdint.h>
 
 #include "constants.h"
 
-#include "transactions/assets/types.h"
+#include "operations/status.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct transaction_t {
-    uint8_t     header;
-    uint8_t     version;
-    uint16_t    type;
-    uint8_t     senderPublicKey[PUBLICKEY_COMPRESSED_LENGTH];
-    uint64_t    fee;
-    union {
-        struct {  // v1 or Legacy
-            uint8_t     recipient[ADDRESS_HASH_LENGTH];
-            uint64_t    amount;
-            uint32_t    assetOffset;
-            uint8_t     assetLength;
-            uint8_t     *assetPtr;
-        };
-        struct {  // v2
-            uint8_t     vendorFieldLength;
-            tx_asset_t  asset;
-        };
-    };
-} Transaction;
+typedef struct multipayment_asset_t {
+    uint16_t    n_payments;         // 2259 hypothetical max
+    uint64_t    *amounts;           // payment(uint64_t) * n_payments
+    uint8_t     addresses[105];     // address[21] * n_payments(ledger limit 5) 
+} MultiPaymentAsset;
+
+////////////////////////////////////////////////////////////////////////////////
+
+ParserStatus deserializeMultiPayment(MultiPaymentAsset *payments,
+                                     const uint8_t *buffer,
+                                     const uint32_t length);
 
 ////////////////////////////////////////////////////////////////////////////////
 

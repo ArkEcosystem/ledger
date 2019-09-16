@@ -1,3 +1,4 @@
+
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
@@ -16,39 +17,39 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_TRANSACTION_H
-#define ARK_TRANSACTION_H
+#include "transactions/assets/type_1.h"
 
-#include <stdbool.h>
 #include <stdint.h>
+
+#include <os.h>
 
 #include "constants.h"
 
-#include "transactions/assets/types.h"
-
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct transaction_t {
-    uint8_t     header;
-    uint8_t     version;
-    uint16_t    type;
-    uint8_t     senderPublicKey[PUBLICKEY_COMPRESSED_LENGTH];
-    uint64_t    fee;
-    union {
-        struct {  // v1 or Legacy
-            uint8_t     recipient[ADDRESS_HASH_LENGTH];
-            uint64_t    amount;
-            uint32_t    assetOffset;
-            uint8_t     assetLength;
-            uint8_t     *assetPtr;
-        };
-        struct {  // v2
-            uint8_t     vendorFieldLength;
-            tx_asset_t  asset;
-        };
-    };
-} Transaction;
+// Second Signature Registration (Type 1) - 33 Bytes
+//
+// @param SecondSignatureRegistration *registration: The Second Signature Registration (Type 1) Asset.
+// @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
+// @param uint32_t length: The Asset Length.
+//
+// ---
+// Internals:
+//
+// Second PublicKey - 33 Bytes:
+// - os_memmove(registration->publicKey, buffer, PUBLICKEY_COMPRESSED_LENGTH);
+//
+// ---
+StreamStatus deserializeSecondSignature(SecondSignatureRegistration *registration,
+                                        const uint8_t *buffer,
+                                        const uint32_t length) {
+    if (length != PUBLICKEY_COMPRESSED_LENGTH) {
+        return USTREAM_FAULT;
+    }
+
+    os_memmove(registration->publicKey, buffer, PUBLICKEY_COMPRESSED_LENGTH);
+
+    return USTREAM_FINISHED;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
-
-#endif

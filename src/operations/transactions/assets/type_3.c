@@ -1,3 +1,4 @@
+
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
@@ -16,39 +17,44 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_TRANSACTION_H
-#define ARK_TRANSACTION_H
+#include "transactions/assets/type_3.h"
 
-#include <stdbool.h>
 #include <stdint.h>
+
+#include <os.h>
 
 #include "constants.h"
 
-#include "transactions/assets/types.h"
+#include "transactions/status.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct transaction_t {
-    uint8_t     header;
-    uint8_t     version;
-    uint16_t    type;
-    uint8_t     senderPublicKey[PUBLICKEY_COMPRESSED_LENGTH];
-    uint64_t    fee;
-    union {
-        struct {  // v1 or Legacy
-            uint8_t     recipient[ADDRESS_HASH_LENGTH];
-            uint64_t    amount;
-            uint32_t    assetOffset;
-            uint8_t     assetLength;
-            uint8_t     *assetPtr;
-        };
-        struct {  // v2
-            uint8_t     vendorFieldLength;
-            tx_asset_t  asset;
-        };
-    };
-} Transaction;
+// Vote (Type 3)
+//
+// @param Vote *vote: The Vote (Type 3) Asset.
+// @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
+// @param uint32_t length: The Asset Length.
+//
+// ---
+// Internals:
+//
+// Number of Votes: 1 Byte
+// - vote->n_votes = buffer[0];
+//
+// Vote - 1 + 33(Compressed PublicKey) Bytes:
+// - os_memmove(vote->data, &buffer[1], 1U + PUBLICKEY_COMPRESSED_LENGTH)
+//
+// ---
+StreamStatus deserializeVote(Vote *vote,
+                             const uint8_t *buffer,
+                             const uint32_t length) {
+    if (((length - 1) % 34U) != 0) {
+        return USTREAM_FAULT;
+    }
+
+    os_memmove(vote->data, &buffer[1], 1U + PUBLICKEY_COMPRESSED_LENGTH);
+
+    return USTREAM_FINISHED;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
-
-#endif
