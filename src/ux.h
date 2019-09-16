@@ -1,6 +1,7 @@
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
+*   (c) ARK Ecosystem
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -15,19 +16,19 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "os.h"
-#include "cx.h"
+#ifndef ARK_UX_H
+#define ARK_UX_H
 
-unsigned short ark_public_key_to_encoded_base58(
-    unsigned char WIDE *in, unsigned short inlen, unsigned char *out,
-    unsigned short outlen, unsigned short version, unsigned char alreadyHashed);
+#include <os.h>
 
-unsigned short ark_decode_base58_address(unsigned char WIDE *in,
-                                         unsigned short inlen,
-                                         unsigned char *out,
-                                         unsigned short outlen);
+////////////////////////////////////////////////////////////////////////////////
 
-unsigned short ark_compress_public_key(cx_ecfp_public_key_t *publicKey,
-                                       uint8_t *out, uint32_t outlen);
+#if defined(TARGET_NANOS)
+    #include "ux/nanos/ux_nanos.h"
+#elif defined(TARGET_NANOX)
+    #include "ux/nanox/ux_nanox.h"
+#endif
 
-unsigned short ark_print_amount(uint64_t amount, uint8_t *out, uint32_t outlen);
+////////////////////////////////////////////////////////////////////////////////
+
+#endif

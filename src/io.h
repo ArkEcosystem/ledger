@@ -1,6 +1,7 @@
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
+*   (c) ARK Ecosystem
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
 *  you may not use this file except in compliance with the License.
@@ -15,11 +16,19 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "os.h"
-#include "cx.h"
+#ifndef ARK_IO_H
+#define ARK_IO_H
 
-unsigned char ark_decode_base58(unsigned char WIDE *in, unsigned char length,
-                                unsigned char *out, unsigned char maxoutlen);
+#include <os_io_seproxyhal.h>
 
-unsigned char ark_encode_base58(unsigned char WIDE *in, unsigned char length,
-                                unsigned char *out, unsigned char maxoutlen);
+////////////////////////////////////////////////////////////////////////////////
+
+uint8_t io_event(uint8_t channel);
+
+uint16_t io_exchange_al(uint8_t channel, uint16_t tx_len);
+
+void io_seproxyhal_display(const bagl_element_t *element);
+
+////////////////////////////////////////////////////////////////////////////////
+
+#endif
