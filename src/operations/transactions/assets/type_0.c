@@ -1,4 +1,3 @@
-
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
@@ -41,10 +40,10 @@
 // Internals:
 //
 // Amount - 8 Bytes:
-// - transfer->amount = U8LE(buffer);
+// - transfer->amount = U8LE(buffer, 0U);
 //
 // Expiration - 4 Bytes:
-// - transfer->expiration = U4LE(&buffer[sizeof(uint64_t)]);
+// - transfer->expiration = U4LE(buffer, sizeof(uint64_t));
 //
 // Recipient - 21 Bytes:
 // - os_memmove(transfer->recipient, &buffer[sizeof(uint64_t) + sizeof(uint32_t)], ADDRESS_HASH_LENGTH);
@@ -53,11 +52,12 @@
 StreamStatus deserializeTransfer(Transfer *transfer,
                                  const uint8_t *buffer,
                                  const uint32_t length) {
-    if (length != PUBLICKEY_COMPRESSED_LENGTH) {
+    if (length != 33U) {
         return USTREAM_FAULT;
     }
 
-    transfer->amount = U8LE(buffer, 0U);
+    transfer->amount        = U8LE(buffer, 0U);
+    transfer->expiration    = U4LE(buffer, sizeof(uint64_t));
     os_memmove(transfer->recipient,
                &buffer[sizeof(uint64_t) + sizeof(uint32_t)],
                ADDRESS_HASH_LENGTH);

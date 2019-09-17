@@ -1,4 +1,3 @@
-
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
@@ -48,7 +47,7 @@
 StreamStatus deserializeIpfs(Ipfs *ipfs,
                              const uint8_t *buffer,
                              const uint32_t length) {
-    // 2nd byte contains hash len.
+    // 2nd byte of IPFS hash contains its len.
     //
     // byte[0] == hash-type (sha256).
     // byte[1] == hash-type length (32-bytes).
@@ -57,7 +56,7 @@ StreamStatus deserializeIpfs(Ipfs *ipfs,
 
     // Let's make sure the length isn't > 255,
     // and that the lengths match.
-    if (!(length & 0xFF) || length != ipfs->length) {
+    if (length > 255U || length != ipfs->length) {
         return USTREAM_FAULT;
     }
 

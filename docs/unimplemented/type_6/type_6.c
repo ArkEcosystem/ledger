@@ -1,4 +1,13 @@
 
+////////////////////////////////////////////////////////////////////////////////
+
+// The Following are only examples and places where this code could be implemented.
+//  It is not final or guaranteed working.
+//  This should only serve as a reference for implementing.
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
@@ -30,6 +39,9 @@
 #include "operations/status.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 // MultiPayment (Type 6) - 0 <=> 255 Bytes
 //
@@ -56,12 +68,11 @@ ParserStatus deserializeMultiPayment(MultiPaymentAsset *payments,
     payments->n_payments = U2BE(buffer, 0);
 
     for (uint8_t i = 0U; i < payments->n_payments; ++i) {
-        payments->amounts[i] = U8BE(&buffer[sizeof(uint16_t) +
-                                           (i * sizeof(uint64_t))],
+        payments->amounts[i] = U8BE(&buffer[sizeof(uint16_t) + i * sizeof(uint64_t)],
                                     sizeof(uint64_t));
 
         os_memmove(&payments->addresses[i * ADDRESS_HASH_LENGTH],
-                   &buffer[(sizeof(uint16_t) + (i * (sizeof(uint64_t) + ADDRESS_HASH_LENGTH)))],
+                   &buffer[sizeof(uint16_t) + payments->n_payments * sizeof(uint64_t) + i * ADDRESS_HASH_LENGTH],
                    ADDRESS_HASH_LENGTH);
     }
 
@@ -73,26 +84,14 @@ ParserStatus deserializeMultiPayment(MultiPaymentAsset *payments,
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-const char * const ui_menu_multi_payment[][2] = {
-    { "Operation",      (const char *const)amountBuffer },
-    { "Payment Count",  (const char *const)screenBuffer },
-    { "Total Amount",   (const char *const)screenBuffer },
-    { "Fees",           (const char *const)amountBuffer },
-};
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-static ParserStatus internalDeserializeAsset(Transaction *transaction,
+static StreamStatus internalDeserializeAsset(Transaction *transaction,
                                              const uint8_t *buffer,
                                              const uint32_t length) {
 /////////
     case TRANSACTION_TYPE_MULTIPAYMENT:
-        return deserializeMultiPayment(&transaction->asset.multiPayment,
-                                        &buffer[assetOffset],
-                                        assetLength);
+        status = deserializeMultiPayment(&transaction->asset.multiPayment,
+                                         &buffer[assetOffset],
+                                         assetLength);
         break;
 /////////
 }
@@ -101,38 +100,6 @@ static ParserStatus internalDeserializeAsset(Transaction *transaction,
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-
-void displayTransaction(uint8_t step, bagl_element_t *element) {
-/////////
-    // MultiPayment / Type 6
-    else if (transaction.type == TRANSACTION_TYPE_MULTIPAYMENT) {
-        displayMultiPayment(&transaction, step);
-        element->text =
-        ui_menu_multi_payment[step][(element->component.userid) >> 4U];
-    }
-/////////
-}
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-void setDisplaySteps(const Transaction *transaction) {
-/////////
-    // MultiPayment / Type 6
-    else if (transaction->type == TRANSACTION_TYPE_MULTIPAYMENT) {
-        operation_set_steps(5U);
-    }
-/////////
-}
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-void displayMultiPayment(const Transaction *transaction, uint8_t step);
 
 void displayMultiPayment(const Transaction *transaction, uint8_t step) {
     switch(step) {
@@ -167,6 +134,17 @@ void displayMultiPayment(const Transaction *transaction, uint8_t step) {
 
         default: break;
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void setDisplay(const Transaction *transaction) {
+/////////
+    case TRANSACTION_TYPE_MULTIPAYMENT:
+        setDisplayMultiPayment(transaction);
+        setDisplaySteps(3U);
+        break;
+/////////
 }
 
 ////////////////////////////////////////////////////////////////////////////////

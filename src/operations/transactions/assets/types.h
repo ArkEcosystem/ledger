@@ -35,45 +35,29 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define TRANSACTION_TYPE_TRANSFER               0x00
-#define TRANSACTION_TYPE_SECOND_SIGNATURE       0x01
-///////// Delegate Registration              // 0x02
-#define TRANSACTION_TYPE_VOTE                   0x03
-///////// MultiSignature                     // 0x04
-#define TRANSACTION_TYPE_IPFS                   0x05
-///////// MultiPayment                       // 0x06
-///////// Delegate Resignation               // 0x07
-#define TRANSACTION_TYPE_HTLC_LOCK              0x08
-#define TRANSACTION_TYPE_HTLC_CLAIM             0x09
-#define TRANSACTION_TYPE_HTLC_REFUND            0x0A
+#define TRANSACTION_TYPE_TRANSFER               0U
+#define TRANSACTION_TYPE_SECOND_SIGNATURE       1U
+// Delegate Registration                        2U
+#define TRANSACTION_TYPE_VOTE                   3U
+// MultiSignature                               4U
+#define TRANSACTION_TYPE_IPFS                   5U
+// MultiPayment                                 6U
+// Delegate Resignation                         7U
+#define TRANSACTION_TYPE_HTLC_LOCK              8U
+#define TRANSACTION_TYPE_HTLC_CLAIM             9U
+#define TRANSACTION_TYPE_HTLC_REFUND            10U
 
 ////////////////////////////////////////////////////////////////////////////////
 
-enum TransactionTypes { TRANSFER = 0U,              // Type 0
-                        SECOND_SIGNATURE,           // Type 1
-                        ///////// Delegate Reg.     // Type 2
-                        VOTE = 3U,                  // Type 3
-                        ///////// MultiSignature    // Type 4
-                        IPFS = 5U,                  // Type 5
-                        ///////// MultiPayment      // Type 6
-                        ///////// Delegate Res.     // Type 7
-                        HTLC_LOCK = 9U,             // Type 8
-                        HTLC_CLAIM,                 // Type 9
-                        HTLC_REFUND                 // Type 10
-};
-
-////////////////////////////////////////////////////////////////////////////////
-
-// static 
 typedef union tx_asset_t {
     Transfer                    transfer;               // Type 0
     SecondSignatureRegistration secondSignature;        // Type 1
-    ///////// Delegate Registration                     // Type 2
+    // Delegate Registration                            // Type 2
     Vote                        vote;                   // Type 3
-    ///////// MultiSignature                            // Type 4
+    // MultiSignature                                   // Type 4
     Ipfs                        ipfs;                   // Type 5
-    ///////// MultiPayment                              // Type 6
-    ///////// Delegate Resignation                      // Type 7
+    // MultiPayment                                     // Type 6
+    // Delegate Resignation                             // Type 7
     HtlcLock                    htlcLock;               // Type 8
     HtlcClaim                   htlcClaim;              // Type 9
     HtlcRefund                  htlcRefund;             // Type 10

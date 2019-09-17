@@ -76,7 +76,7 @@ StreamStatus deserializeLegacy(Transaction *transaction,
         transaction->version        = 0U;
         transaction->type           = buffer[0];
         transaction->fee            = U8LE(buffer, 131U);
-        transaction->amount = U8LE(buffer, 123U);
+        transaction->amount         = U8LE(buffer, 123U);
         os_memmove(transaction->recipient, &buffer[38U], ADDRESS_HASH_LENGTH);
         transaction->assetOffset    = 139U;
         transaction->assetLength    = length - transaction->assetOffset;

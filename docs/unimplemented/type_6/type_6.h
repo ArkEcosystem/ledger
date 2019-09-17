@@ -1,3 +1,13 @@
+
+////////////////////////////////////////////////////////////////////////////////
+
+// The Following are only examples and places where this code could be implemented.
+//  It is not final or guaranteed working.
+//  This should only serve as a reference for implementing.
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
@@ -28,14 +38,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef struct multipayment_asset_t {
-    uint16_t    n_payments;         // 2259 hypothetical max
-    uint64_t    *amounts;           // payment(uint64_t) * n_payments
-    uint8_t     addresses[105];     // address[21] * n_payments(ledger limit 5) 
-} MultiPaymentAsset;
+    uint16_t    n_payments;         // 2,259 network max
+    uint8_t    amounts[2259];       // payment(uint64_t) * n_payments
+    uint8_t    addresses[47439];    // address[21] * n_payments
+} MultiPayment;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-ParserStatus deserializeMultiPayment(MultiPaymentAsset *payments,
+StreamStatus deserializeMultiPayment(MultiPayment *payments,
                                      const uint8_t *buffer,
                                      const uint32_t length);
 

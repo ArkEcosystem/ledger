@@ -1,4 +1,3 @@
-
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
@@ -30,6 +29,7 @@
 
 typedef struct transfer_asset_t {
     uint64_t    amount;
+    uint32_t    expiration;
     uint8_t     recipient[ADDRESS_HASH_LENGTH];
 } Transfer;
 

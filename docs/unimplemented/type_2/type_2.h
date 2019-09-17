@@ -1,3 +1,13 @@
+
+////////////////////////////////////////////////////////////////////////////////
+
+// The Following are only examples and places where this code could be implemented.
+//  It is not final or guaranteed working.
+//  This should only serve as a reference for implementing.
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
@@ -26,13 +36,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef struct delegate_registration_asset_t {
-    uint8_t length;         // min: 3, max: 20
-    uint8_t username[20];   // utf8 - 3-20 bytes
-} DelegateRegistrationAsset;
+    uint8_t     length;
+    uint8_t     username[20U];
+} DelegateRegistration;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-ParserStatus deserializeDelegateRegistration(DelegateRegistrationAsset *registration,
+StreamStatus deserializeDelegateRegistration(DelegateRegistration *registration,
                                              const uint8_t *buffer,
                                              const uint32_t length);
 

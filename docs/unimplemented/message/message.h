@@ -1,3 +1,13 @@
+
+////////////////////////////////////////////////////////////////////////////////
+
+// The Following are only examples and places where this code could be implemented.
+//  It is not final or guaranteed working.
+//  This should only serve as a reference for implementing.
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
@@ -30,8 +40,8 @@
 void handleMessage(const uint8_t *buffer, const uint32_t length) {
     BEGIN_TRY {
         TRY {
-            os_memmove((char *)displayCtx.operation, "Message\0", 9U);
-            os_memmove((char *)displayCtx.title[0], "message\0", 3U);
+            os_memmove((char *)displayCtx.operation, "Message", 8U);
+            os_memmove((char *)displayCtx.title[0], "message", 8U);
 
             os_memmove((char *)displayCtx.var[0], buffer, length);
             displayCtx.var[0][length] = '\0';
@@ -39,7 +49,7 @@ void handleMessage(const uint8_t *buffer, const uint32_t length) {
             setDisplaySteps(1U);
         }
 
-        CATCH_OTHER(e) { result = USTREAM_FAULT; }
+        CATCH_OTHER(e) {}
 
         FINALLY {}
     }
@@ -49,7 +59,6 @@ void handleMessage(const uint8_t *buffer, const uint32_t length) {
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif
-
 
 // #define INS_SIGN_MESSAGE            0x08
 

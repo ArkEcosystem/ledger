@@ -1,4 +1,13 @@
 
+////////////////////////////////////////////////////////////////////////////////
+
+// The Following are only examples and places where this code could be implemented.
+//  It is not final or guaranteed working.
+//  This should only serve as a reference for implementing.
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
@@ -28,10 +37,13 @@
 #include "operations/status.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 // MultiSignature Registration (Type 4)
 //
-// @param MultiSignatureAsset *muSig: The MultiSignature (Type 4) Asset.
+// @param MultiSignature *muSig: The MultiSignature (Type 4) Asset.
 // @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
 // @param uint32_t length: The Asset Length.
 //
@@ -39,29 +51,25 @@
 // Internals:
 //
 // Minimum Participants - 1 Byte:
-// - muSig->min = buffer[0];
+// - multiSig->min = buffer[0];
 //
 // Key Count
-// - (Asset Length - 1) / PublicKey Length
+// - multiSig->count = buffer[1];
 //
 // PublicKeys - 33N Bytes
-// - os_memmove(muSig->keys, &buffer[1U], keysLength);
+// - os_memmove(&multiSig->keys[0], &buffer[2], multiSig->count);
 //
 // ---
-ParserStatus deserializeMultiSignature(MultiSignatureAsset *muSig,
+StreamStatus deserializeMultiSignature(MultiSignatureAsset *multiSig,
                                        const uint8_t *buffer,
                                        const uint32_t length) {
-    const uint8_t keysLength = length - 1U;
-
-    PRINTF("\nkeysLength: %d\n", keysLength);
-
-    if ((keysLength % PUBLICKEY_COMPRESSED_LENGTH) != 0) {
+    if ((length % 34U) != 0) {
         return USTREAM_FAULT;
     }
 
-    muSig->min = buffer[0];
-    muSig->count = keysLength / PUBLICKEY_COMPRESSED_LENGTH;
-    os_memmove(muSig->keys, &buffer[1U], keysLength);
+    multiSig->min = buffer[0];
+    multiSig->count = buffer[1];
+    os_memmove(&multiSig->keys[0], &buffer[2], multiSig->count);
 
     return USTREAM_FINISHED;
 }
@@ -71,26 +79,15 @@ ParserStatus deserializeMultiSignature(MultiSignatureAsset *muSig,
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-const char * const ui_menu_multi_signature[][2] = {
-    { "Operation",  (const char *const)amountBuffer },
-    { "Key Count",  (const char *const)screenBuffer },
-    { "Fees",       (const char *const)amountBuffer },
-};
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-static ParserStatus internalDeserializeAsset(Transaction *transaction,
+static StreamStatus internalDeserializeAsset(Transaction *transaction,
                                              const uint8_t *buffer,
                                              const uint32_t length) {
 /////////
-      case TRANSACTION_TYPE_MULTI_SIGNATURE:
-          return deserializeMultiSignature(&transaction->asset.multiSignature,
-                                           &buffer[assetOffset],
-                                           assetLength);
-          break;
+    case TRANSACTION_TYPE_MULTI_SIGNATURE:
+        status = deserializeMultiSignature(&transaction->asset.multiSignature,
+                                            &buffer[assetOffset],
+                                            assetLength);
+        break;
 /////////
 }
 
@@ -99,63 +96,31 @@ static ParserStatus internalDeserializeAsset(Transaction *transaction,
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void displayTransaction(uint8_t step, bagl_element_t *element) {
-/////////
-    // MultiSignature Registration / Type 4
-    else if (transaction.type == TRANSACTION_TYPE_MULTI_SIGNATURE) {
-        displayMultiSignature(&transaction, step);
-        element->text =
-        ui_menu_multi_signature[step][(element->component.userid) >> 4U];
-    }
-/////////
+void setDisplayMultiSignature(const Transaction *transaction) {
+    os_memmove((char *)displayCtx.operation, "MultiSignature", 15U);
+    os_memmove((char *)displayCtx.title[0], "Key Count", 10U);
+    os_memmove((char *)displayCtx.title[1], "Fees", 5U);
+
+    // Key Count
+    printAmount(transaction->asset.multiSignature.count,
+                (uint8_t *)displayCtx.var[0], sizeof(displayCtx.var[0]),
+                "", 0, 0);
+
+    // Fee
+    printAmount(transaction->fee,
+                (uint8_t *)displayCtx.var[1], sizeof(displayCtx.var[1]),
+                TOKEN_NAME, TOKEN_NAME_LENGTH, TOKEN_DECIMALS);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
 
-void setDisplaySteps(const Transaction *transaction) {
+void setDisplay(const Transaction *transaction) {
 /////////
-    // MultiSignature Registration / Type 4
-        else if (transaction->type == TRANSACTION_TYPE_MULTI_SIGNATURE) {
-        operation_set_steps(4U);
-    }
+    case TRANSACTION_TYPE_MULTI_SIGNATURE:
+        setDisplayMultiSignature(transaction);
+        setDisplaySteps(2U);
+        break;
 /////////
-}
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-void displayMultiSignature(const Transaction *transaction, uint8_t step);
-
-void displayMultiSignature(const Transaction *transaction, uint8_t step) {
-    switch(step) {
-        // Operation type
-        case 0:
-            os_memmove((void *)amountBuffer, "MultiSignature\0", 16U);
-            break;
-
-        // Key Count
-        case 1:
-            printAmount(transaction->asset.multiSignature.count,
-                        (uint8_t *)screenBuffer,
-                        transaction->asset.multiSignature.count,
-                        "", 0, 0);
-            break;
-
-        // Fees
-        case 2:
-            printAmount(transaction->fee,
-                        (uint8_t *)amountBuffer, sizeof(amountBuffer),
-                        TOKEN_NAME, TOKEN_NAME_LENGTH,
-                        TOKEN_DECIMALS);
-            break;
-
-        default: break;
-    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

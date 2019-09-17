@@ -1,3 +1,13 @@
+
+////////////////////////////////////////////////////////////////////////////////
+
+// The Following are only examples and places where this code could be implemented.
+//  It is not final or guaranteed working.
+//  This should only serve as a reference for implementing.
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
@@ -28,12 +38,12 @@
 typedef struct multi_signature_asset_t {
     uint8_t min;
     uint8_t count;
-    uint8_t keys[102];  // 3 keys
-} MultiSignatureAsset;
+    uint8_t keys[528];  // 16 * 33 keys max
+} MultiSignature;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-ParserStatus deserializeMultiSignature(MultiSignatureAsset *muSig,
+StreamStatus deserializeMultiSignature(MultiSignature *muSig,
                                        const uint8_t *buffer,
                                        const uint32_t length);
 

@@ -26,7 +26,7 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/type_2.h"
+#include "transactions/assets/type_7.h"
 
 #include <stdint.h>
 
@@ -34,42 +34,8 @@
 
 #include "constants.h"
 
-#include "transactions/status.h"
+#include "operations/status.h"
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-// Deserialize Transfer (Type 2) - 4 <=> 21 Bytes
-//
-// @param DelegateRegistrationAsset *registration: The Delegate Registration (Type 2) Asset.
-// @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
-// @param uint32_t length: The Asset Length.
-//
-// ---
-// Internals:
-//
-// Username Length - 1 Byte:
-// - registration->length = buffer[0];
-//
-// Username - 3 <=> 20 Bytes:
-// - os_memmove(registration->username, &buffer[1], registration->length)
-//
-// ---
-StreamStatus deserializeDelegateRegistration(DelegateRegistration *registration,
-                                             const uint8_t *buffer,
-                                             const uint32_t length) {
-    // usernameLength + username
-    if (length < 4U || length > 21U) {
-        return USTREAM_FAULT;  // Incorrect Username Length
-    }
-
-    registration->length = (int)buffer[0];
-    os_memmove((void *)registration->username, &buffer[1], (int)registration->length);
-
-    return USTREAM_FINISHED;
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -80,11 +46,9 @@ static StreamStatus internalDeserializeAsset(Transaction *transaction,
                                              const uint8_t *buffer,
                                              const uint32_t length) {
 /////////
-    case TRANSACTION_TYPE_DELEGATE_REGISTRATION:
-        status = deserializeDelegateRegistration(
-                        &transaction->asset.delegateRegistration,
-                        &buffer[assetOffset],
-                        assetLength);
+    case TRANSACTION_TYPE_DELEGATE_RESIGNATION:
+        // No Payload
+        status = USTREAM_FINISHED;
         break;
 /////////
 }
@@ -94,18 +58,17 @@ static StreamStatus internalDeserializeAsset(Transaction *transaction,
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void setDisplayDelegateRegistration(const Transaction *transaction,) {
-    os_memmove((char *)displayCtx.operation, "Delegate Registration", 22U);
-    os_memmove((char *)displayCtx.title[0], "Username", 9U);
+void setDisplayDelegateResignation(const Transaction *transaction) {
+    os_memmove((char *)displayCtx.operation, "Delegate Resignation", 21U);
+    os_memmove((char *)displayCtx.title[0], "PublicKey", 10U);
     os_memmove((char *)displayCtx.title[1], "Fees", 5U);
 
-    // Username
-    os_memmove((char *)displayCtx.var[0],
-               transaction->asset.delegateRegistration.username,
-               transaction->asset.delegateRegistration.length);
-    displayCtx.var[0][transaction->asset.delegateRegistration.length] = '\0';
+    // Delegate PublicKey
+    bytesToHex((char *)displayCtx.var[0],
+               transaction->senderPublicKey,
+               PUBLICKEY_COMPRESSED_LENGTH);
 
-    // Fee
+    // Fees
     printAmount(transaction->fee,
                 (uint8_t *)displayCtx.var[1], sizeof(displayCtx.var[1]),
                 TOKEN_NAME, TOKEN_NAME_LENGTH, TOKEN_DECIMALS);
@@ -115,8 +78,8 @@ void setDisplayDelegateRegistration(const Transaction *transaction,) {
 
 void setDisplay(const Transaction *transaction) {
 /////////
-    case TRANSACTION_TYPE_SECOND_SIGNATURE:
-        setDisplaySecondSignature(transaction);
+    case TRANSACTION_TYPE_DELEGATE_RESIGNATION:
+        setDisplayDelegateResignation(transaction);
         setDisplaySteps(2U);
         break;
 /////////

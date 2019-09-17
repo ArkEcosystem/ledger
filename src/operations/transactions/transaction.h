@@ -19,7 +19,6 @@
 #ifndef ARK_TRANSACTION_H
 #define ARK_TRANSACTION_H
 
-#include <stdbool.h>
 #include <stdint.h>
 
 #include "constants.h"

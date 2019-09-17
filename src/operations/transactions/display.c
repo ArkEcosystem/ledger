@@ -37,10 +37,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 static void setDisplayTransfer(const Transaction *transaction) {
-    os_memmove((char *)displayCtx.operation, "Transfer\0", 9U);
-    os_memmove((char *)displayCtx.title[0], "To\0", 3U);
-    os_memmove((char *)displayCtx.title[1], "Amount\0", 7U);
-    os_memmove((char *)displayCtx.title[2], "Fees\0", 5U);
+    os_memmove((char *)displayCtx.operation, "Transfer", 9U);
+    os_memmove((char *)displayCtx.title[0], "To", 3U);
+    os_memmove((char *)displayCtx.title[1], "Expiration", 11U);
+    os_memmove((char *)displayCtx.title[2], "Amount", 7U);
+    os_memmove((char *)displayCtx.title[3], "Fees", 5U);
 
     // Recipient
     encodeBase58PublicKey((uint8_t *)transaction->asset.transfer.recipient,
@@ -51,23 +52,28 @@ static void setDisplayTransfer(const Transaction *transaction) {
                           1U);
     displayCtx.var[0][ADDRESS_LENGTH] = '\0';
 
+    // Expiration
+    printAmount(transaction->asset.transfer.expiration,
+                displayCtx.var[1], sizeof(displayCtx.var[1]),
+                NULL, 0U, 0U);
+
     // Amount
     printAmount(transaction->asset.transfer.amount,
-                displayCtx.var[1], sizeof(displayCtx.var[1]),
+                displayCtx.var[2], sizeof(displayCtx.var[2]),
                 TOKEN_NAME, TOKEN_NAME_LENGTH, TOKEN_DECIMALS);
 
     // Fee
     printAmount(transaction->fee,
-                displayCtx.var[2], sizeof(displayCtx.var[2]),
+                displayCtx.var[3], sizeof(displayCtx.var[3]),
                 TOKEN_NAME, TOKEN_NAME_LENGTH, TOKEN_DECIMALS);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 static void setDisplaySecondSignature(const Transaction *transaction) {
-    os_memmove((char *)displayCtx.operation, "Second Signature Registration\0", 30U);
-    os_memmove((char *)displayCtx.title[0], "PublicKey\0", 10U);
-    os_memmove((char *)displayCtx.title[1], "Fees\0", 5U);
+    os_memmove((char *)displayCtx.operation, "Second Signature Registration", 30U);
+    os_memmove((char *)displayCtx.title[0], "PublicKey", 10U);
+    os_memmove((char *)displayCtx.title[1], "Fees", 5U);
 
     // PublicKey of Second Signature
     bytesToHex((char *)displayCtx.var[0],
@@ -83,9 +89,9 @@ static void setDisplaySecondSignature(const Transaction *transaction) {
 ////////////////////////////////////////////////////////////////////////////////
 
 static void setDisplayVote(const Transaction *transaction) {
-    os_memmove((char *)displayCtx.operation, "Vote\0", 5U);
-    os_memmove((char *)displayCtx.title[0], "Vote\0", 7U);
-    os_memmove((char *)displayCtx.title[1], "Fees\0", 5U);
+    os_memmove((char *)displayCtx.operation, "Vote", 5U);
+    os_memmove((char *)displayCtx.title[0], "Vote", 7U);
+    os_memmove((char *)displayCtx.title[1], "Fees", 5U);
 
     // Vote
     displayCtx.var[0][0] = (transaction->asset.vote.data[0] == 1U) ? '+' : '-';
@@ -102,9 +108,9 @@ static void setDisplayVote(const Transaction *transaction) {
 ////////////////////////////////////////////////////////////////////////////////
 
 static void setDisplayIpfs(const Transaction *transaction) {
-    os_memmove((char *)displayCtx.operation, "IPFS\0", 6U);
-    os_memmove((char *)displayCtx.title[0], "DAG\0", 4U);
-    os_memmove((char *)displayCtx.title[1], "Fees\0", 5U);
+    os_memmove((char *)displayCtx.operation, "IPFS", 5U);
+    os_memmove((char *)displayCtx.title[0], "DAG", 4U);
+    os_memmove((char *)displayCtx.title[1], "Fees", 5U);
 
     // DAG
     encodeBase58((uint8_t *)transaction->asset.ipfs.dag,
@@ -114,7 +120,7 @@ static void setDisplayIpfs(const Transaction *transaction) {
 
     // Let's truncate the DAG if it's longer than 64 bytes.
     if (transaction->asset.ipfs.length > HASH_64_LENGTH) {
-        os_memmove((void *)&displayCtx.var[0][HASH_64_LENGTH], (char *)"...\0", 4U);
+        os_memmove((void *)&displayCtx.var[0][HASH_64_LENGTH], (char *)"...", 4U);
     }
 
     // Fee
@@ -126,11 +132,11 @@ static void setDisplayIpfs(const Transaction *transaction) {
 ////////////////////////////////////////////////////////////////////////////////
 
 static void setDisplayHtlcLock(const Transaction *transaction) {
-    os_memmove((char *)displayCtx.operation, "HTLC Lock\0", 10U);
-    os_memmove((char *)displayCtx.title[0], "To\0", 3U);
-    os_memmove((char *)displayCtx.title[1], "Secret Hash\0", 12U);
-    os_memmove((char *)displayCtx.title[2], "Amount\0", 7U);
-    os_memmove((char *)displayCtx.title[3], "Fees\0", 5U);
+    os_memmove((char *)displayCtx.operation, "HTLC Lock", 10U);
+    os_memmove((char *)displayCtx.title[0], "To", 3U);
+    os_memmove((char *)displayCtx.title[1], "Secret Hash", 12U);
+    os_memmove((char *)displayCtx.title[2], "Amount", 7U);
+    os_memmove((char *)displayCtx.title[3], "Fees", 5U);
 
     // Recipient
     encodeBase58PublicKey((uint8_t *)transaction->asset.htlcLock.recipient,
@@ -159,9 +165,9 @@ static void setDisplayHtlcLock(const Transaction *transaction) {
 ////////////////////////////////////////////////////////////////////////////////
 
 static void setDisplayHtlcClaim(const Transaction *transaction) {
-    os_memmove((char *)displayCtx.operation, "HTLC Claim\0", 11U);
-    os_memmove((char *)displayCtx.title[0], "Lock Id\0", 8U);
-    os_memmove((char *)displayCtx.title[1], "Secret\0", 7U);
+    os_memmove((char *)displayCtx.operation, "HTLC Claim", 11U);
+    os_memmove((char *)displayCtx.title[0], "Lock Id", 8U);
+    os_memmove((char *)displayCtx.title[1], "Secret", 7U);
 
     // Id
     bytesToHex((char *)displayCtx.var[0],
@@ -178,8 +184,8 @@ static void setDisplayHtlcClaim(const Transaction *transaction) {
 ////////////////////////////////////////////////////////////////////////////////
 
 void setDisplayHtlcRefund(const Transaction *transaction) {
-    os_memmove((char *)displayCtx.operation, "HTLC Refund\0", 12U);
-    os_memmove((char *)displayCtx.title[0], "Lock Id\0", 8U);
+    os_memmove((char *)displayCtx.operation, "HTLC Refund", 12U);
+    os_memmove((char *)displayCtx.title[0], "Lock Id", 8U);
 
     // Lock Id
     bytesToHex((char *)displayCtx.var[0],
@@ -193,7 +199,7 @@ void setDisplay(const Transaction *transaction) {
     switch (transaction->type) {
         case TRANSACTION_TYPE_TRANSFER:
             setDisplayTransfer(transaction);
-            setDisplaySteps(3U);
+            setDisplaySteps(4U);
             break;
 
         case TRANSACTION_TYPE_SECOND_SIGNATURE:
