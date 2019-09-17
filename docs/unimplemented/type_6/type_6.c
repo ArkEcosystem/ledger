@@ -105,7 +105,7 @@ void displayMultiPayment(const Transaction *transaction, uint8_t step) {
     switch(step) {
         // Operation type
         case 0:
-            os_memmove((void *)amountBuffer, "MultiPayment\0", 13U);
+            os_memmove((void *)amountBuffer, "MultiPayment", 13U);
             break;
 
         // Count

@@ -18,7 +18,7 @@ The following are snippets from the implementation for future reference.
 
 ```c
 static void setVendorField(const Transaction *transaction) {
-    os_memmove((char *)displayCtx.title[1], "VendorField\0", 12U);
+    os_memmove((char *)displayCtx.title[1], "VendorField", 12U);
 
     uint8_t vfLength = MIN(transaction->vendorFieldLength, HASH_64_LENGTH);
 
@@ -26,22 +26,22 @@ static void setVendorField(const Transaction *transaction) {
     displayCtx.var[1][vfLength] = '\0';
 
     if (transaction->vendorFieldLength > HASH_64_LENGTH) {
-        os_memmove((char *)&displayCtx.var[1][HASH_64_LENGTH], (char *)"...\0", 4U);
+        os_memmove((char *)&displayCtx.var[1][HASH_64_LENGTH], (char *)"...", 4U);
     }
 }
 ```
 
 ```c
 void setDisplayTransfer(const Transaction *transaction) {
-    os_memmove((char *)displayCtx.operation, "Transfer\0", 9U);
-    os_memmove((char *)displayCtx.title[0], "To\0", 3U);
+    os_memmove((char *)displayCtx.operation, "Transfer", 9U);
+    os_memmove((char *)displayCtx.title[0], "To", 3U);
 
     // Lets offset 'Amount' & 'Fees' by '+1' if there's a VendorField.
     // Display slot offset 0 if No VF; 1 if VF
     uint8_t offset = (transaction->vendorFieldLength != 0);
 
-    os_memmove((char *)displayCtx.title[1U + offset], "Amount\0", 7U);
-    os_memmove((char *)displayCtx.title[2U + offset], "Fees\0", 5U);
+    os_memmove((char *)displayCtx.title[1U + offset], "Amount", 7U);
+    os_memmove((char *)displayCtx.title[2U + offset], "Fees", 5U);
 
     // Recipient
     // os_memset(displayCtx.var[0], 0, sizeof(displayCtx.var[0]));
