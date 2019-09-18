@@ -16,8 +16,8 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_CRYPTO_SIGNING_CONTEXT_H
-#define ARK_CRYPTO_SIGNING_CONTEXT_H
+#ifndef ARK_CRYPTO_SIGNING_H
+#define ARK_CRYPTO_SIGNING_H
 
 #include <stdint.h>
 

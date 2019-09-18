@@ -9,28 +9,28 @@
 	"network": 23,
 	"type": 8,
 	"nonce": "2",
-	"senderPublicKey": "0207ebc33a5f6eddf623706b6645b785eaa4405d14f80556461d8f78e0b1cb1884",
+	"senderPublicKey": "020d272fab67c179a9e4df4d006344d3ca47fb531b4246b483373940f0603a9216",
 	"fee": "10000000",
 	"amount": "1",
-	"recipientId": "AZqDtF6WbksWaE2DSH6CVRV5kqvoCwnnnq",
+	"recipientId": "ATNGUiu6sYRb7MXtdcVc7KjoyM6TdfuoC1",
 	"asset": {
 		"lock": {
 			"secretHash": "09b9a28393efd02fcd76a21b0f0f55ba2aad8f3640ff8cae86de033a9cfbd78c",
 			"expiration": {
 				"type": 1,
-				"value": 78127967
+				"value": 78740307
 			}
 		}
 	},
-	"signature": "de19469ac62a66898814a1a2c9e396b826df1a1e1296191c66b10f09df412f7313d80c8c8d09a629094acc118fc42de048112921cd030b59c85536fc5471b05a",
-	"id": "5dfcae6b5d954d05de58ef4d75693e515155e5fe8b08d44c78dffdf41e2c790e"
+	"signature": "11b1c06b4e5ba7c196f6f36fca2540275173a472e61581e949cd24a7cf5ee98af6a74f3c919f9b82a2e65b51b737bdf22f7a08ffcf52b88dc4a16d6ac5c10bfe",
+	"id": "f84efeab77224af8959301a7185597a7cfbfbc9a4d99cb021af62f3714feb9d3"
 }
 ```
 
 ## Serialized Payload
 
 ```shell
-ff021701000000080002000000000000000207ebc33a5f6eddf623706b6645b785eaa4405d14f80556461d8f78e0b1cb1884809698000000000000010000000000000009b9a28393efd02fcd76a21b0f0f55ba2aad8f3640ff8cae86de033a9cfbd78c015f23a8040000000017c61467acf99231ed0c717ca9c6bbf6fb44b1d138de19469ac62a66898814a1a2c9e396b826df1a1e1296191c66b10f09df412f7313d80c8c8d09a629094acc118fc42de048112921cd030b59c85536fc5471b05a
+ff02170100000008000200000000000000020d272fab67c179a9e4df4d006344d3ca47fb531b4246b483373940f0603a9216809698000000000000010000000000000009b9a28393efd02fcd76a21b0f0f55ba2aad8f3640ff8cae86de033a9cfbd78c01537bb104177f2a95c7076ea278776d8fcecc5b18e588976da611b1c06b4e5ba7c196f6f36fca2540275173a472e61581e949cd24a7cf5ee98af6a74f3c919f9b82a2e65b51b737bdf22f7a08ffcf52b88dc4a16d6ac5c10bfe
 ```
 
 ## Deserializing the Hex
@@ -43,21 +43,19 @@ ff021701000000080002000000000000000207ebc33a5f6eddf623706b6645b785eaa4405d14f805
 | **Typegroup:**            | **[3]**   | **4**             | `0x01000000`          |
 | **Type:**                 | **[7]**   | **2**             | `0x0800`              |
 | **Nonce:**                | **[9]**   | **8**             | `0x0200000000000000`  |
-| **SenderPublicKey:**      | **[17]**  | **33**            | `0x0207ebc33a5f6eddf623706b6645b785eaa4405d14f80556461d8f78e0b1cb1884`    |
+| **SenderPublicKey:**      | **[17]**  | **33**            | `0x020d272fab67c179a9e4df4d006344d3ca47fb531b4246b483373940f0603a9216`    |
 | **Fee:**                  | **[50]**  | **8**             | `0x8096980000000000`  |
 | **VendorField Length:**   | **[58]**  | **1**             | `0x00`                |
 | **Amount:**               | **[59]**  | **8**             | `0x0100000000000000`  |
 | **Secret Hash:**          | **[67]**  | **32**            | `0x09b9a28393efd02fcd76a21b0f0f55ba2aad8f3640ff8cae86de033a9cfbd78c`  |
 | **Expiration Type:**      | **[99]**  | **1**             | `0x01`                |
-| **Expiration Value:**     | **[100]** | **8**             | `0x5f23a80400000000`  |
-| **Recipient:**            | **[108]** | **21**            | `0x17c61467acf99231ed0c717ca9c6bbf6fb44b1d138`    |
-| **Signature:**            | **[129]** | **64**            | `0xde19469ac62a66898814a1a2c9e396b826df1a1e1296191c66b10f09df412f7313d80c8c8d09a629094acc118fc42de048112921cd030b59c85536fc5471b05a`  |
-> _htlc asset numbers are little-endian packed_
+| **Expiration Value:**     | **[100]** | **4**             | `0x537bb104`          |
+| **Recipient:**            | **[104]** | **21**            | `0x177f2a95c7076ea278776d8fcecc5b18e588976da6`    |
+| **Signature:**            | **[125]** | **64**            | `0x11b1c06b4e5ba7c196f6f36fca2540275173a472e61581e949cd24a7cf5ee98af6a74f3c919f9b82a2e65b51b737bdf22f7a08ffcf52b88dc4a16d6ac5c10bfe`  |
 
 ## Example Ledger Payload
 
 ```shell
-python examples/example_helper.py --tx ff021701000000080002000000000000000207ebc33a5f6eddf623706b6645b785eaa4405d14f80556461d8f78e0b1cb1884809698000000000000010000000000000009b9a28393efd02fcd76a21b0f0f55ba2aad8f3640ff8cae86de033a9cfbd78c015f23a8040000000017c61467acf99231ed0c717ca9c6bbf6fb44b1d138
+python examples/example_helper.py --tx ff02170100000008000200000000000000020d272fab67c179a9e4df4d006344d3ca47fb531b4246b483373940f0603a9216809698000000000000010000000000000009b9a28393efd02fcd76a21b0f0f55ba2aad8f3640ff8cae86de033a9cfbd78c01537bb104177f2a95c7076ea278776d8fcecc5b18e588976da6
 ```
 > _note that signature bytes are removed (i.e. there's no need to sign a signed-transaction)._
-

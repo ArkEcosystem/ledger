@@ -46,7 +46,6 @@ ff0217010000000000020000000000000003d59f3b7d698536f6925a77f22d484d518b06a2c09318
 | **Recipient:**            | **[90]**  | **21**            | `0x178c9bd74222025a19063c8fca8a50c39a891feeca`    |
 | **Signature:**            | **[111]** | **64**            | `0x504215bf61f7e8e0d4cd7c7e1511b501367e8c2f3543972906a3b80d42cebc3e4ec974f938124661cb65eab93dacba6ba0f5045861ac28fc0287462557ffd99b`  |
 
-
 ## Example Ledger Payload
 
 ```shell

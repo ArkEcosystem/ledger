@@ -5,7 +5,7 @@
 
 -   Ledger Nano S Hardware Wallet
 -   Python
--   [Ledger-Vagrant](https://github.com/sleepdefic1t/ledger-vagrant)._
+-   [Ledger-Vagrant](https://github.com/sleepdefic1t/ledger-vagrant).
 
 ## Running all examples
 

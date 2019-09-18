@@ -28,7 +28,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Vote (Type 3)
+// Vote (Type 3) - 34 Bytes
 //
 // @param Vote *vote: The Vote (Type 3) Asset.
 // @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
@@ -47,7 +47,7 @@
 StreamStatus deserializeVote(Vote *vote,
                              const uint8_t *buffer,
                              const uint32_t length) {
-    if (((length - 1) % 34U) != 0) {
+    if (length != 34U) {
         return USTREAM_FAULT;
     }
 

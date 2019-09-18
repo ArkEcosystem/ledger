@@ -192,4 +192,3 @@ python examples/example_helper.py --tx ff0217010000000600020000000000000002a5337
 ```
 > _note that signature bytes are removed (i.e. there's no need to sign a signed-transaction)._  
 > _also note this is currently waaaaaay too big for Ledger._
-

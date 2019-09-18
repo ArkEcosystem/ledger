@@ -30,7 +30,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Htlc Lock (Type 8) - 70 Bytes
+// Htlc Lock (Type 8) - 66 Bytes
 //
 // @param HtlcLock *lock: The Htlc Lock (Type 8) Asset.
 // @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
@@ -40,7 +40,7 @@
 // Internals:
 //
 // Amount - 8 Bytes:
-// - lock->amount = U8LE(buffer, 0U);
+// - lock->amount = U4LE(buffer, 0U);
 //
 // Secret Hash - 32 Bytes
 // - os_memmove(lock->secretHash, &buffer[8], 32U);
@@ -48,23 +48,25 @@
 // Expiration Type- 1 Byte
 // - lock->expirationType = buffer[40];
 //
-// Expiration Value - 8 Bytes
-// - lock->expirationValue = U8BE(buffer, 41U);
+// Expiration Value - 4 Bytes
+// - lock->expirationValue = U4LE(buffer, 41U);
 //
 // Recipient - 21 Bytes
-// - os_memmove(lock->recipient, &buffer[49], 21U);
+// - os_memmove(lock->recipient, &buffer[45], 21U);
 //
 // ---
 StreamStatus deserializeHtlcLock(HtlcLock *lock,
-                                const uint8_t *buffer,
-                                const uint32_t length) {
-    if (length != 70U) {
+                                 const uint8_t *buffer,
+                                 const uint32_t length) {
+    if (length != 66U) {
         return USTREAM_FAULT;
     }
 
-    lock->amount = U8LE(buffer, 0U);
+    lock->amount            = U8LE(buffer, 0U);
     os_memmove(lock->secretHash, &buffer[8], HASH_32_LENGTH);
-    os_memmove(lock->recipient, &buffer[49], ADDRESS_HASH_LENGTH);
+    lock->expirationType    = buffer[40];
+    lock->expiration        = U4LE(buffer, 41U);
+    os_memmove(lock->recipient, &buffer[45], ADDRESS_HASH_LENGTH);
 
     return USTREAM_FINISHED;
 }

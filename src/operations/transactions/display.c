@@ -135,8 +135,9 @@ static void setDisplayHtlcLock(const Transaction *transaction) {
     os_memmove((char *)displayCtx.operation, "HTLC Lock", 10U);
     os_memmove((char *)displayCtx.title[0], "To", 3U);
     os_memmove((char *)displayCtx.title[1], "Secret Hash", 12U);
-    os_memmove((char *)displayCtx.title[2], "Amount", 7U);
-    os_memmove((char *)displayCtx.title[3], "Fees", 5U);
+    os_memmove((char *)displayCtx.title[2], "Expiration", 11U);
+    os_memmove((char *)displayCtx.title[3], "Amount", 7U);
+    os_memmove((char *)displayCtx.title[4], "Fees", 5U);
 
     // Recipient
     encodeBase58PublicKey((uint8_t *)transaction->asset.htlcLock.recipient,
@@ -152,13 +153,24 @@ static void setDisplayHtlcLock(const Transaction *transaction) {
                (uint8_t *)transaction->asset.htlcLock.secretHash,
                HASH_32_LENGTH);
 
+    // Expiration
+    if (transaction->asset.htlcLock.expirationType == 1U) {
+        printAmount(transaction->asset.htlcLock.expiration,
+                    displayCtx.var[2], sizeof(displayCtx.var[2]),
+                    "time: ", 6U, 0U);
+    } else {
+        printAmount(transaction->asset.htlcLock.expiration,
+                    displayCtx.var[2], sizeof(displayCtx.var[2]),
+                    "height: ", 8U, 0U);
+    }
+
     // Amount
     printAmount(transaction->asset.htlcLock.amount,
-                (uint8_t *)displayCtx.var[2], sizeof(displayCtx.var[2]),
+                (uint8_t *)displayCtx.var[3], sizeof(displayCtx.var[3]),
                 TOKEN_NAME, TOKEN_NAME_LENGTH, TOKEN_DECIMALS);
     // Fees
     printAmount(transaction->fee,
-                (uint8_t *)displayCtx.var[3], sizeof(displayCtx.var[3]),
+                (uint8_t *)displayCtx.var[4], sizeof(displayCtx.var[4]),
                 TOKEN_NAME, TOKEN_NAME_LENGTH, TOKEN_DECIMALS);
 }
 
@@ -219,7 +231,7 @@ void setDisplay(const Transaction *transaction) {
 
         case TRANSACTION_TYPE_HTLC_LOCK:
             setDisplayHtlcLock(transaction);
-            setDisplaySteps(4U);
+            setDisplaySteps(5U);
             break;
 
         case TRANSACTION_TYPE_HTLC_CLAIM:

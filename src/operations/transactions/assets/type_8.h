@@ -29,6 +29,8 @@
 
 typedef struct htlc_lock_asset_t {
     uint64_t    amount;
+    uint8_t     expirationType;
+    uint32_t    expiration;
     uint8_t     secretHash[HASH_32_LENGTH];
     uint8_t     recipient[ADDRESS_HASH_LENGTH];
 } HtlcLock;

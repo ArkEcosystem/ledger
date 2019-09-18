@@ -56,7 +56,7 @@
 // - payments->n_payments = U2BE(buffer, 0);
 //
 // Amounts[] - 8 Bytes * n_payments
-// - payments->amounts[i] = U8BE(&buffer[sizeof(uint16_t) + (i * sizeof(uint64_t))], sizeof(uint64_t))
+// - payments->amounts[i] = U8LE(&buffer[sizeof(uint16_t) + (i * sizeof(uint64_t))], sizeof(uint64_t))
 //
 // Addresses[] - 21 Bytes * n_payments
 // - os_memmove(&payments->addresses[i * ADDRESS_HASH_LENGTH], &buffer[(sizeof(uint16_t) + (i * (sizeof(uint64_t) + ADDRESS_HASH_LENGTH))], ADDRESS_HASH_LENGTH);
@@ -68,7 +68,7 @@ ParserStatus deserializeMultiPayment(MultiPaymentAsset *payments,
     payments->n_payments = U2BE(buffer, 0);
 
     for (uint8_t i = 0U; i < payments->n_payments; ++i) {
-        payments->amounts[i] = U8BE(&buffer[sizeof(uint16_t) + i * sizeof(uint64_t)],
+        payments->amounts[i] = U8LE(&buffer[sizeof(uint16_t) + i * sizeof(uint64_t)],
                                     sizeof(uint64_t));
 
         os_memmove(&payments->addresses[i * ADDRESS_HASH_LENGTH],
