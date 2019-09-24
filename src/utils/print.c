@@ -52,7 +52,10 @@ static bool adjustDecimals(char *src,
         }
 
         target[offset++] = '0';
-        target[offset++] = '.';
+        if (decimals > 0) {
+          target[offset++] = '.';
+        }
+        
         for (uint32_t i = 0U; i < delta; i++) {
             target[offset++] = '0';
         }
@@ -144,7 +147,7 @@ uint8_t printAmount(uint64_t amount,
     }
 
     adjustDecimals((char *)tmp, i,
-                   (char *)tmp2 + 4U,
+                   (char *)tmp2 + tokenNameLength,
                    sizeof(tmp2) - tokenNameLength,
                    decimals);
 

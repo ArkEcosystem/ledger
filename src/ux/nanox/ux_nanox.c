@@ -84,12 +84,16 @@ UX_STEP_NOCB(ux_confirm_full_flow_5_step,
              bnnn_paging,
              { .title = title4, .text = var4, });
 
-UX_STEP_VALID(ux_confirm_full_flow_6_step,
+UX_STEP_NOCB(ux_confirm_full_flow_6_step,
+             bnnn_paging,
+             { .title = title5, .text = var5, });
+
+UX_STEP_VALID(ux_confirm_full_flow_7_step,
               pb,
               ioApprove(NULL),
               { &C_icon_validate_14, "Accept", });
 
-UX_STEP_VALID(ux_confirm_full_flow_7_step,
+UX_STEP_VALID(ux_confirm_full_flow_8_step,
               pb,
               ioCancel(NULL),
               { &C_icon_crossmark, "Reject", });
@@ -98,16 +102,16 @@ UX_STEP_VALID(ux_confirm_full_flow_7_step,
 UX_FLOW(ux_confirm_full_flow_1var,
         &ux_confirm_full_flow_1_step,
         &ux_confirm_full_flow_2_step,
-        &ux_confirm_full_flow_6_step,
-        &ux_confirm_full_flow_7_step);
+        &ux_confirm_full_flow_7_step,
+        &ux_confirm_full_flow_8_step);
 
 // 2-variable UX Flow
 UX_FLOW(ux_confirm_full_flow_2var,
         &ux_confirm_full_flow_1_step,
         &ux_confirm_full_flow_2_step,
         &ux_confirm_full_flow_3_step,
-        &ux_confirm_full_flow_6_step,
-        &ux_confirm_full_flow_7_step);
+        &ux_confirm_full_flow_7_step,
+        &ux_confirm_full_flow_8_step);
 
 // 3-variable UX Flow
 UX_FLOW(ux_confirm_full_flow_3var,
@@ -115,8 +119,8 @@ UX_FLOW(ux_confirm_full_flow_3var,
         &ux_confirm_full_flow_2_step,
         &ux_confirm_full_flow_3_step,
         &ux_confirm_full_flow_4_step,
-        &ux_confirm_full_flow_6_step,
-        &ux_confirm_full_flow_7_step);
+        &ux_confirm_full_flow_7_step,
+        &ux_confirm_full_flow_8_step);
 
 // 4-variable UX Flow
 UX_FLOW(ux_confirm_full_flow_4var,
@@ -128,14 +132,27 @@ UX_FLOW(ux_confirm_full_flow_4var,
         &ux_confirm_full_flow_6_step,
         &ux_confirm_full_flow_7_step);
 
+// 5-variable UX Flow
+UX_FLOW(ux_confirm_full_flow_5var,
+        &ux_confirm_full_flow_1_step,
+        &ux_confirm_full_flow_2_step,
+        &ux_confirm_full_flow_3_step,
+        &ux_confirm_full_flow_4_step,
+        &ux_confirm_full_flow_5_step,
+        &ux_confirm_full_flow_6_step,
+        &ux_confirm_full_flow_7_step,
+        &ux_confirm_full_flow_8_step);
+
 ////////////////////////////////////////////////////////////////////////////////
 
+// Set the number of Items (steps) to be displayed.
 void setDisplaySteps(uint8_t steps) {
     switch(steps) {
         case 1: ux_flow_init(0U, ux_confirm_full_flow_1var, NULL); break;
         case 2: ux_flow_init(0U, ux_confirm_full_flow_2var, NULL); break;
         case 3: ux_flow_init(0U, ux_confirm_full_flow_3var, NULL); break;
         case 4: ux_flow_init(0U, ux_confirm_full_flow_4var, NULL); break;
+        case 5: ux_flow_init(0U, ux_confirm_full_flow_5var, NULL); break;
         default: break;
     }
 }

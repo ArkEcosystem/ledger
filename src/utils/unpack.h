@@ -23,11 +23,9 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define U8BE(buf, off)  (((uint64_t)(U4BE(buf, off)                     & 0xFFFFFFFF) << 32U)   |   \
-                        ((uint64_t)(U4BE(buf, off + sizeof(uint32_t)))  & 0xFFFFFFFF))
-
-#define U8LE(buf, off)  (((uint64_t)(U4LE(buf, off))                    & 0xFFFFFFFF)           |   \
-                        ((uint64_t)(U4LE(buf, off + sizeof(uint32_t))  & 0xFFFFFFFF) << 32U))
+#define U8LE(buf, off)                                                              \
+        (((uint64_t)(U4LE(buf, off))                    & 0xFFFFFFFF)           |   \
+         ((uint64_t)(U4LE(buf, off + sizeof(uint32_t))  & 0xFFFFFFFF) << 32U))
 
 ////////////////////////////////////////////////////////////////////////////////
 

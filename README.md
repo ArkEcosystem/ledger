@@ -15,19 +15,6 @@ Under development
 -   Connect your ledger Nano S
 -   Install the app `sh ./rebuild.sh` (ie. build, delete and load app on ledger)
 
-## TODO
-
--   [x] Make derivation path working
--   [x] Generate correct address
--   [-] Parse serialized transactions
-    -   [x] Type 1
-    -   [x] Type 2
-    -   [ ] Type 3
-    -   [ ] Type 4
-    -   [ ] Type 5
--   [x] Sign transaction
--   [x] Make network agnostic
-
 ## Security
 
 If you discover a security vulnerability within this package, please send an e-mail to security@ark.io. All security vulnerabilities will be promptly addressed.

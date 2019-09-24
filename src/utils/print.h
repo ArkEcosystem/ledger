@@ -24,8 +24,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 uint8_t printAmount(uint64_t amount,
-                    uint8_t *out, uint8_t outLength,
-                    const char *tokenName, uint8_t tokenNameLength,
+                    uint8_t *out,
+                    uint8_t outLength,
+                    const char *tokenName,
+                    uint8_t tokenNameLength,
                     uint8_t decimals);
 
 ////////////////////////////////////////////////////////////////////////////////

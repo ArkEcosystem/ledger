@@ -51,12 +51,13 @@ static const ux_menu_entry_t menu_main[4] = {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static const char *const menu_flow[5][2] = {
+static const char *const menu_flow[6][2] = {
     { "type",                                   (const char *const)displayCtx.operation },
     { (const char *const)displayCtx.title[0],   (const char *const)displayCtx.var[0] },
     { (const char *const)displayCtx.title[1],   (const char *const)displayCtx.var[1] },
     { (const char *const)displayCtx.title[2],   (const char *const)displayCtx.var[2] },
     { (const char *const)displayCtx.title[3],   (const char *const)displayCtx.var[3] },
+    { (const char *const)displayCtx.title[4],   (const char *const)displayCtx.var[4] },
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -175,6 +176,7 @@ const bagl_element_t *ui_menu_item_out_over(const bagl_element_t *e) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// Set the number of Items (steps) to be displayed.
 void setDisplaySteps(uint8_t steps) {
     ux_step = 0;
     ux_step_count = steps + 2U;

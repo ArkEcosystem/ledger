@@ -7,10 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+-   implement v2 Transactions ([#27])
+
 ### Changed
 -   merged updates from LedgerHQ/ledger-app-ark ([#23])
 -   cleaned up warnings and refactored implementation ([#25])
 
 [#23]: https://github.com/ArkEcosystem/ledger/pull/23
 [#25]: https://github.com/ArkEcosystem/ledger/pull/25
+[#27]: https://github.com/ArkEcosystem/ledger/pull/27
 [unreleased]: https://github.com/ArkEcosystem/ledger/compare/master...develop

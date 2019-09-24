@@ -16,13 +16,14 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_TRANSACTION_H
-#define ARK_TRANSACTION_H
+#ifndef ARK_OPERATIONS_TRANSACTION_H
+#define ARK_OPERATIONS_TRANSACTION_H
 
-#include <stdbool.h>
 #include <stdint.h>
 
 #include "constants.h"
+
+#include "transactions/assets/types.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -32,11 +33,19 @@ typedef struct transaction_t {
     uint16_t    type;
     uint8_t     senderPublicKey[PUBLICKEY_COMPRESSED_LENGTH];
     uint64_t    fee;
-    uint8_t     recipient[ADDRESS_HASH_LENGTH];
-    uint64_t    amount;
-    uint32_t    assetOffset;
-    uint8_t     assetLength;
-    uint8_t     *assetPtr;
+    union {
+        struct {  // v1 or Legacy
+            uint8_t     recipient[ADDRESS_HASH_LENGTH];
+            uint64_t    amount;
+            uint32_t    assetOffset;
+            uint8_t     assetLength;
+            uint8_t     *assetPtr;
+        };
+        struct {  // v2
+            uint8_t     vendorFieldLength;
+            tx_asset_t  asset;
+        };
+    };
 } Transaction;
 
 ////////////////////////////////////////////////////////////////////////////////

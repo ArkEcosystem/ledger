@@ -3,7 +3,8 @@
 TEST_DIR=$(dirname $0)
 
 echo ""
-echo Running all ARK Ledger Tests..
-sh ${TEST_DIR}/transfer.sh
-sh ${TEST_DIR}/vote.sh
+echo Running all ARK Ledger Examples..
+echo ""
+sh ${TEST_DIR}/legacy.sh
+sh ${TEST_DIR}/v2.sh
 echo ""

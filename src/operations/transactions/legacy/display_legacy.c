@@ -38,10 +38,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 void setTransferLegacy(const Transaction *transaction) {
-    os_memmove((char*)displayCtx.operation, "Transfer\0", 9U);
-    os_memmove((char*)displayCtx.title[0], "To\0", 3U);
-    os_memmove((char*)displayCtx.title[1], "Amount\0", 7U);
-    os_memmove((char*)displayCtx.title[2], "Fees\0", 5U);
+    os_memmove((char*)displayCtx.operation, "Transfer", 9U);
+    os_memmove((char*)displayCtx.title[0], "To", 3U);
+    os_memmove((char*)displayCtx.title[1], "Amount", 7U);
+    os_memmove((char*)displayCtx.title[2], "Fees", 5U);
 
     encodeBase58PublicKey((uint8_t*)transaction->recipient,
                           ADDRESS_HASH_LENGTH,
@@ -73,9 +73,9 @@ void setTransferLegacy(const Transaction *transaction) {
 ////////////////////////////////////////////////////////////////////////////////
 
 void setVoteLegacy(const Transaction *transaction) {
-    os_memmove((char*)displayCtx.operation, "Vote\0", 5U);
-    os_memmove((char*)displayCtx.title[0], "Vote\0", 7U);
-    os_memmove((char*)displayCtx.title[1], "Fees\0", 5U);
+    os_memmove((char*)displayCtx.operation, "Vote", 5U);
+    os_memmove((char*)displayCtx.title[0], "Vote", 5U);
+    os_memmove((char*)displayCtx.title[1], "Fees", 5U);
 
     // V1
     if (transaction->version == TRANSACTION_VERSION_TYPE_1) {

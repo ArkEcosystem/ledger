@@ -28,7 +28,10 @@
 
 void hash160(uint8_t WIDE *in, uint16_t inLength, uint8_t *out);
 
-void hash256(cx_sha256_t *ctx, uint8_t WIDE *in, uint16_t inLength, uint8_t *out);
+void hash256(cx_sha256_t *ctx,
+             uint8_t WIDE *in,
+             uint16_t inLength,
+             uint8_t *out);
 
 ////////////////////////////////////////////////////////////////////////////////
 
