@@ -23,6 +23,7 @@
 #include <os.h>
 
 #include "constants.h"
+
 #include "utils/unpack.h"
 
 #include "transactions/status.h"
@@ -82,12 +83,12 @@ Transaction transaction;
 // ---
 static void internalDeserializeCommon(Transaction *transaction,
                                       const uint8_t *buffer) {
-    transaction->header             = buffer[0];
-    transaction->version            = buffer[1];
-    transaction->type               = U2LE(buffer, 7U);
-    os_memmove(transaction->senderPublicKey, &buffer[17], 33U);
-    transaction->fee                = U8LE(buffer, 50U);
-    transaction->vendorFieldLength  = buffer[58];
+    transaction->header             = buffer[0];                    // 1 Byte
+    transaction->version            = buffer[1];                    // 1 Byte
+    transaction->type               = U2LE(buffer, 7U);             // 2 Bytes
+    os_memmove(transaction->senderPublicKey, &buffer[17], 33U);     // 33 Bytes
+    transaction->fee                = U8LE(buffer, 50U);            // 8 Bytes
+    transaction->vendorFieldLength  = buffer[58];                   // 1 Byte
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -16,8 +16,8 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_TRANSACTIONS_ASSETS_TYPES_H
-#define ARK_TRANSACTIONS_ASSETS_TYPES_H
+#ifndef ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
+#define ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
 
 ////////////////////////////////////////////////////////////////////////////////
 

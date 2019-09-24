@@ -23,9 +23,6 @@
 
 #include "constants.h"
 
-#include "utils/base58.h"
-#include "utils/hex.h"
-
 ////////////////////////////////////////////////////////////////////////////////
 
 void compressPublicKey(const cx_ecfp_public_key_t *publicKey,

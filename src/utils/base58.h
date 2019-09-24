@@ -30,8 +30,10 @@ uint8_t encodeBase58(uint8_t WIDE *in,
                      uint8_t *out,
                      uint8_t maxoutlen);
 
-uint16_t encodeBase58PublicKey(uint8_t WIDE *in, uint16_t inLength,
-                               uint8_t *out, uint16_t outLength,
+uint16_t encodeBase58PublicKey(uint8_t WIDE *in,
+                               uint16_t inLength,
+                               uint8_t *out,
+                               uint16_t outLength,
                                uint16_t version,
                                uint8_t alreadyHashed);
 

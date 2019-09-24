@@ -16,15 +16,14 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include <os.h>
+#include "transactions/display.h"
 
 #include <stdint.h>
 
-#include "transactions/display.h"
+#include <os.h>
 
 #include "constants.h"
 
-#include "crypto/keys.h"
 #include "utils/base58.h"
 #include "utils/hex.h"
 #include "utils/print.h"

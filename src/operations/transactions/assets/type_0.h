@@ -16,8 +16,8 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_TRANSACTION_TYPE_0_H
-#define ARK_TRANSACTION_TYPE_0_H
+#ifndef ARK_OPERATIONS_TRANSACTION_TYPE_0_H
+#define ARK_OPERATIONS_TRANSACTION_TYPE_0_H
 
 #include <stdint.h>
 

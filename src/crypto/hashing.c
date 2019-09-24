@@ -34,7 +34,10 @@ void hash160(uint8_t WIDE *in, uint16_t inLength, uint8_t *out) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void hash256(cx_sha256_t *ctx, uint8_t WIDE *in, uint16_t inLength, uint8_t *out) {
+void hash256(cx_sha256_t *ctx,
+             uint8_t WIDE *in,
+             uint16_t inLength,
+             uint8_t *out) {
     cx_sha256_init(ctx);
     cx_hash(&ctx->header, CX_LAST, in, inLength, out, CX_SHA256_SIZE);
 }
