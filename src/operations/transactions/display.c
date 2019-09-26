@@ -35,12 +35,31 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
+static void setVendorField(const Transaction *transaction) {
+    os_memmove((char *)displayCtx.title[1], "VendorField", 12U);
+
+    os_memmove((char *)displayCtx.var[1],
+               (uint8_t *)transaction->vendorField,
+               MIN(transaction->vendorFieldLength, HASH_64_LENGTH));
+
+    if (transaction->vendorFieldLength > HASH_64_LENGTH) {
+        os_memmove((char *)&displayCtx.var[1][HASH_64_LENGTH], (char *)"...", 4U);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 static void setDisplayTransfer(const Transaction *transaction) {
     os_memmove((char *)displayCtx.operation, "Transfer", 9U);
     os_memmove((char *)displayCtx.title[0], "To", 3U);
-    os_memmove((char *)displayCtx.title[1], "Expiration", 11U);
-    os_memmove((char *)displayCtx.title[2], "Amount", 7U);
-    os_memmove((char *)displayCtx.title[3], "Fees", 5U);
+
+    // Let's offset the screen variables if there's a VendorField.
+    // offset == 1 if VendorField; otherwise, 0.
+    uint8_t offset = (transaction->vendorFieldLength != 0U);
+
+    os_memmove((char *)displayCtx.title[1U + offset], "Expiration", 11U);
+    os_memmove((char *)displayCtx.title[2U + offset], "Amount", 7U);
+    os_memmove((char *)displayCtx.title[3U + offset], "Fees", 5U);
 
     // Recipient
     encodeBase58PublicKey((uint8_t *)transaction->asset.transfer.recipient,
@@ -49,21 +68,28 @@ static void setDisplayTransfer(const Transaction *transaction) {
                           sizeof(displayCtx.var[0]),
                           transaction->asset.transfer.recipient[0],
                           1U);
-    displayCtx.var[0][ADDRESS_LENGTH] = '\0';
+
+    // VendorField
+    if (offset) {
+        setVendorField(transaction);
+    }
 
     // Expiration
     printAmount(transaction->asset.transfer.expiration,
-                displayCtx.var[1], sizeof(displayCtx.var[1]),
+                displayCtx.var[1U + offset],
+                sizeof(displayCtx.var[1U + offset]),
                 NULL, 0U, 0U);
 
     // Amount
     printAmount(transaction->asset.transfer.amount,
-                displayCtx.var[2], sizeof(displayCtx.var[2]),
+                displayCtx.var[2U + offset],
+                sizeof(displayCtx.var[2U + offset]),
                 TOKEN_NAME, TOKEN_NAME_LENGTH, TOKEN_DECIMALS);
 
     // Fee
     printAmount(transaction->fee,
-                displayCtx.var[3], sizeof(displayCtx.var[3]),
+                displayCtx.var[3U + offset],
+                sizeof(displayCtx.var[3U + offset]),
                 TOKEN_NAME, TOKEN_NAME_LENGTH, TOKEN_DECIMALS);
 }
 
@@ -115,7 +141,6 @@ static void setDisplayIpfs(const Transaction *transaction) {
     encodeBase58((uint8_t *)transaction->asset.ipfs.dag,
                  transaction->asset.ipfs.length,
                  (uint8_t *)displayCtx.var[0], MIN(46U, HASH_64_LENGTH));
-    displayCtx.var[0][transaction->asset.ipfs.length] = '\0';
 
     // Let's truncate the DAG if it's longer than 64 bytes.
     if (transaction->asset.ipfs.length > HASH_64_LENGTH) {
@@ -145,7 +170,6 @@ static void setDisplayHtlcLock(const Transaction *transaction) {
                           ADDRESS_LENGTH,
                           transaction->asset.htlcLock.recipient[0],
                           1U);
-    displayCtx.var[0][ADDRESS_LENGTH] = '\0';
 
     // Secret Hash
     bytesToHex((char *)displayCtx.var[1],
@@ -189,7 +213,6 @@ static void setDisplayHtlcClaim(const Transaction *transaction) {
     os_memmove((char *)displayCtx.var[1],
                transaction->asset.htlcClaim.secret,
                HASH_32_LENGTH);
-    displayCtx.var[1][HASH_32_LENGTH] = '\0';
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -207,10 +230,12 @@ void setDisplayHtlcRefund(const Transaction *transaction) {
 ////////////////////////////////////////////////////////////////////////////////
 
 void setDisplay(const Transaction *transaction) {
+    os_memset(&displayCtx, 0, sizeof(displayCtx));
+
     switch (transaction->type) {
         case TRANSACTION_TYPE_TRANSFER:
             setDisplayTransfer(transaction);
-            setDisplaySteps(4U);
+            setDisplaySteps(4U + (transaction->vendorFieldLength != 0U));
             break;
 
         case TRANSACTION_TYPE_SECOND_SIGNATURE:

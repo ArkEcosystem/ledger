@@ -53,8 +53,8 @@ uint8_t encodeBase58(uint8_t WIDE *in,
                      uint8_t length,
                      uint8_t *out,
                      uint8_t maxoutlen) {
-    uint8_t tmp[164U];
-    uint8_t buffer[164U];
+    uint8_t tmp[164];
+    uint8_t buffer[164];
     uint8_t j;
     uint8_t startAt;
     uint8_t zeroCount = 0;

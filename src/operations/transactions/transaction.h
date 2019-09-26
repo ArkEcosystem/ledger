@@ -33,6 +33,8 @@ typedef struct transaction_t {
     uint16_t    type;
     uint8_t     senderPublicKey[PUBLICKEY_COMPRESSED_LENGTH];
     uint64_t    fee;
+    uint8_t     vendorFieldLength;
+    uint8_t     *vendorField;
     union {
         struct {  // v1 or Legacy
             uint8_t     recipient[ADDRESS_HASH_LENGTH];
@@ -42,7 +44,6 @@ typedef struct transaction_t {
             uint8_t     *assetPtr;
         };
         struct {  // v2
-            uint8_t     vendorFieldLength;
             tx_asset_t  asset;
         };
     };

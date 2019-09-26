@@ -120,7 +120,7 @@ uint8_t printAmount(uint64_t amount,
                     const char *tokenName,
                     uint8_t tokenNameLength,
                     uint8_t decimals) {
-    uint8_t tmp[21U];
+    uint8_t tmp[21];
     uint8_t tmp2[sizeof(tmp) + tokenNameLength];
     uint32_t numDigits = 0UL, i;
     uint64_t base = 1ULL;

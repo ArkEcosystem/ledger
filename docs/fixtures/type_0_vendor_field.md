@@ -8,23 +8,23 @@
 	"version": 2,
 	"network": 23,
 	"type": 0,
-	"nonce": "2",
-	"senderPublicKey": "03d59f3b7d698536f6925a77f22d484d518b06a2c09318e8e5ff487afcdedefb2c",
+	"nonce": "3",
+	"senderPublicKey": "029f0ab8ab10258144332230178353fa24eb4274370345eaaf1594948a79c89399",
 	"fee": "10000000",
 	"amount": "1",
-	"vendorFieldHex": "302e3132373131363230373030383934323434",
-	"vendorField": "0.12711620700894244",
+	"vendorFieldHex": "48656c6c6f20576f726c64",
+	"vendorField": "Hello World",
 	"expiration": 0,
-	"recipientId": "AUbLwNEQWMshw4vBGYyR8JWn4Lx6sJbj6M",
-	"signature": "504215bf61f7e8e0d4cd7c7e1511b501367e8c2f3543972906a3b80d42cebc3e4ec974f938124661cb65eab93dacba6ba0f5045861ac28fc0287462557ffd99b",
-	"id": "8bd461006dc6481c17b38f652e775d151fb36e8b3f390fb213b6b5c399df6c97"
+	"recipientId": "AMLFBUUXs8ss9iq4k5fLLnZJ5TV757dUFV",
+	"signature": "0e23e11473c80ea9e2d32d32bb338a649ad09ac1e4b302ec938efcbe3046176344495e538d3fb1b95efd1f2d0d847b34eee0c440ae4575446d93e5c4219c0e63",
+	"id": "ffc4ace894fb29d986d0b11829e67740b47056bd362a52a5eaeda8cf8c18d349"
 }
 ```
 
 ## Serialized Payload
 
 ```shell
-ff0217010000000000020000000000000003d59f3b7d698536f6925a77f22d484d518b06a2c09318e8e5ff487afcdedefb2c809698000000000013302e3132373131363230373030383934323434010000000000000000000000178c9bd74222025a19063c8fca8a50c39a891feeca504215bf61f7e8e0d4cd7c7e1511b501367e8c2f3543972906a3b80d42cebc3e4ec974f938124661cb65eab93dacba6ba0f5045861ac28fc0287462557ffd99b
+ff02170100000000000300000000000000029f0ab8ab10258144332230178353fa24eb4274370345eaaf1594948a79c8939980969800000000000b48656c6c6f20576f726c64010000000000000000000000173cf7ea59e8d9690e858b7674885b9a4a2c4365d60e23e11473c80ea9e2d32d32bb338a649ad09ac1e4b302ec938efcbe3046176344495e538d3fb1b95efd1f2d0d847b34eee0c440ae4575446d93e5c4219c0e63
 ```
 
 ## Deserializing the Hex
@@ -36,19 +36,19 @@ ff0217010000000000020000000000000003d59f3b7d698536f6925a77f22d484d518b06a2c09318
 | **Network:**              | **[2]**   | **1**             | `0x17`                |
 | **Typegroup:**            | **[3]**   | **4**             | `0x01000000`          |
 | **Type:**                 | **[7]**   | **2**             | `0x0000`              |
-| **Nonce:**                | **[9]**   | **8**             | `0x0200000000000000`  |
-| **SenderPublicKey:**      | **[17]**  | **33**            | `0x03d59f3b7d698536f6925a77f22d484d518b06a2c09318e8e5ff487afcdedefb2c`    |
+| **Nonce:**                | **[9]**   | **8**             | `0x0300000000000000`  |
+| **SenderPublicKey:**      | **[17]**  | **33**            | `0x029f0ab8ab10258144332230178353fa24eb4274370345eaaf1594948a79c89399`    |
 | **Fee:**                  | **[50]**  | **8**             | `0x8096980000000000`  |
-| **VendorField Length:**   | **[58]**  | **1**             | `0x13`                |
-| **VendorField:**          | **[59]**  | **19**            | `0x302e3132373131363230373030383934323434`    |
-| **Amount:**               | **[78]**  | **8**             | `0x0100000000000000`  |
-| **Expiration:**           | **[86]**  | **4**             | `0x00000000`          |
-| **Recipient:**            | **[90]**  | **21**            | `0x178c9bd74222025a19063c8fca8a50c39a891feeca`    |
-| **Signature:**            | **[111]** | **64**            | `0x504215bf61f7e8e0d4cd7c7e1511b501367e8c2f3543972906a3b80d42cebc3e4ec974f938124661cb65eab93dacba6ba0f5045861ac28fc0287462557ffd99b`  |
+| **VendorField Length:**   | **[58]**  | **1**             | `0x0b`                |
+| **VendorField:**          | **[59]**  | **11**            | `0x48656c6c6f20576f726c64`    |
+| **Amount:**               | **[70]**  | **8**             | `0x0100000000000000`  |
+| **Expiration:**           | **[78]**  | **4**             | `0x00000000`          |
+| **Recipient:**            | **[82]**  | **21**            | `0x173cf7ea59e8d9690e858b7674885b9a4a2c4365d6`    |
+| **Signature:**            | **[103]** | **64**            | `0x0e23e11473c80ea9e2d32d32bb338a649ad09ac1e4b302ec938efcbe3046176344495e538d3fb1b95efd1f2d0d847b34eee0c440ae4575446d93e5c4219c0e63`  |
 
 ## Example Ledger Payload
 
 ```shell
-python examples/example_helper.py --tx ff0217010000000000020000000000000003d59f3b7d698536f6925a77f22d484d518b06a2c09318e8e5ff487afcdedefb2c809698000000000013302e3132373131363230373030383934323434010000000000000000000000178c9bd74222025a19063c8fca8a50c39a891feeca
+python examples/example_helper.py --tx ff02170100000000000300000000000000029f0ab8ab10258144332230178353fa24eb4274370345eaaf1594948a79c8939980969800000000000b48656c6c6f20576f726c64010000000000000000000000173cf7ea59e8d9690e858b7674885b9a4a2c4365d6
 ```
 > _note that signature bytes are removed (i.e. there's no need to sign a signed-transaction)._

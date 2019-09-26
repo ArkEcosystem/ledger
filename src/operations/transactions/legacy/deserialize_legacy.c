@@ -36,12 +36,16 @@ StreamStatus deserializeLegacy(Transaction *transaction,
     // V1
     if (buffer[0] == 0xFF) {
         // Deserialize Common
-        transaction->header         = buffer[0];
-        transaction->version        = buffer[1U];
-        transaction->type           = buffer[3U];
-        transaction->fee            = U8LE(buffer, 41U);
-        transaction->assetOffset    = (49U + (buffer[49U] ?: 1U)) + 1U;
-        transaction->assetLength    = length - (transaction->assetOffset);
+        transaction->header             = buffer[0];
+        transaction->version            = buffer[1];
+        transaction->type               = buffer[3];
+        transaction->fee                = U8LE(buffer, 41U);
+
+        transaction->vendorFieldLength  = buffer[49];
+        transaction->vendorField        = (uint8_t *)&buffer[50];
+
+        transaction->assetOffset        = (49U + buffer[49U] + 1U);
+        transaction->assetLength        = length - (transaction->assetOffset);
 
         // Type 0: Transfer
         if (transaction->type == 0U) {
@@ -56,10 +60,9 @@ StreamStatus deserializeLegacy(Transaction *transaction,
                        &buffer[transaction->assetOffset + 12U],
                        ADDRESS_HASH_LENGTH);
         }
-
         // Type 3: Vote
         else if (transaction->type == 3U) { 
-            if (transaction->assetLength != 34U) {
+            if (transaction->assetLength != 35U) {
                 return USTREAM_FAULT;
             }
         }
@@ -75,9 +78,23 @@ StreamStatus deserializeLegacy(Transaction *transaction,
         // Deserialize Common
         transaction->version        = 0U;
         transaction->type           = buffer[0];
-        transaction->fee            = U8LE(buffer, 131U);
+
+        os_memmove(transaction->recipient, &buffer[38], ADDRESS_HASH_LENGTH);
+
+        transaction->vendorField = (uint8_t *)&buffer[59];
+        if (transaction->vendorField != 0) {
+            uint8_t *ptr = transaction->vendorField;
+            while (*ptr++) {
+                ++transaction->vendorFieldLength;
+            }
+        }
+        else {
+            transaction->vendorFieldLength = 0U;
+        }
+
         transaction->amount         = U8LE(buffer, 123U);
-        os_memmove(transaction->recipient, &buffer[38U], ADDRESS_HASH_LENGTH);
+        transaction->fee            = U8LE(buffer, 131U);
+
         transaction->assetOffset    = 139U;
         transaction->assetLength    = length - transaction->assetOffset;
 
