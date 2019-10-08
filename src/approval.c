@@ -46,36 +46,36 @@ unsigned int ioApprove(const bagl_element_t *e) {
     cx_ecfp_private_key_t privateKey;
     uint8_t privateKeyData[HASH_64_LENGTH];
 
-    os_perso_derive_node_bip32(CX_CURVE_256K1,
-                               tmpCtx.signing.bip32Path,
-                               tmpCtx.signing.pathLength,
-                               privateKeyData,
-                               NULL);
+    TRY {
+        os_perso_derive_node_bip32(CX_CURVE_256K1,
+                                tmpCtx.signing.bip32Path,
+                                tmpCtx.signing.pathLength,
+                                privateKeyData,
+                                NULL);
 
-    cx_ecfp_init_private_key(tmpCtx.signing.curve,
-                             privateKeyData,
-                             HASH_32_LENGTH,
-                             &privateKey);
+        cx_ecfp_init_private_key(tmpCtx.signing.curve,
+                                privateKeyData,
+                                HASH_32_LENGTH,
+                                &privateKey);
 
-    os_memset(privateKeyData, 0, sizeof(privateKeyData));
+        os_memset(privateKeyData, 0, sizeof(privateKeyData));
 
 
-    setPublicKeyContext(&tmpCtx.publicKey, G_io_apdu_buffer);
+        setPublicKeyContext(&tmpCtx.publicKey, G_io_apdu_buffer);
 
-    if (tmpCtx.signing.curve == CX_CURVE_256K1) {
-        cx_sha256_t hashCtx;
-        uint8_t hash[CX_SHA256_SIZE];
-        hash256(&hashCtx,
-                tmpCtx.signing.data,
-                tmpCtx.signing.dataLength,
-                hash);
+        if (tmpCtx.signing.curve == CX_CURVE_256K1) {
+            cx_sha256_t hashCtx;
+            uint8_t hash[CX_SHA256_SIZE];
+            hash256(&hashCtx,
+                    tmpCtx.signing.data,
+                    tmpCtx.signing.dataLength,
+                    hash);
 
-        tx = signEcdsa(&privateKey, hash,
-                       G_io_apdu_buffer,
-                       sizeof(G_io_apdu_buffer));
-    }
-
-    os_memset(&privateKey, 0, sizeof(privateKey));
+            tx = signEcdsa(&privateKey, hash,
+                        G_io_apdu_buffer,
+                        sizeof(G_io_apdu_buffer));
+        }
+    } FINALLY { explicit_bzero(&privateKey, sizeof(privateKey)) }
 
     G_io_apdu_buffer[tx++] = 0x90;
     G_io_apdu_buffer[tx++] = 0x00;

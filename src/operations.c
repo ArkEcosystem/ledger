@@ -117,36 +117,41 @@ static void handlePublicKeyContext(volatile unsigned int *tx) {
 
     tmpCtx.publicKey.needsChainCode = (p2Chain == P2_CHAINCODE);
 
-    os_perso_derive_node_bip32(CX_CURVE_256K1,
-                               bip32Path, bip32PathLength,
-                               privateKeyData,
-                               (tmpCtx.publicKey.needsChainCode
-                                        ? tmpCtx.publicKey.chainCode
-                                        : NULL));
+    TRY {
+        os_perso_derive_node_bip32(CX_CURVE_256K1,
+                                   bip32Path, bip32PathLength,
+                                   privateKeyData,
+                                   (tmpCtx.publicKey.needsChainCode
+                                            ? tmpCtx.publicKey.chainCode
+                                            : NULL));
 
-    cx_ecfp_init_private_key(curve, privateKeyData, HASH_32_LENGTH, &privateKey);
+        cx_ecfp_init_private_key(curve,
+                                 privateKeyData,
+                                 HASH_32_LENGTH,
+                                 &privateKey);
 
-    cx_ecfp_generate_pair(curve, &tmpCtx.publicKey.data, &privateKey, 1U);
+        cx_ecfp_generate_pair(curve, &tmpCtx.publicKey.data, &privateKey, 1U);
 
-    os_memset(&privateKey, 0, sizeof(privateKey));
-    os_memset(privateKeyData, 0, sizeof(privateKeyData));
+        os_memset(&privateKey, 0, sizeof(privateKey));
+        os_memset(privateKeyData, 0, sizeof(privateKeyData));
 
-    compressPublicKey(&tmpCtx.publicKey.data,
-                      privateKeyData,
-                      PUBLICKEY_COMPRESSED_LENGTH);
+        compressPublicKey(&tmpCtx.publicKey.data,
+                        privateKeyData,
+                        PUBLICKEY_COMPRESSED_LENGTH);
 
-    addressLength = encodeBase58PublicKey(privateKeyData,
-                                          HASH_32_LENGTH + 1U,
-                                          tmpCtx.publicKey.address,
-                                          sizeof(tmpCtx.publicKey.address),
-                                          TOKEN_NETWORK_BYTE,
-                                          0U);
-    tmpCtx.publicKey.address[addressLength] = '\0';
+        addressLength = encodeBase58PublicKey(privateKeyData,
+                                              HASH_32_LENGTH + 1U,
+                                              tmpCtx.publicKey.address,
+                                              sizeof(tmpCtx.publicKey.address),
+                                              TOKEN_NETWORK_BYTE,
+                                              0U);
+        tmpCtx.publicKey.address[addressLength] = '\0';
 
-    if (p1 == P1_NON_CONFIRM) {
-        *tx = setPublicKeyContext(&tmpCtx.publicKey, G_io_apdu_buffer);
-        THROW(0x9000);
-    }
+        if (p1 == P1_NON_CONFIRM) {
+            *tx = setPublicKeyContext(&tmpCtx.publicKey, G_io_apdu_buffer);
+            THROW(0x9000);
+        }
+    } FINALLY { explicit_bzero(&privateKey, sizeof(privateKey)) }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -223,22 +228,25 @@ static void handleAppConfiguration(volatile unsigned int *tx) {
 ////////////////////////////////////////////////////////////////////////////////
 
 void handleOperation(volatile unsigned int *flags, volatile unsigned int *tx) {
-    if (G_io_apdu_buffer[0] != 0xE0) {
-        THROW(0x6E00);
-    }
+    TRY {
+        if (G_io_apdu_buffer[0] != 0xE0) {
+            THROW(0x6E00);
+        }
 
-    switch (G_io_apdu_buffer[1U]) {
-        case INS_GET_PUBLIC_KEY: handlePublicKeyContext(tx); break;
+        switch (G_io_apdu_buffer[1U]) {
+            case INS_GET_PUBLIC_KEY: handlePublicKeyContext(tx); break;
 
-        case INS_SIGN:
-            handleSigningContext();
-            handleTransaction(tmpCtx.signing.data, tmpCtx.signing.dataLength);
-            break;
+            case INS_SIGN:
+                handleSigningContext();
+                handleTransaction(tmpCtx.signing.data,
+                                  tmpCtx.signing.dataLength);
+                break;
 
-        case INS_GET_APP_CONFIGURATION: handleAppConfiguration(tx); break;
+            case INS_GET_APP_CONFIGURATION: handleAppConfiguration(tx); break;
 
-        default: THROW(0x6D00);
-    }
+            default: THROW(0x6D00);
+        }
+    } FINALLY { explicit_bzero(&tmpCtx, sizeof(tmpCtx)) }
 
     *flags |= IO_ASYNCH_REPLY;
 }
