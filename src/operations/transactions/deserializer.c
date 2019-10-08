@@ -218,7 +218,7 @@ StreamStatus deserialize(const uint8_t *buffer, const uint32_t length) {
         }
 
         CATCH_OTHER(e) {
-            os_memset(&transaction, 0U, sizeof(Transaction));
+            explicit_bzero(&transaction, sizeof(Transaction));
             result = USTREAM_FAULT;
         }
 

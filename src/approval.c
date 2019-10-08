@@ -60,7 +60,6 @@ unsigned int ioApprove(const bagl_element_t *e) {
 
         os_memset(privateKeyData, 0, sizeof(privateKeyData));
 
-
         setPublicKeyContext(&tmpCtx.publicKey, G_io_apdu_buffer);
 
         if (tmpCtx.signing.curve == CX_CURVE_256K1) {
@@ -75,7 +74,10 @@ unsigned int ioApprove(const bagl_element_t *e) {
                         G_io_apdu_buffer,
                         sizeof(G_io_apdu_buffer));
         }
-    } FINALLY { explicit_bzero(&privateKey, sizeof(privateKey)) }
+    } FINALLY {
+        explicit_bzero(&privateKey, sizeof(privateKey));
+        explicit_bzero(&privateKeyData, sizeof(privateKeyData));
+    }
 
     G_io_apdu_buffer[tx++] = 0x90;
     G_io_apdu_buffer[tx++] = 0x00;

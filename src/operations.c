@@ -151,7 +151,10 @@ static void handlePublicKeyContext(volatile unsigned int *tx) {
             *tx = setPublicKeyContext(&tmpCtx.publicKey, G_io_apdu_buffer);
             THROW(0x9000);
         }
-    } FINALLY { explicit_bzero(&privateKey, sizeof(privateKey)) }
+    } FINALLY {
+        explicit_bzero(&privateKey, sizeof(privateKey));
+        explicit_bzero(&privateKeyData, sizeof(privateKeyData));
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
