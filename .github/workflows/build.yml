@@ -1,0 +1,63 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'develop'
+  pull_request:
+    types: [ready_for_review, synchronize, opened]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Installing Dependencies
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update  > /dev/null
+          sudo apt-get install git curl python-dev python-pip python-pil python-setuptools zlib1g-dev libjpeg-dev libudev-dev build-essential libusb-1.0-0-dev -y > /dev/null
+          sudo apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386 libc6-dev-i386 -y > /dev/null
+          pip install wheel
+          pip install --upgrade setuptools
+          pip install ledgerblue
+
+      - name: Installing Compilers
+        run: |
+          echo "Creating BOLOS Directory.."
+          mkdir /opt/bolos
+          cd /opt/bolos
+
+          echo "Installing ARM compilers.."
+          wget -q https://launchpad.net/gcc-arm-embedded/5.0/5-2016-q1-update/+download/gcc-arm-none-eabi-5_3-2016q1-20160330-linux.tar.bz2
+          tar xjf gcc-arm-none-eabi-5_3-2016q1-20160330-linux.tar.bz2
+          sudo ln -s /opt/bolos/gcc-arm-none-eabi-5_3-2016q1/bin/arm-none-eabi-gcc /usr/bin/arm-none-eabi-gcc
+
+          echo "Installing Clang compilers.."
+          wget -q https://releases.llvm.org/8.0.0/clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
+          tar xvf clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz
+          mv clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-18.04 clang-arm-fropi
+          chmod 757 -R clang-arm-fropi/
+          chmod +x clang-arm-fropi/bin/clang
+          sudo ln -s -f /opt/bolos/clang-arm-fropi/bin/clang /usr/bin/clang
+
+      - name: Installing the Ledger NanoS SDK
+        run: |
+          cd /opt/bolos/
+          git clone https://github.com/LedgerHQ/nanos-secure-sdk.git
+          cd nanos-secure-sdk/
+          git -c advice.detachedHead=false checkout tags/nanos-1553
+
+          sudo bash ~/work/ledger/ledger/provision/udev.sh
+          sudo usermod --append --groups lxd $(whoami)
+          sudo usermod -a -G plugdev $(whoami)
+
+      - name: Building the Ledger ARK app
+        run: make
+        env:
+          BOLOS_ENV: /opt/bolos
+          BOLOS_SDK: /opt/bolos/nanos-secure-sdk
+          ARM_HOME: /opt/bolos/gcc-arm-none-eabi-5_3-2016q1
