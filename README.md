@@ -2,6 +2,7 @@
 
 > Ark wallet application for Ledger Blue and Nano S
 
+[![Build](https://github.com/ArkEcosystem/ledger/workflows/Build/badge.svg)](https://github.com/ArkEcosystem/ledger/actions)
 [![License: MIT](https://badgen.now.sh/badge/license/MIT/green)](https://opensource.org/licenses/MIT)
 
 Under development
