@@ -51,10 +51,6 @@ jobs:
           cd nanos-secure-sdk/
           git -c advice.detachedHead=false checkout tags/nanos-1553
 
-          sudo bash ~/work/ledger/ledger/provision/udev.sh
-          sudo usermod --append --groups lxd $(whoami)
-          sudo usermod -a -G plugdev $(whoami)
-
       - name: Building the Ledger ARK app
         run: make
         env:
