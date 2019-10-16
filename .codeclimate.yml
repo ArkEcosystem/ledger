@@ -1,0 +1,14 @@
+version: "2"
+plugins:
+    cppcheck:
+        enabled: true
+        config:
+            check: all
+            language: c
+            stds:
+                - c11
+            includes:
+                - src/
+exclude_patterns:
+  - "glyphs/"
+  - "samples/"
