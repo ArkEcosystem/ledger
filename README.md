@@ -2,6 +2,7 @@
 
 > A simple Ledger NanoS/NanoX app for the ARK Blockchain.
 
+[![Build](https://github.com/ArkEcosystem/ledger/workflows/Build/badge.svg)](https://github.com/ArkEcosystem/ledger/actions)
 [![License: MIT](https://badgen.now.sh/badge/license/MIT/green)](https://opensource.org/licenses/MIT)
 
 <!--ts-->
