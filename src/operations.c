@@ -227,7 +227,7 @@ void handleOperation(volatile unsigned int *flags, volatile unsigned int *tx) {
         THROW(0x6E00);
     }
 
-    switch (G_io_apdu_buffer[1U]) {
+    switch (G_io_apdu_buffer[1]) {
         case INS_GET_PUBLIC_KEY: handlePublicKeyContext(tx); break;
 
         case INS_SIGN:

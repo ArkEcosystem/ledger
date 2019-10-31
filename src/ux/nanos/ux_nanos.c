@@ -123,6 +123,10 @@ unsigned int operation_menu_button(unsigned int button_mask,
             ioApprove(NULL);
             break;
     }
+
+    // clear the display variables.
+    os_memset(&displayCtx, 0, sizeof(displayCtx));
+
     return 0;
 }
 
@@ -135,43 +139,33 @@ const bagl_element_t *operation_prepro(const bagl_element_t *element) {
         return element;
     }
 
-    if (element->component.userid > 0U) {
-        // display the meta element when at least bigger
-        display = (ux_step == element->component.userid - 1U) ||
-                  (element->component.userid >= 0x02 && ux_step >= 1U);
+    display = (ux_step == element->component.userid - 1U) ||
+            (element->component.userid >= 0x02 && ux_step >= 1U);
 
-        if (display) {
-            switch (element->component.userid) {
-                case 0x01:
-                    UX_CALLBACK_SET_INTERVAL(2000);
-                    break;
+    if (display) {
 
-                case 0x02:
+        switch (element->component.userid) {
+            case 0x01: UX_CALLBACK_SET_INTERVAL(2000); break;
 
-                case 0x12:
-                    os_memmove(&tmp_element, element, sizeof(bagl_element_t));
-                    display = ux_step - 1U;
-                    tmp_element.text = menu_flow[display][(element->component.userid) >> 4];
+            case 0x02:
+
+            case 0x12:
+                os_memmove(&tmp_element, element, sizeof(bagl_element_t));
+
+                display = ux_step - 1U;
+                tmp_element.text =
+                menu_flow[display][(element->component.userid) >> 4];
 
                 UX_CALLBACK_SET_INTERVAL(MAX(
-                    3000UL,
-                    1000UL + bagl_label_roundtrip_duration_ms(&tmp_element, 8U)));
+                        3000UL,
+                        1000UL +
+                        bagl_label_roundtrip_duration_ms(&tmp_element, 8U)));
 
-                return &tmp_element;
-            }
+            return &tmp_element;
         }
     }
 
     return display ? element : NULL;
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
-
-const bagl_element_t *ui_menu_item_out_over(const bagl_element_t *e) {
-    // the selection rectangle is after the none|touchable
-    e = (const bagl_element_t *)(((unsigned int)e) + sizeof(bagl_element_t));
-    return e;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

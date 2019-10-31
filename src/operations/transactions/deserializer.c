@@ -89,6 +89,7 @@ static void internalDeserializeCommon(Transaction *transaction,
     os_memmove(transaction->senderPublicKey, &buffer[17], 33U);     // 33 Bytes
     transaction->fee                = U8LE(buffer, 50U);            // 8 Bytes
     transaction->vendorFieldLength  = buffer[58];                   // 1 Byte
+    transaction->vendorField        = (uint8_t *)&buffer[59];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
