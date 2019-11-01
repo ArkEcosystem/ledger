@@ -26,7 +26,7 @@
 
 #include "utils/unpack.h"
 
-#include "transactions/status.h"
+#include "operations/status.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 

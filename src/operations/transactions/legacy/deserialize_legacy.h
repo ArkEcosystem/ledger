@@ -21,7 +21,7 @@
 
 #include <stdint.h>
 
-#include "transactions/status.h"
+#include "operations/status.h"
 #include "transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
