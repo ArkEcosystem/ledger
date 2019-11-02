@@ -35,86 +35,98 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// Sets the titles and variables to display a Message.
+//
+// Message must be: 0 < Msg <= 255
+//
+// -------
+// Display:
+//
+// Message > 0 && Message <= 64
+// - screen 1: Message Length
+// - screen 2: \"message\"
+//
+// ---
+//
+// Message > 64 && Message <= 128
+// - screen 1: Message Length
+// - screen 2: \"message...\"
+// - screen 3: \"...message\"
+//
+// ---
+//
+// Message > 128 && Message <= 192
+// - screen 1: Message Length
+// - screen 2: \"message...\"
+// - screen 3: \"...message...\"
+// - screen 4: \"...message\"
+//
+// ---
+//
+// Message > 192 && Message <= 255
+// - screen 1: Message Length
+// - screen 2: \"message...\"
+// - screen 3: \"...message...\"
+// - screen 4: \"...message...\"
+// - screen 5: \"...message\"
+//
+// ---
 static void internalHandleMessage(const uint8_t *buffer, const uint32_t length) {
     if (length == 0 || length > MAX_DISPLAY_BUFFER) {
         THROW(EXCEPTION_OVERFLOW);
     }
 
+    // - set the operation title.
     os_memmove((char *)displayCtx.operation, "Message", 8U);
 
-    // Set the Message Length for display.
+    // - set the Message Length for display.
     os_memmove((char *)displayCtx.title[0], "length:", 8U);
+
     printAmount(length,
                 displayCtx.var[0], sizeof(displayCtx.var[0]),
                 "", 0U, 0U);
 
-    uint8_t steps = 0U;
-
-    // Set the first part of the Message.
+    // - set the first part of the Message.
     os_memmove((char *)displayCtx.title[1], "message:", 9U);
     os_memmove((char *)displayCtx.var[1],
-               buffer,
-               length < HASH_64_LENGTH ? length : HASH_64_LENGTH);
+                buffer,
+                MIN(length, HASH_64_LENGTH));
+    displayCtx.var[1][MIN(length, HASH_64_LENGTH)] = '\0';
 
-    displayCtx.var[1][HASH_64_LENGTH] = '\0';
+    // - 1 step for Length Display.
+    // - 2..5 Steps for Message Length.
+    const uint8_t steps = 1U + ((length - 1U) / HASH_64_LENGTH) + 1U;
 
-    steps = 2U;
-    
-    // - add ellipses to the end of the first var.
-    // - set the second var.
-    if (length > HASH_64_LENGTH) {
-        os_memmove((char *)&displayCtx.var[1][HASH_64_LENGTH], "...", 4U);
+    // Loop through the message steps,
+    // prepending/appending ellipses where needed.
+    // skipped if the Message only needs one screen.
+    uint8_t step        = 0U;
+    uint8_t pos         = 0U;
+    for (uint8_t i = 0; i < steps - 2U; ++i) {
+        step        = i + 2U;
+        pos         =  HASH_64_LENGTH * (i + 1U);
 
-        os_memmove((char *)displayCtx.title[2], "message pt 2:", 14U);
-        os_memmove((char *)displayCtx.var[2], "...", 3U);
+        // - append ellipses to the end of the last var.
+        os_memmove((char *)&displayCtx.var[i + 1U][HASH_64_LENGTH + (i ? 3U : 0U)],
+                    "...", 4U);
 
-        os_memmove((char *)&displayCtx.var[2][3],
-                   buffer + HASH_64_LENGTH,
-                   length < HASH_64_LENGTH * 2U
-                            ? length - HASH_64_LENGTH
-                            : HASH_64_LENGTH * 2U);
+        // - set the current title step.
+        // - add '48' to step for ASCII.
+        os_memmove((char *)displayCtx.title[step],
+                    "message pt  :", 14U);
+        // step to ascii
+        displayCtx.title[step][11] = step + 48U;  // 49 == "1", 50 == "2",...
 
-        displayCtx.var[2][3U + length - HASH_64_LENGTH] = '\0';
+        // - prepend the current var with ellipses.
+        os_memmove((char *)displayCtx.var[step], "...", 3U);
 
-        steps = 3U;
-    }
+        // - set the current var.
+        os_memmove((char *)&displayCtx.var[step][3],
+                    buffer + pos,
+                    length - pos);
 
-    // if the buffer length > 128
-    // - add ellipses to the end of the second var.
-    // - set the third var.
-    if (length > HASH_64_LENGTH * 2U) {
-        os_memmove((char *)&displayCtx.var[2][HASH_64_LENGTH], "...", 4U);
-
-        os_memmove((char *)displayCtx.title[3], "message pt 3:", 14U);
-        os_memmove((char *)displayCtx.var[3], "...", 3U);
-
-        os_memmove((char *)&displayCtx.var[3][3],
-                   buffer + HASH_64_LENGTH * 2U,
-                   length < HASH_64_LENGTH * 3U
-                            ? length - HASH_64_LENGTH * 2U
-                            : HASH_64_LENGTH * 3U);
-
-        displayCtx.var[3][3U + length - HASH_64_LENGTH * 2U] = '\0';
-
-        steps = 4U;
-    }
-
-    // if the buffer length > 192
-    // - add ellipses to the end of the third var.
-    // - set the fourth var.
-    if (length > HASH_64_LENGTH * 3U) {
-        os_memmove((char *)&displayCtx.var[3][HASH_64_LENGTH], "...", 4U);
-
-        os_memmove((char *)displayCtx.title[4], "message pt 4:", 14U);
-        os_memmove((char *)displayCtx.var[4], "...", 3U);
-
-        os_memmove((char *)&displayCtx.var[4][3],
-                   buffer + HASH_64_LENGTH * 3U,
-                   length - HASH_64_LENGTH * 3U);
-
-        displayCtx.var[4][3U + length - HASH_64_LENGTH * 3U] = '\0';
-
-        steps = 5U;
+        // - null-terminate the prepended step var (... + var + \0)
+        displayCtx.var[step][3U + length - pos] = '\0';
     }
 
     setDisplaySteps(steps);
