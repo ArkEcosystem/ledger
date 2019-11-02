@@ -159,7 +159,7 @@ const bagl_element_t *operation_prepro(const bagl_element_t *element) {
                 UX_CALLBACK_SET_INTERVAL(MAX(
                         3000UL,
                         1000UL +
-                        bagl_label_roundtrip_duration_ms(&tmp_element, 8U)));
+                        bagl_label_roundtrip_duration_ms(&tmp_element, 7U)));
 
             return &tmp_element;
         }
