@@ -21,14 +21,17 @@ from ledgerblue.commException import CommException
 import argparse
 import struct
 
+chunkSize   = 255
+payloadMax  = 2 * chunkSize
+
 
 # Packs the BIP32 Path.
 def parse_bip32_path(path):
     if len(path) == 0:
         return ""
 
-    result = ""
-    elements = path.split('/')
+    result      = ""
+    elements    = path.split('/')
 
     for pathElement in elements:
         element = pathElement.split('\'')
@@ -67,6 +70,12 @@ elif args.tx is not None:
     operation = "04"
 
 
+# Check that the payload is not larger than the current max.
+if len(payload) > payloadMax:
+    raise Exception('Payload size:', len(payload),
+                    'exceeds max length:', payloadMax)
+
+
 # Set the BIP32 Path.
 donglePath = parse_bip32_path(args.path)
 
@@ -75,9 +84,9 @@ donglePath = parse_bip32_path(args.path)
 pathLength = len(donglePath) + 1
 
 # Pack the payload.
-if len(payload) > 255 - pathLength:
-    chunk1 = args.tx[0 : 255 - pathLength]
-    chunk2 = args.tx[255 - pathLength:]
+if len(payload) > chunkSize - pathLength:
+    chunk1 = payload[0 : chunkSize - pathLength]
+    chunk2 = payload[chunkSize - pathLength:]
     p1 = "00"
 else:
     chunk1 = payload
@@ -97,5 +106,5 @@ result = dongle.exchange(bytes(apdu))
 
 # Send second data chunk if present
 if chunk2 is not None:
-    apdu = "e0048140".decode('hex') + chr(len(chunk2)) + chunk2
+    apdu = "e0" + operation + "8140".decode('hex') + chr(len(chunk2)) + chunk2
     result = dongle.exchange(bytes(apdu))
