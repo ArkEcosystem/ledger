@@ -27,7 +27,7 @@
 
 #include "crypto/hashing.h"
 
-#include "transactions/status.h"
+#include "operations/status.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 

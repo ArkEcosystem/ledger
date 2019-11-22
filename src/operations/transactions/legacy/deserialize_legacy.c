@@ -23,7 +23,7 @@
 #include "constants.h"
 #include "utils/unpack.h"
 
-#include "transactions/status.h"
+#include "operations/status.h"
 #include "transactions/transaction.h"
 
 #include "ux.h"

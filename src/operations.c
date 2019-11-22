@@ -30,6 +30,7 @@
 #include "crypto/signing.h"
 #include "utils/base58.h"
 
+#include "operations/message_op.h"
 #include "operations/transaction_op.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -66,6 +67,7 @@
 
 #define INS_GET_PUBLIC_KEY          0x02
 #define INS_SIGN                    0x04
+#define INS_SIGN_MESSAGE            0x08
 #define INS_GET_APP_CONFIGURATION   0x06
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -200,6 +202,7 @@ static void handleSigningContext() {
         os_memmove(&tmpCtx.signing.data[tmpCtx.signing.dataLength],
                    workBuffer,
                    dataLength);
+
         tmpCtx.signing.dataLength += dataLength;
     }
 
@@ -233,6 +236,11 @@ void handleOperation(volatile unsigned int *flags, volatile unsigned int *tx) {
         case INS_SIGN:
             handleSigningContext();
             handleTransaction(tmpCtx.signing.data, tmpCtx.signing.dataLength);
+            break;
+
+        case INS_SIGN_MESSAGE:
+            handleSigningContext();
+            handleMessage(tmpCtx.signing.data, tmpCtx.signing.dataLength);
             break;
 
         case INS_GET_APP_CONFIGURATION: handleAppConfiguration(tx); break;

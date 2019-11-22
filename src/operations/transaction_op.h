@@ -23,7 +23,7 @@
 
 #include <os.h>
 
-#include "transactions/status.h"
+#include "operations/status.h"
 
 #include "transactions/deserializer.h"
 

@@ -6,8 +6,6 @@ They're not final or guaranteed as working, but should hopefully make implementi
 
 ## What's currently here
 
-- Message Signing
-- VendorField
 - Type 2: Delegate Registration
 - Type 4: MultiSignature Registration
 - Type 6: MultiPayment
