@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # /*******************************************************************************
 # *   Ark Wallet
 # *   (c) 2017 Ledger
@@ -19,6 +21,7 @@
 from ledgerblue.comm import getDongle
 from ledgerblue.commException import CommException
 import argparse
+import binascii
 import struct
 
 chunkSize   = 255
@@ -28,11 +31,9 @@ payloadMax  = 2 * chunkSize
 # Packs the BIP32 Path.
 def parse_bip32_path(path):
     if len(path) == 0:
-        return ""
-
-    result      = ""
-    elements    = path.split('/')
-
+        return b""
+    result = b""
+    elements = path.split('/')
     for pathElement in elements:
         element = pathElement.split('\'')
         if len(element) == 1:
@@ -63,10 +64,10 @@ if args.tx is None and args.message is None or          \
 
 # Set the payload
 if args.message is not None:
-    payload = args.message.decode('hex')
+    payload = binascii.unhexlify(args.message)
     operation = "08"
 elif args.tx is not None:
-    payload = args.tx.decode('hex') 
+    payload = bytearray.fromhex(args.tx)
     operation = "04"
 
 
@@ -83,6 +84,7 @@ donglePath = parse_bip32_path(args.path)
 # Set the full paths length.
 pathLength = len(donglePath) + 1
 
+
 # Pack the payload.
 if len(payload) > chunkSize - pathLength:
     chunk1 = payload[0 : chunkSize - pathLength]
@@ -95,10 +97,10 @@ else:
 
 
 # Build the APDU Payload
-apdu = ("e0" + operation + p1 + "40").decode('hex')                 \
-        + chr(pathLength + len(chunk1)) + chr(len(donglePath) / 4)  \
-        + donglePath                                                \
-        + chunk1
+apdu = bytearray.fromhex("e0" + operation + p1 + "40")
+apdu.append(pathLength + len(chunk1))
+apdu.append(pathLength // 4)
+apdu += donglePath + chunk1
 
 dongle = getDongle(True)
 result = dongle.exchange(bytes(apdu))
@@ -106,5 +108,7 @@ result = dongle.exchange(bytes(apdu))
 
 # Send second data chunk if present
 if chunk2 is not None:
-    apdu = "e0" + operation + "8140".decode('hex') + chr(len(chunk2)) + chunk2
+    apdu = bytearray.fromhex("e0" + operation + "8140")
+    apdu.append(len(chunk2))
+    apdu += chunk2
     result = dongle.exchange(bytes(apdu))
