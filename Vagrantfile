@@ -30,6 +30,14 @@ Vagrant.configure("2") do |config|
                         source: "./Makefile",
                         destination: "/home/vagrant/apps/ledger-app-ark/")
 
+    # Copy Icons
+    config.vm.provision("file",
+                        source: "./nanos_app_ark.gif",
+                        destination: "/home/vagrant/apps/ledger-app-ark/")
+    config.vm.provision("file",
+                        source: "./nanox_app_ark.gif",
+                        destination: "/home/vagrant/apps/ledger-app-ark/")
+
     # VM specific configs
     config.vm.provider "virtualbox" do |v|
         v.name = "Ledger Development Box"

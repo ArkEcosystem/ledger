@@ -5,10 +5,11 @@ echo "Provisioning virtual machine..."
 echo "Installing Utilities"
 dpkg --add-architecture i386
 apt-get update  > /dev/null
-apt-get install git curl python-dev python-pip python-pil python-setuptools zlib1g-dev libjpeg-dev libudev-dev build-essential libusb-1.0-0-dev -y > /dev/null
+apt-get install git curl python-dev python3-pip python-setuptools zlib1g-dev libjpeg-dev libudev-dev build-essential libusb-1.0-0-dev -y > /dev/null
 apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386 libc6-dev-i386 -y > /dev/null
-pip install --upgrade setuptools
-pip install ledgerblue
+pip3 install --upgrade setuptools
+pip3 install ledgerblue
+pip3 install Pillow
 
 if [ ! -d "/opt/bolos" ]; then
     echo "Setting up BOLOS environment"
@@ -38,7 +39,7 @@ if [ ! -d "/opt/bolos/nanos-secure-sdk" ]; then
     cd /opt/bolos/
     git clone https://github.com/LedgerHQ/nanos-secure-sdk.git
     cd nanos-secure-sdk/
-    git -c advice.detachedHead=false checkout tags/nanos-1553
+    git -c advice.detachedHead=false checkout tags/nanos-160
     cd /opt/bolos/
 fi
 
