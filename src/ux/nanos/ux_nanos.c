@@ -44,9 +44,12 @@ extern unsigned int ux_step_count;
 ////////////////////////////////////////////////////////////////////////////////
 
 static const ux_menu_entry_t menu_main[4] = {
-    { NULL, NULL, 0, &C_icon_ark, "Use wallet to", "view accounts", 33U, 12U },
-    { NULL, NULL, 0U, NULL, "Version", APPVERSION, 0U, 0U },
-    { NULL, os_sched_exit, 0U, &C_icon_dashboard, "Quit app", NULL, 50U, 29U },
+    { NULL, NULL, 0, &C_icon_ark,
+      "Use wallet to", "view accounts", 33U, 12U },
+    { NULL, NULL, 0U, NULL,
+      "Version", APPVERSION, 0U, 0U },
+    { NULL, (ux_menu_callback_t)os_sched_exit, 0U, &C_icon_dashboard,
+      "Quit app", NULL, 50U, 29U },
       UX_MENU_END };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -76,39 +79,31 @@ static const bagl_element_t operation_menu[7] = {
             0xFFFFFF,   // background color
             0,          // font Id
             0 },        // iconId
-        NULL,           // txt,
-        // touchparams...         ]
-        0, 0, 0, NULL, NULL, NULL },
+        NULL },         // txt,
 
     { { BAGL_ICON, 0x00, 3, 12, 7, 7, 0, 0, 0, 0xFFFFFF, 0x000000, 0,
         BAGL_GLYPH_ICON_CROSS },
-        NULL,
-        0, 0, 0, NULL, NULL, NULL },
+        NULL },
 
     { { BAGL_ICON, 0x00, 117, 13, 8, 6, 0, 0, 0, 0xFFFFFF, 0x000000, 0,
         BAGL_GLYPH_ICON_CHECK },
-        NULL,
-        0, 0, 0, NULL, NULL, NULL },
+        NULL },
 
     { { BAGL_LABELINE, 0x01, 0, 12, 128, 32, 0, 0, 0, 0xFFFFFF, 0,
         BAGL_FONT_OPEN_SANS_EXTRABOLD_11px | BAGL_FONT_ALIGNMENT_CENTER, 0 },
-        "Review",
-        0, 0, 0, NULL, NULL, NULL },
+        "Review" },
 
     { { BAGL_LABELINE, 0x01, 0, 26, 128, 32, 0, 0, 0, 0xFFFFFF, 0x000000,
         BAGL_FONT_OPEN_SANS_EXTRABOLD_11px | BAGL_FONT_ALIGNMENT_CENTER, 0 },
-        "operation:",
-        0, 0, 0, NULL, NULL, NULL },
+        "operation:" },
 
     { { BAGL_LABELINE, 0x02, 0x00, 12, 128, 32, 0, 0, 0, 0xFFFFFF, 0x000000,
         BAGL_FONT_OPEN_SANS_REGULAR_11px | BAGL_FONT_ALIGNMENT_CENTER, 0 },
-        NULL,
-        0, 0, 0, NULL, NULL, NULL },
+        NULL },
 
     { { BAGL_LABELINE, 0x12, 23, 26, 84, 12, 0x80 | 10, 0, 0, 0xFFFFFF, 0x000000,
         BAGL_FONT_OPEN_SANS_EXTRABOLD_11px | BAGL_FONT_ALIGNMENT_CENTER, 26 },
-        NULL,
-        0, 0, 0, NULL, NULL, NULL },
+        NULL },
 };
 
 ////////////////////////////////////////////////////////////////////////////////
