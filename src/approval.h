@@ -19,6 +19,7 @@
 #ifndef ARK_APPROVAL_H
 #define ARK_APPROVAL_H
 
+#include <ux.h>
 #include <os_io_seproxyhal.h>
 
 ////////////////////////////////////////////////////////////////////////////////

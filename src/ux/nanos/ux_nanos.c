@@ -22,6 +22,7 @@
 
 #include "ux/nanos/ux_nanos.h"
 
+#include <ux.h>
 #include <os_io_seproxyhal.h>
 
 #include "glyphs.h"
