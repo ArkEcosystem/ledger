@@ -36,6 +36,10 @@
 #include "ux/display_context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+// Externally Declared Methods.
+extern void setDisplaySteps(uint8_t steps);
+
+////////////////////////////////////////////////////////////////////////////////
 
 static void setVendorField(const Transaction *transaction) {
     os_memmove((char *)displayCtx.title[1], "VendorField", 12U);
