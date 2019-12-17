@@ -25,6 +25,7 @@
 #include <stdint.h>
 
 #include <cx.h>
+#include <ux.h>
 #include <os_io_seproxyhal.h>
 
 #include "glyphs.h"
