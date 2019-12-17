@@ -18,6 +18,7 @@
 
 #include "transactions/assets/type_8.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <os.h>
@@ -34,7 +35,7 @@
 //
 // @param HtlcLock *lock: The Htlc Lock (Type 8) Asset.
 // @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
-// @param uint32_t length: The Asset Length.
+// @param size_t size: The Asset Buffer Size.
 //
 // ---
 // Internals:
@@ -57,15 +58,15 @@
 // ---
 StreamStatus deserializeHtlcLock(HtlcLock *lock,
                                  const uint8_t *buffer,
-                                 uint32_t length) {
-    if (length != 66U) {
+                                 size_t size) {
+    if (size != 66) {
         return USTREAM_FAULT;
     }
 
-    lock->amount            = U8LE(buffer, 0U);
+    lock->amount            = U8LE(buffer, 0);
     os_memmove(lock->secretHash, &buffer[8], HASH_32_LENGTH);
     lock->expirationType    = buffer[40];
-    lock->expiration        = U4LE(buffer, 41U);
+    lock->expiration        = U4LE(buffer, 41);
     os_memmove(lock->recipient, &buffer[45], ADDRESS_HASH_LENGTH);
 
     return USTREAM_FINISHED;

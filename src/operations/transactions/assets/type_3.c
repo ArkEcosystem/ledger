@@ -18,6 +18,7 @@
 
 #include "transactions/assets/type_3.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <os.h>
@@ -32,7 +33,7 @@
 //
 // @param Vote *vote: The Vote (Type 3) Asset.
 // @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
-// @param uint32_t length: The Asset Length.
+// @param size_t size: The Asset Buffer Size.
 //
 // ---
 // Internals:
@@ -44,10 +45,8 @@
 // - os_memmove(vote->data, &buffer[1], 1U + PUBLICKEY_COMPRESSED_LENGTH)
 //
 // ---
-StreamStatus deserializeVote(Vote *vote,
-                             const uint8_t *buffer,
-                             uint32_t length) {
-    if (length != 35U) {
+StreamStatus deserializeVote(Vote *vote, const uint8_t *buffer, size_t size) {
+    if (size != 35) {
         return USTREAM_FAULT;
     }
 

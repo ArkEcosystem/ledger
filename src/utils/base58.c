@@ -18,6 +18,7 @@
 
 #include "utils/base58.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <os.h>
@@ -50,84 +51,85 @@ const uint8_t BASE58ALPHABET[] = {
 ////////////////////////////////////////////////////////////////////////////////
 
 uint8_t encodeBase58(uint8_t WIDE *in,
-                     uint8_t length,
+                     size_t inSize,
                      uint8_t *out,
-                     uint8_t maxoutlen) {
+                     size_t maxOutSize) {
     uint8_t tmp[164];
     uint8_t buffer[164];
-    uint8_t j;
-    uint8_t startAt;
-    uint8_t zeroCount = 0;
+    size_t j;
+    size_t startAt;
+    size_t zeroCount = 0;
 
-    if (length > sizeof(tmp)) {
+    if (inSize > sizeof(tmp)) {
         THROW(INVALID_PARAMETER);
     }
 
-    os_memmove(tmp, in, length);
-    while ((zeroCount < length) && (tmp[zeroCount] == 0U)) {
+    os_memmove(tmp, in, inSize);
+    while ((zeroCount < inSize) && (tmp[zeroCount] == 0U)) {
         ++zeroCount;
     }
 
-    j = 2U * length;
+    j = 2 * inSize;
     startAt = zeroCount;
-    while (startAt < length) {
-        uint16_t remainder = 0U;
-        uint8_t divLoop;
+    while (startAt < inSize) {
+        size_t remainder = 0;
+        size_t divLoop;
 
-        for (divLoop = startAt; divLoop < length; divLoop++) {
-            uint16_t digit256 = (uint16_t)(tmp[divLoop] & 0xff);
-            uint16_t tmpDiv = remainder * 256U + digit256;
-            tmp[divLoop] = (uint8_t)(tmpDiv / 58U);
-            remainder = (tmpDiv % 58U);
+        for (divLoop = startAt; divLoop < inSize; divLoop++) {
+            size_t digit256 = (size_t)(tmp[divLoop] & 0xff);
+            size_t tmpDiv = remainder * 256 + digit256;
+            tmp[divLoop] = (uint8_t)(tmpDiv / 58);
+            remainder = (tmpDiv % 58);
         }
 
-        if (tmp[startAt] == 0U) {
+        if (tmp[startAt] == 0) {
             ++startAt;
         }
 
         buffer[--j] = (uint8_t)BASE58ALPHABET[remainder];
     }
 
-    while ((j < (2U * length)) && (buffer[j] == BASE58ALPHABET[0])) {
+    while ((j < (2 * inSize)) && (buffer[j] == BASE58ALPHABET[0])) {
         ++j;
     }
 
-    while (zeroCount-- > 0U) {
+    while (zeroCount-- > 0) {
         buffer[--j] = BASE58ALPHABET[0];
     }
 
-    length = 2U * length - j;
-    if (maxoutlen < length) {
+    inSize = 2 * inSize - j;
+    if (maxOutSize < inSize) {
         THROW(EXCEPTION_OVERFLOW);
     }
 
-    os_memmove(out, (buffer + j), length);
-    return length;
+    os_memmove(out, (buffer + j), inSize);
+
+    return inSize;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 uint16_t encodeBase58PublicKey(uint8_t WIDE *in,
-                               uint16_t inLength,
+                               size_t inSize,
                                uint8_t *out,
-                               uint16_t outLength,
+                               size_t outSize,
                                uint16_t version,
                                uint8_t alreadyHashed) {
-    uint8_t temp[inLength + 4U];
+    uint8_t temp[inSize + 4];
     uint8_t checksum[CX_SHA256_SIZE];
-    uint8_t versionSize = (version > 255U ? 2U : 1U);
-    uint8_t ripeLength = versionSize + CX_RIPEMD160_SIZE;
+    size_t versionSize = (version > 255U ? 2 : 1);
+    size_t ripeLength = versionSize + CX_RIPEMD160_SIZE;
 
     if (version > 255U) {
-        temp[0] = (version >> 8U);
-        temp[1] = version;
+        temp[0] = (uint8_t)(version >> 8);
+        temp[1] = (uint8_t)version;
     }
     else {
-        temp[0] = version;
+        temp[0] = (uint8_t)version;
     }
 
     if (!alreadyHashed) {
-        hash160(in, inLength, &temp[versionSize]);
+        hash160(in, inSize, &temp[versionSize]);
     }
     else {
         os_memmove(&temp[versionSize], &in[versionSize], CX_RIPEMD160_SIZE);
@@ -137,9 +139,9 @@ uint16_t encodeBase58PublicKey(uint8_t WIDE *in,
     hash256(&hash, temp, ripeLength, checksum);
     hash256(&hash, checksum, CX_SHA256_SIZE, checksum);
 
-    os_memmove(&temp[ripeLength], checksum, 4U);
+    os_memmove(&temp[ripeLength], checksum, 4);
 
-    return encodeBase58(temp, ripeLength + 4U, out, outLength);
+    return encodeBase58(temp, ripeLength + 4, out, outSize);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

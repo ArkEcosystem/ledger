@@ -19,6 +19,7 @@
 #ifndef ARK_OPERATIONS_TRANSACTION_TYPE_9_H
 #define ARK_OPERATIONS_TRANSACTION_TYPE_9_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
@@ -36,7 +37,7 @@ typedef struct htlc_claim_asset_t {
 
 StreamStatus deserializeHtlcClaim(HtlcClaim *claim,
                                   const uint8_t *buffer,
-                                  uint32_t length);
+                                  size_t size);
 
 ////////////////////////////////////////////////////////////////////////////////
 

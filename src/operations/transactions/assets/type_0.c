@@ -18,6 +18,7 @@
 
 #include "transactions/assets/type_0.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <os.h>
@@ -34,7 +35,7 @@
 //
 // @param Transfer *transfer: The Transfer (Type 0) Asset.
 // @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
-// @param uint32_t length: The Asset Length.
+// @param size_t size: The Asset Buffer Size.
 //
 // ---
 // Internals:
@@ -51,12 +52,12 @@
 // ---
 StreamStatus deserializeTransfer(Transfer *transfer,
                                  const uint8_t *buffer,
-                                 uint32_t length) {
-    if (length != 33U) {
+                                 size_t size) {
+    if (size != 33) {
         return USTREAM_FAULT;
     }
 
-    transfer->amount        = U8LE(buffer, 0U);
+    transfer->amount        = U8LE(buffer, 0);
     transfer->expiration    = U4LE(buffer, sizeof(uint64_t));
     os_memmove(transfer->recipient,
                &buffer[sizeof(uint64_t) + sizeof(uint32_t)],

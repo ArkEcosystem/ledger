@@ -18,6 +18,7 @@
 
 #include "transactions/legacy/deserialize_legacy.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
@@ -32,7 +33,7 @@
 
 StreamStatus deserializeLegacy(Transaction *transaction,
                                const uint8_t *buffer,
-                               uint32_t length) {
+                               size_t size) {
     // V1
     if (buffer[0] == 0xFF) {
         // Deserialize Common
@@ -45,11 +46,11 @@ StreamStatus deserializeLegacy(Transaction *transaction,
         transaction->vendorField        = (uint8_t *)&buffer[50];
 
         transaction->assetOffset        = (49U + buffer[49U] + 1U);
-        transaction->assetLength        = length - (transaction->assetOffset);
+        transaction->assetSize          = size - (transaction->assetOffset);
 
         // Type 0: Transfer
         if (transaction->type == 0U) {
-            if (transaction->assetLength != 33U) {
+            if (transaction->assetSize != 33) {
                 return USTREAM_FAULT;
             }
 
@@ -62,7 +63,7 @@ StreamStatus deserializeLegacy(Transaction *transaction,
         }
         // Type 3: Vote
         else if (transaction->type == 3U) { 
-            if (transaction->assetLength != 35U) {
+            if (transaction->assetSize != 35) {
                 return USTREAM_FAULT;
             }
         }
@@ -92,22 +93,22 @@ StreamStatus deserializeLegacy(Transaction *transaction,
             transaction->vendorFieldLength = 0U;
         }
 
-        transaction->amount         = U8LE(buffer, 123U);
-        transaction->fee            = U8LE(buffer, 131U);
+        transaction->amount         = U8LE(buffer, 123);
+        transaction->fee            = U8LE(buffer, 131);
 
-        transaction->assetOffset    = 139U;
-        transaction->assetLength    = length - transaction->assetOffset;
+        transaction->assetOffset    = 139;
+        transaction->assetSize      = size - transaction->assetOffset;
 
         // Type 0: Transfer
         if (transaction->type == 0U) {
-            if (transaction->assetLength != 0U) {
+            if (transaction->assetSize != 0U) {
                 return USTREAM_FAULT;
             }
         }
 
         // Type 3: Vote
         else if (transaction->type == 3U){
-            if (transaction->assetLength != 67U) {
+            if (transaction->assetSize != 67) {
                 return USTREAM_FAULT;
             }
         }

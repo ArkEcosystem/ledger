@@ -18,6 +18,7 @@
 
 #include "transactions/assets/type_10.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <os.h>
@@ -32,7 +33,7 @@
 //
 // @param HtlcRefund *refund: The Htlc Refund (Type 10) Asset.
 // @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
-// @param uint32_t length: The Asset Length.
+// @param size_t size: The Asset Buffer Size.
 //
 // ---
 // Internals:
@@ -43,8 +44,8 @@
 // ---
 StreamStatus deserializeHtlcRefund(HtlcRefund *refund,
                                    const uint8_t *buffer,
-                                   uint32_t length) {
-    if (length != HASH_32_LENGTH) {
+                                   size_t size) {
+    if (size != HASH_32_LENGTH) {
         return USTREAM_FAULT;
     }
 

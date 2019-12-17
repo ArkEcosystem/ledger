@@ -19,6 +19,7 @@
 #ifndef ARK_OPERATIONS_TRANSACTION_TYPE_5_H
 #define ARK_OPERATIONS_TRANSACTION_TYPE_5_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
@@ -28,13 +29,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef struct ipfs_asset_t {
-  uint8_t   length;
+  size_t    length;
   uint8_t   dag[HASH_64_LENGTH];
 } Ipfs;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-StreamStatus deserializeIpfs(Ipfs *ipfs, const uint8_t *buffer, uint32_t length);
+StreamStatus deserializeIpfs(Ipfs *ipfs, const uint8_t *buffer, size_t size);
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -19,6 +19,7 @@
 #ifndef ARK_CRYPTO_SIGNING_H
 #define ARK_CRYPTO_SIGNING_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <os.h>
@@ -41,7 +42,7 @@ typedef struct signing_context_t {
 uint32_t signEcdsa(const cx_ecfp_private_key_t *privateKey,
                    const uint8_t *hash,
                    uint8_t *signature,
-                   unsigned int signatureLength);
+                   size_t signatureSize);
 
 ////////////////////////////////////////////////////////////////////////////////
 

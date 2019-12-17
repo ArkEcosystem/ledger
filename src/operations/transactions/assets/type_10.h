@@ -19,6 +19,7 @@
 #ifndef ARK_OPERATIONS_TRANSACTION_TYPE_10_H
 #define ARK_OPERATIONS_TRANSACTION_TYPE_10_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
@@ -35,7 +36,7 @@ typedef struct htlc_refund_asset_t {
 
 StreamStatus deserializeHtlcRefund(HtlcRefund *refund,
                                    const uint8_t *buffer,
-                                   uint32_t length);
+                                   size_t size);
 
 ////////////////////////////////////////////////////////////////////////////////
 

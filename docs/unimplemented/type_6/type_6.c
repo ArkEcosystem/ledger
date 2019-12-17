@@ -91,7 +91,7 @@ static StreamStatus internalDeserializeAsset(Transaction *transaction,
     case TRANSACTION_TYPE_MULTIPAYMENT:
         status = deserializeMultiPayment(&transaction->asset.multiPayment,
                                          &buffer[assetOffset],
-                                         assetLength);
+                                         assetSize);
         break;
 /////////
 }

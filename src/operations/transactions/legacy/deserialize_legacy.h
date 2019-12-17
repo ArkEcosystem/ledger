@@ -19,6 +19,7 @@
 #ifndef ARK_OPERATIONS_TRANSACTIONS_DESERIALIZE_LEGACY_H
 #define ARK_OPERATIONS_TRANSACTIONS_DESERIALIZE_LEGACY_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include "operations/status.h"
@@ -28,7 +29,7 @@
 
 StreamStatus deserializeLegacy(Transaction *transaction,
                                const uint8_t *buffer,
-                               uint32_t length);
+                               size_t size);
 
 ////////////////////////////////////////////////////////////////////////////////
 

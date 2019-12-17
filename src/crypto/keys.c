@@ -18,6 +18,8 @@
 
 #include "crypto/keys.h"
 
+#include <stddef.h>
+
 #include <os.h>
 #include <cx.h>
 
@@ -27,8 +29,8 @@
 
 void compressPublicKey(const cx_ecfp_public_key_t *publicKey,
                        uint8_t *out,
-                       uint8_t outLength) {
-    if (outLength != PUBLICKEY_COMPRESSED_LENGTH) {
+                       size_t outSize) {
+    if (outSize != PUBLICKEY_COMPRESSED_LENGTH) {
         THROW(EXCEPTION_OVERFLOW);
     }
 

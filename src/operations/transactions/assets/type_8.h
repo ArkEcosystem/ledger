@@ -19,6 +19,7 @@
 #ifndef ARK_OPERATIONS_TRANSACTION_TYPE_8_H
 #define ARK_OPERATIONS_TRANSACTION_TYPE_8_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
@@ -39,7 +40,7 @@ typedef struct htlc_lock_asset_t {
 
 StreamStatus deserializeHtlcLock(HtlcLock *lock,
                                  const uint8_t *buffer,
-                                 uint32_t length);
+                                 size_t size);
 
 ////////////////////////////////////////////////////////////////////////////////
 

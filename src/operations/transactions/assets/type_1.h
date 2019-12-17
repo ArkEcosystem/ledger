@@ -19,6 +19,7 @@
 #ifndef ARK_OPERATIONS_TRANSACTION_TYPE_1_H
 #define ARK_OPERATIONS_TRANSACTION_TYPE_1_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
@@ -35,7 +36,7 @@ typedef struct ss_registration_asset_t {
 
 StreamStatus deserializeSecondSignature(SecondSignatureRegistration *registration,
                                         const uint8_t *buffer,
-                                        uint32_t length);
+                                        size_t size);
 
 ////////////////////////////////////////////////////////////////////////////////
 

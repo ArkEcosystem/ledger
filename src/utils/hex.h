@@ -19,11 +19,12 @@
 #ifndef ARK_UTILS_HEX_H
 #define ARK_UTILS_HEX_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void bytesToHex(char *dest, const uint8_t *src, uint8_t length);
+void bytesToHex(char *dest, const uint8_t *src, size_t length);
 
 ////////////////////////////////////////////////////////////////////////////////
 

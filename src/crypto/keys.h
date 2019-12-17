@@ -40,7 +40,7 @@ typedef struct public_key_context_t {
 
 void compressPublicKey(const cx_ecfp_public_key_t *publicKey,
                        uint8_t *out,
-                       uint8_t outLength);
+                       size_t outSize);
 
 uint32_t setPublicKeyContext(PublicKeyContext *ctx, uint8_t *apduBuffer);
 

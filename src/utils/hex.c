@@ -18,6 +18,7 @@
 
 #include "utils/hex.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <os.h>
@@ -33,7 +34,7 @@ const uint8_t hexDigits[] = {
 
 // Convert Bytes to a Hex string.
 // NULL terminator is added at (hexStringLen + 1)
-void bytesToHex(char *dest, const uint8_t *src, uint8_t length) {
+void bytesToHex(char *dest, const uint8_t *src, size_t length) {
     while (length--) {
         *dest++ = hexDigits[(*src >> 0x04) & 0xF];
         *dest++ = hexDigits[*src & 0xF];

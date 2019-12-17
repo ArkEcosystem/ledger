@@ -19,6 +19,7 @@
 #ifndef ARK_OPERATIONS_TRANSACTION_TYPE_3_H
 #define ARK_OPERATIONS_TRANSACTION_TYPE_3_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
@@ -33,9 +34,7 @@ typedef struct vote_asset_t {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-StreamStatus deserializeVote(Vote *vote,
-                             const uint8_t *buffer,
-                             uint32_t length);
+StreamStatus deserializeVote(Vote *vote, const uint8_t *buffer, size_t size);
 
 ////////////////////////////////////////////////////////////////////////////////
 

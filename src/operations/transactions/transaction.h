@@ -39,8 +39,8 @@ typedef struct transaction_t {
         struct {  // v1 or Legacy
             uint8_t     recipient[ADDRESS_HASH_LENGTH];
             uint64_t    amount;
-            uint32_t    assetOffset;
-            uint8_t     assetLength;
+            size_t      assetOffset;
+            size_t      assetSize;
             uint8_t     *assetPtr;
         };
         struct {  // v2

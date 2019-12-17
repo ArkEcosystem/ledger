@@ -96,8 +96,9 @@ static void internalDeserializeCommon(Transaction *transaction,
 
 // Deserialize Type
 //
-// @param uint8_t *buffer: The serialized transactions buffer.
 // @param Transaction *transaction: A Transaction object.
+// @param uint8_t *buffer: The serialized transactions buffer.
+// @param size_t size
 //
 // ---
 // Internals:
@@ -117,54 +118,54 @@ static void internalDeserializeCommon(Transaction *transaction,
 // ---
 static StreamStatus internalDeserializeAsset(Transaction *transaction,
                                              const uint8_t *buffer,
-                                             uint32_t length) {
+                                             size_t size) {
     StreamStatus status = USTREAM_FAULT;
 
-    uint32_t assetOffset = 58U + transaction->vendorFieldLength + 1U;
-    uint32_t assetLength = length - assetOffset;
+    size_t assetOffset = 58U + transaction->vendorFieldLength + 1U;
+    size_t assetSize = size - assetOffset;
 
     switch (transaction->type) {
         case TRANSACTION_TYPE_TRANSFER:
             status = deserializeTransfer(&transaction->asset.transfer,
                                          &buffer[assetOffset],
-                                         assetLength);
+                                         assetSize);
             break;
 
         case TRANSACTION_TYPE_SECOND_SIGNATURE:
             status = deserializeSecondSignature(
                     &transaction->asset.secondSignature,
                     &buffer[assetOffset],
-                    assetLength);
+                    assetSize);
             break;
 
         case TRANSACTION_TYPE_VOTE:
             status = deserializeVote(&transaction->asset.vote,
                                      &buffer[assetOffset],
-                                     assetLength);
+                                     assetSize);
             break;
 
         case TRANSACTION_TYPE_IPFS:
             status = deserializeIpfs(&transaction->asset.ipfs,
                                      &buffer[assetOffset],
-                                     assetLength);
+                                     assetSize);
             break;
 
         case TRANSACTION_TYPE_HTLC_LOCK:
             status = deserializeHtlcLock(&transaction->asset.htlcLock,
                                          &buffer[assetOffset],
-                                         assetLength);
+                                         assetSize);
             break;
 
         case TRANSACTION_TYPE_HTLC_CLAIM:
             status = deserializeHtlcClaim(&transaction->asset.htlcClaim,
                                           &buffer[assetOffset],
-                                          assetLength);
+                                          assetSize);
             break;
 
         case TRANSACTION_TYPE_HTLC_REFUND:
             status = deserializeHtlcRefund(&transaction->asset.htlcRefund,
                                            &buffer[assetOffset],
-                                           assetLength);
+                                           assetSize);
             break;
 
         default: break;
@@ -177,13 +178,13 @@ static StreamStatus internalDeserializeAsset(Transaction *transaction,
 
 static StreamStatus internalDeserialize(Transaction *transaction,
                                         const uint8_t *buffer,
-                                        uint32_t length) {
+                                        size_t size) {
     StreamStatus status = USTREAM_FAULT;
 
     // V2 Transactions
     if (buffer[0] == 0xFF && buffer[1] == TRANSACTION_VERSION_TYPE_2) {
         internalDeserializeCommon(transaction, buffer);
-        status = internalDeserializeAsset(transaction, buffer, length);
+        status = internalDeserializeAsset(transaction, buffer, size);
         if (status == USTREAM_FINISHED) {
             setDisplay(transaction);
         }
@@ -193,7 +194,7 @@ static StreamStatus internalDeserialize(Transaction *transaction,
     else if (buffer[0] != 0xFF ||
             (buffer[0] == 0xFF && buffer[1] == TRANSACTION_VERSION_TYPE_1)) {
 
-        status = deserializeLegacy(transaction, buffer, length);
+        status = deserializeLegacy(transaction, buffer, size);
 
         // Transfer
         if (transaction->type == TRANSACTION_TYPE_TRANSFER) {
@@ -210,12 +211,12 @@ static StreamStatus internalDeserialize(Transaction *transaction,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-StreamStatus deserialize(const uint8_t *buffer, uint32_t length) {
+StreamStatus deserialize(const uint8_t *buffer, size_t size) {
     StreamStatus result;
     BEGIN_TRY {
         TRY {
             os_memset(&transaction, 0U, sizeof(Transaction));
-            result = internalDeserialize(&transaction, buffer, length);
+            result = internalDeserialize(&transaction, buffer, size);
         }
 
         CATCH_OTHER(e) {
