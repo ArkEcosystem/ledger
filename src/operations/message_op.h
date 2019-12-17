@@ -56,7 +56,7 @@ extern void setDisplaySteps(uint8_t steps);
 // Set the Screen Title for a given Message display segment.
 //
 // @param: uint8_t *dst
-// @param: const uint8_t msgScreen
+// @param: uint8_t msgScreen
 //
 // -------
 // Title:
@@ -65,7 +65,7 @@ extern void setDisplaySteps(uint8_t steps);
 // - screen 2..N: \"message pt N:\"
 //
 // ---
-static void internalSetMessageTitle(uint8_t *dst, const uint8_t msgScreen) {
+static void internalSetMessageTitle(uint8_t *dst, uint8_t msgScreen) {
     os_memmove((char *)dst, MSG_TITLE, MSG_TITLE_SIZE);
 
     if (msgScreen > 1U) {
@@ -87,7 +87,7 @@ static void internalSetMessageTitle(uint8_t *dst, const uint8_t msgScreen) {
 // Message must be: 0 < Msg <= 255
 //
 // @param: const uint8_t *buffer
-// @param: const uint32_t length
+// @param: uint32_t length
 //
 // -------
 // Display:
@@ -121,7 +121,7 @@ static void internalSetMessageTitle(uint8_t *dst, const uint8_t msgScreen) {
 // - screen 5: \"...message\"
 //
 // ---
-static void internalHandleMessage(const uint8_t *buffer, const uint32_t length) {
+static void internalHandleMessage(const uint8_t *buffer, uint32_t length) {
     if (length == 0UL || length > MAX_DISPLAY_BUFFER) {
         THROW(0x6A80);
     }
@@ -203,7 +203,7 @@ static void internalHandleMessage(const uint8_t *buffer, const uint32_t length) 
 // - Multiple steps prepended/appended by ellipses (...)
 //
 // ---
-void handleMessage(const uint8_t *buffer, const uint32_t length) {
+void handleMessage(const uint8_t *buffer, uint32_t length) {
     BEGIN_TRY {
         TRY {
             internalHandleMessage(buffer, length);

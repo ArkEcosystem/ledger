@@ -117,7 +117,7 @@ static void internalDeserializeCommon(Transaction *transaction,
 // ---
 static StreamStatus internalDeserializeAsset(Transaction *transaction,
                                              const uint8_t *buffer,
-                                             const uint32_t length) {
+                                             uint32_t length) {
     StreamStatus status = USTREAM_FAULT;
 
     uint32_t assetOffset = 58U + transaction->vendorFieldLength + 1U;
@@ -177,7 +177,7 @@ static StreamStatus internalDeserializeAsset(Transaction *transaction,
 
 static StreamStatus internalDeserialize(Transaction *transaction,
                                         const uint8_t *buffer,
-                                        const uint32_t length) {
+                                        uint32_t length) {
     StreamStatus status = USTREAM_FAULT;
 
     // V2 Transactions
@@ -210,7 +210,7 @@ static StreamStatus internalDeserialize(Transaction *transaction,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-StreamStatus deserialize(const uint8_t *buffer, const uint32_t length) {
+StreamStatus deserialize(const uint8_t *buffer, uint32_t length) {
     StreamStatus result;
     BEGIN_TRY {
         TRY {

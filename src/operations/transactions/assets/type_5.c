@@ -46,7 +46,7 @@
 // ---
 StreamStatus deserializeIpfs(Ipfs *ipfs,
                              const uint8_t *buffer,
-                             const uint32_t length) {
+                             uint32_t length) {
     // 2nd byte of IPFS hash contains its len.
     //
     // byte[0] == hash-type (sha256).

@@ -44,7 +44,7 @@ extern unsigned int ux_step_count;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static const ux_menu_entry_t menu_main[4] = {
+const ux_menu_entry_t menu_main[4] = {
     { NULL, NULL, 0, &C_icon_ark,
       "Use wallet to", "view accounts", 33U, 12U },
     { NULL, NULL, 0U, NULL,
@@ -55,7 +55,7 @@ static const ux_menu_entry_t menu_main[4] = {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static const char *const menu_flow[6][2] = {
+const char *const menu_flow[6][2] = {
     { "type",                                   (const char *const)displayCtx.operation },
     { (const char *const)displayCtx.title[0],   (const char *const)displayCtx.var[0] },
     { (const char *const)displayCtx.title[1],   (const char *const)displayCtx.var[1] },
@@ -66,7 +66,7 @@ static const char *const menu_flow[6][2] = {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static const bagl_element_t operation_menu[7] = {
+const bagl_element_t operation_menu[7] = {
     { { BAGL_RECTANGLE, // type
             0x00,       // userid
             0,          // x

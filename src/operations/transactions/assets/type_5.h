@@ -34,9 +34,7 @@ typedef struct ipfs_asset_t {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-StreamStatus deserializeIpfs(Ipfs *ipfs,
-                             const uint8_t *buffer,
-                             const uint32_t length);
+StreamStatus deserializeIpfs(Ipfs *ipfs, const uint8_t *buffer, uint32_t length);
 
 ////////////////////////////////////////////////////////////////////////////////
 
