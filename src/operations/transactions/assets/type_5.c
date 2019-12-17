@@ -18,6 +18,7 @@
 
 #include "transactions/assets/type_5.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <os.h>
@@ -32,7 +33,7 @@
 //
 // @param Ipfs *ipfs: The Ipfs (Type 5) Asset.
 // @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
-// @param uint32_t length: The Asset Length.
+// @param size_t size: The Asset Buffer Size.
 //
 // ---
 // Internals:
@@ -46,7 +47,7 @@
 // ---
 StreamStatus deserializeIpfs(Ipfs *ipfs,
                              const uint8_t *buffer,
-                             uint32_t length) {
+                             size_t size) {
     // 2nd byte of IPFS hash contains its len.
     //
     // byte[0] == hash-type (sha256).
@@ -56,11 +57,11 @@ StreamStatus deserializeIpfs(Ipfs *ipfs,
 
     // Let's make sure the length isn't > 255,
     // and that the lengths match.
-    if (length > 255U || length != ipfs->length) {
+    if (size > 255 || size != ipfs->length) {
         return USTREAM_FAULT;
     }
 
-    os_memmove(ipfs->dag, buffer, length);
+    os_memmove(ipfs->dag, buffer, size);
 
     return USTREAM_FINISHED;
 }

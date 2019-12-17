@@ -18,6 +18,7 @@
 
 #include "transactions/assets/type_9.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <os.h>
@@ -35,7 +36,7 @@
 //
 // @param HtlcClaim *claim: The Htlc Claim (Type 8) Asset.
 // @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
-// @param uint32_t length: The Asset Length.
+// @param size_t size: The Asset Buffer Size.
 //
 // ---
 // Internals:
@@ -49,13 +50,13 @@
 // ---
 StreamStatus deserializeHtlcClaim(HtlcClaim *claim,
                                   const uint8_t *buffer,
-                                  uint32_t length) {
-    if (length <= HASH_32_LENGTH) {
+                                  size_t size) {
+    if (size <= HASH_32_LENGTH) {
         return USTREAM_FAULT;
     }
 
     os_memmove(claim->id, &buffer[0], HASH_32_LENGTH);
-    os_memmove(claim->secret, &buffer[HASH_32_LENGTH], length - HASH_32_LENGTH);
+    os_memmove(claim->secret, &buffer[HASH_32_LENGTH], size - HASH_32_LENGTH);
 
     return USTREAM_FINISHED;
 }

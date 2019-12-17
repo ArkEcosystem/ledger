@@ -86,7 +86,7 @@ static StreamStatus internalDeserializeAsset(Transaction *transaction,
     case TRANSACTION_TYPE_MULTI_SIGNATURE:
         status = deserializeMultiSignature(&transaction->asset.multiSignature,
                                             &buffer[assetOffset],
-                                            assetLength);
+                                            assetSize);
         break;
 /////////
 }

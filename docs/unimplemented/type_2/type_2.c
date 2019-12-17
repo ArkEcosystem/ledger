@@ -84,7 +84,7 @@ static StreamStatus internalDeserializeAsset(Transaction *transaction,
         status = deserializeDelegateRegistration(
                         &transaction->asset.delegateRegistration,
                         &buffer[assetOffset],
-                        assetLength);
+                        assetSize);
         break;
 /////////
 }

@@ -19,6 +19,7 @@
 #ifndef ARK_UTILS_BASE58_H
 #define ARK_UTILS_BASE58_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <os.h>
@@ -26,14 +27,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 uint8_t encodeBase58(uint8_t WIDE *in,
-                     uint8_t length,
+                     size_t inSize,
                      uint8_t *out,
-                     uint8_t maxoutlen);
+                     size_t maxOutSize);
 
 uint16_t encodeBase58PublicKey(uint8_t WIDE *in,
-                               uint16_t inLength,
+                               size_t inSize,
                                uint8_t *out,
-                               uint16_t outLength,
+                               size_t outSize,
                                uint16_t version,
                                uint8_t alreadyHashed);
 

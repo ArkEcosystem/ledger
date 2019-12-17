@@ -19,6 +19,7 @@
 #ifndef ARK_OPERATIONS_TRANSACTION_H
 #define ARK_OPERATIONS_TRANSACTION_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <os.h>
@@ -29,8 +30,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void handleTransaction(const uint8_t *buffer, uint32_t length) {
-    if (deserialize(buffer, length) != USTREAM_FINISHED) {
+void handleTransaction(const uint8_t *buffer, size_t size) {
+    if (deserialize(buffer, size) != USTREAM_FINISHED) {
         // Deserialization failed
         THROW(0x6A80);
     }

@@ -18,6 +18,8 @@
 
 #include "crypto/signing.h"
 
+#include <stddef.h>
+
 #include <os.h>
 #include <cx.h>
 
@@ -28,12 +30,12 @@
 uint32_t signEcdsa(const cx_ecfp_private_key_t *privateKey,
                    const uint8_t *hash,
                    uint8_t *signature,
-                   unsigned int signatureLength) {
+                   size_t signatureSize) {
     #if CX_APILEVEL >= 8U
         return cx_ecdsa_sign(privateKey,
                              CX_RND_RFC6979 | CX_LAST, CX_SHA256,
                              hash, HASH_32_LENGTH,
-                             signature, signatureLength,
+                             signature, signatureSize,
                              NULL);
     #else
         UNUSED(signatureLength);

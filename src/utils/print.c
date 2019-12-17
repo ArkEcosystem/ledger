@@ -19,6 +19,7 @@
 #include "utils/print.h"
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
 #include <os.h>
@@ -28,16 +29,16 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 static bool adjustDecimals(char *src,
-                           uint32_t srcLength,
+                           size_t srcSize,
                            char *target,
-                           uint32_t targetLength,
+                           size_t targetSize,
                            uint8_t decimals) {
-    uint32_t startOffset;
-    uint32_t lastZeroOffset = 0U;
-    uint32_t offset = 0U;
+    size_t startOffset;
+    size_t lastZeroOffset = 0;
+    size_t offset = 0;
 
-    if ((srcLength == 1U) && (*src == '0')) {
-        if (targetLength < 2U) {
+    if ((srcSize == 1) && (*src == '0')) {
+        if (targetSize < 2) {
             return false;
         }
         target[offset++] = '0';
@@ -45,9 +46,9 @@ static bool adjustDecimals(char *src,
         return true;
     }
 
-    if (srcLength <= decimals) {
-        uint32_t delta = decimals - srcLength;
-        if (targetLength < srcLength + 1U + 2U + delta) {
+    if (srcSize <= decimals) {
+        size_t delta = decimals - srcSize;
+        if (targetSize < srcSize + 1 + 2 + delta) {
             return false;
         }
 
@@ -56,22 +57,22 @@ static bool adjustDecimals(char *src,
           target[offset++] = '.';
         }
         
-        for (uint32_t i = 0U; i < delta; i++) {
+        for (size_t i = 0; i < delta; i++) {
             target[offset++] = '0';
         }
 
         startOffset = offset;
-        for (uint32_t i = 0U; i < srcLength; i++) {
+        for (size_t i = 0; i < srcSize; i++) {
             target[offset++] = src[i];
         }
 
         target[offset] = '\0';
     }
     else {
-        uint32_t sourceOffset = 0U;
-        uint32_t delta = srcLength - decimals;
+        size_t sourceOffset = 0;
+        size_t delta = srcSize - decimals;
 
-        if (targetLength < srcLength + 1U + 1U) {
+        if (targetSize < srcSize + 1 + 1) {
             return false;
         }
 
@@ -79,21 +80,21 @@ static bool adjustDecimals(char *src,
             target[offset++] = src[sourceOffset++];
         }
 
-        if (decimals != 0U) {
+        if (decimals != 0) {
             target[offset++] = '.';
         }
 
         startOffset = offset;
-        while (sourceOffset < srcLength) {
+        while (sourceOffset < srcSize) {
             target[offset++] = src[sourceOffset++];
         }
 
         target[offset] = '\0';
     }
 
-    for (uint32_t i = startOffset; i < offset; i++) {
+    for (size_t i = startOffset; i < offset; i++) {
         if (target[i] == '0') {
-            if (lastZeroOffset == 0U) {
+            if (lastZeroOffset == 0) {
                 lastZeroOffset = i;
             }
         }
@@ -102,10 +103,10 @@ static bool adjustDecimals(char *src,
         }
     }
 
-    if (lastZeroOffset != 0U) {
+    if (lastZeroOffset != 0) {
         target[lastZeroOffset] = '\0';
-        if (target[lastZeroOffset - 1U] == '.') {
-            target[lastZeroOffset - 1U] = '\0';
+        if (target[lastZeroOffset - 1] == '.') {
+            target[lastZeroOffset - 1] = '\0';
         }
     }
 
@@ -114,15 +115,15 @@ static bool adjustDecimals(char *src,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t printAmount(uint64_t amount,
-                    uint8_t *out,
-                    uint8_t outLength,
-                    const char *tokenName,
-                    uint8_t tokenNameLength,
-                    uint8_t decimals) {
+size_t printAmount(uint64_t amount,
+                   uint8_t *out,
+                   size_t outSize,
+                   const char *tokenName,
+                   size_t tokenNameSize,
+                   uint8_t decimals) {
     uint8_t tmp[21];
-    uint8_t tmp2[sizeof(tmp) + tokenNameLength];
-    uint32_t numDigits = 0UL, i;
+    uint8_t tmp2[sizeof(tmp) + tokenNameSize];
+    size_t numDigits = 0, i;
     uint64_t base = 1ULL;
 
     while (base <= amount) {
@@ -130,29 +131,29 @@ uint8_t printAmount(uint64_t amount,
         numDigits++;
     }
 
-    if (numDigits > sizeof(tmp) - 1U) {
+    if (numDigits > sizeof(tmp) - 1) {
         THROW(EXCEPTION);
     }
 
     base /= 0x0A;
-    for (i = 0U; i < numDigits; i++) {
+    for (i = 0; i < numDigits; i++) {
         tmp[i] = '0' + ((amount / base) % 0x0A);
         base /= 0x0A;
     }
 
     tmp[i] = '\0';
 
-    if (tokenNameLength > 0U) {
-        os_memmove(tmp2, tokenName, tokenNameLength);
+    if (tokenNameSize > 0) {
+        os_memmove(tmp2, tokenName, tokenNameSize);
     }
 
     adjustDecimals((char *)tmp, i,
-                   (char *)tmp2 + tokenNameLength,
-                   sizeof(tmp2) - tokenNameLength,
+                   (char *)tmp2 + tokenNameSize,
+                   sizeof(tmp2) - tokenNameSize,
                    decimals);
 
 
-    if (sizeof(tmp2) < outLength - 1U) {
+    if (sizeof(tmp2) < outSize - 1) {
         os_memmove(out, tmp2, sizeof(tmp2));
     } else {
         out[0] = '\0';

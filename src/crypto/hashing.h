@@ -19,6 +19,7 @@
 #ifndef ARK_CRYPTO_HASHING_H
 #define ARK_CRYPTO_HASHING_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <os.h>
@@ -26,12 +27,9 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void hash160(uint8_t WIDE *in, uint16_t inLength, uint8_t *out);
+void hash160(uint8_t WIDE *in, size_t inSize, uint8_t *out);
 
-void hash256(cx_sha256_t *ctx,
-             uint8_t WIDE *in,
-             uint16_t inLength,
-             uint8_t *out);
+void hash256(cx_sha256_t *ctx, uint8_t WIDE *in, size_t inSize, uint8_t *out);
 
 ////////////////////////////////////////////////////////////////////////////////
 

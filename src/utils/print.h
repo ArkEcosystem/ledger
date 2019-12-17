@@ -19,16 +19,17 @@
 #ifndef ARK_UTILS_PRINT_H
 #define ARK_UTILS_PRINT_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t printAmount(uint64_t amount,
-                    uint8_t *out,
-                    uint8_t outLength,
-                    const char *tokenName,
-                    uint8_t tokenNameLength,
-                    uint8_t decimals);
+size_t printAmount(uint64_t amount,
+                   uint8_t *out,
+                   size_t outSize,
+                   const char *tokenName,
+                   size_t tokenNameSize,
+                   uint8_t decimals);
 
 ////////////////////////////////////////////////////////////////////////////////
 

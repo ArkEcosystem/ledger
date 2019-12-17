@@ -19,6 +19,7 @@
 #ifndef ARK_OPERATIONS_MESSAGE_H
 #define ARK_OPERATIONS_MESSAGE_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <os.h>
@@ -48,8 +49,8 @@ extern void setDisplaySteps(uint8_t steps);
 #define MSG_TITLE_EXTRA         " pt  :"
 #define MSG_TITLE_EXTRA_SIZE    sizeof(MSG_TITLE_EXTRA)
 
-#define MSG_NUM_OFFSET      MSG_TITLE_SIZE - 2U + MSG_TITLE_EXTRA_SIZE - 3U
-#define ASCII_OFFSET        48U
+#define MSG_NUM_OFFSET      MSG_TITLE_SIZE - 2 + MSG_TITLE_EXTRA_SIZE - 3
+#define ASCII_OFFSET        48
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -87,7 +88,7 @@ static void internalSetMessageTitle(uint8_t *dst, uint8_t msgScreen) {
 // Message must be: 0 < Msg <= 255
 //
 // @param: const uint8_t *buffer
-// @param: uint32_t length
+// @param: size_t length
 //
 // -------
 // Display:
@@ -121,37 +122,37 @@ static void internalSetMessageTitle(uint8_t *dst, uint8_t msgScreen) {
 // - screen 5: \"...message\"
 //
 // ---
-static void internalHandleMessage(const uint8_t *buffer, uint32_t length) {
-    if (length == 0UL || length > MAX_DISPLAY_BUFFER) {
+static void internalHandleMessage(const uint8_t *buffer, size_t length) {
+    if (length == 0 || length > MAX_DISPLAY_BUFFER) {
         THROW(0x6A80);
     }
 
     // Set the operation title.
-    os_memmove(displayCtx.operation, "Message", 8U);
+    os_memmove(displayCtx.operation, "Message", 8);
 
     // Set the Message Length for display.
-    os_memmove(displayCtx.title[0], "length:", 8U);
+    os_memmove(displayCtx.title[0], "length:", 8);
     printAmount(length,
                 displayCtx.var[0], sizeof(displayCtx.var[0]),
                 "", 0U, 0U);
 
     // Calculate the usable space inside a screen var.
     const size_t usableSize = sizeof(displayCtx.var[1]) -
-                              (2U * ELLIPSES_SIZE - 1U);
+                              (2 * ELLIPSES_SIZE - 1);
 
     // Set the first Message Title.
-    internalSetMessageTitle(displayCtx.title[1], 1U);
+    internalSetMessageTitle(displayCtx.title[1], 1);
 
     // Set the first part of the Message.
     // First screen will always have at least usableSize + 3.
     os_memmove(displayCtx.var[1],
                buffer,
-               MIN(length, usableSize + ELLIPSES_SIZE - 1U));
-    displayCtx.var[1][MIN(length, usableSize + ELLIPSES_SIZE - 1U)] = '\0';
+               MIN(length, usableSize + ELLIPSES_SIZE - 1));
+    displayCtx.var[1][MIN(length, usableSize + ELLIPSES_SIZE - 1)] = '\0';
 
     // - 1 step for Length Display.
     // - 2..5 Steps for Message.
-    const uint8_t steps = 1U + ((length - 1U) / usableSize) + 1U;
+    const uint8_t steps = 1 + ((length - 1) / usableSize) + 1;
 
     // Loop only executed if more than 1 screen is needed.
     // Max of 4 screens.
@@ -161,16 +162,16 @@ static void internalHandleMessage(const uint8_t *buffer, uint32_t length) {
     // - set current screen('&message[pos]') to: '&var[step][3]'
     // - null-terminate the current screen: '...' + msg + '\0'
     uint8_t step    = 0U;
-    uint32_t pos    = 0U;
+    size_t pos      = 0;
     for (uint8_t i = 0; i < steps - 2U; ++i) {
         step    = i + 2U;
-        pos     =  usableSize * (i + 1U);
+        pos     =  usableSize * (i + 1);
 
         // - append ellipses to the end of the last var.
         //   - if last var is screen 1:     (msg) + '...'
         //   - if last var is screen 2..3:  ('...' + msg) + '...'
         os_memmove(&displayCtx
-                        .var[i + 1U][usableSize + (i ? ELLIPSES_SIZE - 1U : 0U)],
+                        .var[i + 1][usableSize + (i ? ELLIPSES_SIZE - 1 : 0)],
                    ELLIPSES,
                    ELLIPSES_SIZE);
 
@@ -178,16 +179,16 @@ static void internalHandleMessage(const uint8_t *buffer, uint32_t length) {
         internalSetMessageTitle(displayCtx.title[step], step);
 
         // Prepend the current var with ellipses.
-        os_memmove((char *)displayCtx.var[step], ELLIPSES, ELLIPSES_SIZE - 1U);
+        os_memmove((char *)displayCtx.var[step], ELLIPSES, ELLIPSES_SIZE - 1);
 
         // Set the current var.
-        os_memmove((char *)&displayCtx.var[step][ELLIPSES_SIZE - 1U],
+        os_memmove((char *)&displayCtx.var[step][ELLIPSES_SIZE - 1],
                     buffer + pos,
                     length - pos);
 
         // Null-terminate the prepended step var.
         // - (... + var + \0)
-        displayCtx.var[step][ELLIPSES_SIZE - 1U + length - pos] = '\0';
+        displayCtx.var[step][ELLIPSES_SIZE - 1 + length - pos] = '\0';
     }
 
     setDisplaySteps(steps);
@@ -203,7 +204,7 @@ static void internalHandleMessage(const uint8_t *buffer, uint32_t length) {
 // - Multiple steps prepended/appended by ellipses (...)
 //
 // ---
-void handleMessage(const uint8_t *buffer, uint32_t length) {
+void handleMessage(const uint8_t *buffer, size_t length) {
     BEGIN_TRY {
         TRY {
             internalHandleMessage(buffer, length);

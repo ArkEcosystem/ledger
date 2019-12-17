@@ -18,6 +18,7 @@
 
 #include "transactions/assets/type_1.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <os.h>
@@ -30,7 +31,7 @@
 //
 // @param SecondSignatureRegistration *registration: The Second Signature Registration (Type 1) Asset.
 // @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
-// @param uint32_t length: The Asset Length.
+// @param size_t size: The Asset Buffer Size.
 //
 // ---
 // Internals:
@@ -41,8 +42,8 @@
 // ---
 StreamStatus deserializeSecondSignature(SecondSignatureRegistration *registration,
                                         const uint8_t *buffer,
-                                        uint32_t length) {
-    if (length != 33U) {
+                                        size_t size) {
+    if (size != 33) {
         return USTREAM_FAULT;
     }
 
