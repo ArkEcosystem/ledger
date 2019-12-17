@@ -57,7 +57,7 @@
 // ---
 StreamStatus deserializeHtlcLock(HtlcLock *lock,
                                  const uint8_t *buffer,
-                                 const uint32_t length) {
+                                 uint32_t length) {
     if (length != 66U) {
         return USTREAM_FAULT;
     }

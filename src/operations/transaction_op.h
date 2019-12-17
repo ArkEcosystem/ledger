@@ -29,7 +29,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void handleTransaction(const uint8_t *buffer, const uint32_t length) {
+void handleTransaction(const uint8_t *buffer, uint32_t length) {
     if (deserialize(buffer, length) != USTREAM_FINISHED) {
         // Deserialization failed
         THROW(0x6A80);

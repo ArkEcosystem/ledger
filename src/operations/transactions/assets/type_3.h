@@ -35,7 +35,7 @@ typedef struct vote_asset_t {
 
 StreamStatus deserializeVote(Vote *vote,
                              const uint8_t *buffer,
-                             const uint32_t length);
+                             uint32_t length);
 
 ////////////////////////////////////////////////////////////////////////////////
 

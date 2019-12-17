@@ -35,7 +35,7 @@ typedef struct htlc_refund_asset_t {
 
 StreamStatus deserializeHtlcRefund(HtlcRefund *refund,
                                    const uint8_t *buffer,
-                                   const uint32_t length);
+                                   uint32_t length);
 
 ////////////////////////////////////////////////////////////////////////////////
 

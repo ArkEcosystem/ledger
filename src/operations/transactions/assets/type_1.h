@@ -35,7 +35,7 @@ typedef struct ss_registration_asset_t {
 
 StreamStatus deserializeSecondSignature(SecondSignatureRegistration *registration,
                                         const uint8_t *buffer,
-                                        const uint32_t length);
+                                        uint32_t length);
 
 ////////////////////////////////////////////////////////////////////////////////
 

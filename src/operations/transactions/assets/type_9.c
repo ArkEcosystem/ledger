@@ -49,7 +49,7 @@
 // ---
 StreamStatus deserializeHtlcClaim(HtlcClaim *claim,
                                   const uint8_t *buffer,
-                                  const uint32_t length) {
+                                  uint32_t length) {
     if (length <= HASH_32_LENGTH) {
         return USTREAM_FAULT;
     }
