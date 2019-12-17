@@ -17,6 +17,7 @@
 ********************************************************************************/
 
 #include <os.h>
+#include <ux.h>
 #include <os_io_seproxyhal.h>
 
 #include "operations.h"
