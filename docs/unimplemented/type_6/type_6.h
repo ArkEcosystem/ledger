@@ -33,8 +33,6 @@
 
 #include "constants.h"
 
-#include "operations/status.h"
-
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef struct multipayment_asset_t {
@@ -45,7 +43,7 @@ typedef struct multipayment_asset_t {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-StreamStatus deserializeMultiPayment(MultiPayment *payments,
+bool deserializeMultiPayment(MultiPayment *payments,
                                      const uint8_t *buffer,
                                      const uint32_t length);
 

@@ -16,16 +16,26 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_STATUS_H
-#define ARK_OPERATIONS_STATUS_H
+#ifndef ARK_OPERATIONS_TRANSACTIONS_ASSETS_SECOND_SIGNATURE_H
+#define ARK_OPERATIONS_TRANSACTIONS_ASSETS_SECOND_SIGNATURE_H
+
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+#include "constants.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef enum stream_status_t {
-    USTREAM_PROCESSING,
-    USTREAM_FINISHED,
-    USTREAM_FAULT
-} StreamStatus;
+typedef struct ss_registration_asset_t {
+    uint8_t publicKey[PUBLICKEY_COMPRESSED_LEN];
+} SecondSignatureRegistration;
+
+////////////////////////////////////////////////////////////////////////////////
+
+bool deserializeSecondSignature(SecondSignatureRegistration *registration,
+                                const uint8_t *buffer,
+                                size_t size);
 
 ////////////////////////////////////////////////////////////////////////////////
 

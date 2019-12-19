@@ -34,8 +34,6 @@
 
 #include "constants.h"
 
-#include "operations/status.h"
-
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,21 +55,21 @@
 // - multiSig->count = buffer[1];
 //
 // PublicKeys - 33N Bytes
-// - os_memmove(&multiSig->keys[0], &buffer[2], multiSig->count);
+// - bytecpy(&multiSig->keys[0], &buffer[2], multiSig->count);
 //
 // ---
-StreamStatus deserializeMultiSignature(MultiSignatureAsset *multiSig,
+bool deserializeMultiSignature(MultiSignatureAsset *multiSig,
                                        const uint8_t *buffer,
                                        const uint32_t length) {
     if ((length % 34U) != 0) {
-        return USTREAM_FAULT;
+        return false;
     }
 
     multiSig->min = buffer[0];
     multiSig->count = buffer[1];
-    os_memmove(&multiSig->keys[0], &buffer[2], multiSig->count);
+    bytecpy(&multiSig->keys[0], &buffer[2], multiSig->count);
 
-    return USTREAM_FINISHED;
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -79,7 +77,7 @@ StreamStatus deserializeMultiSignature(MultiSignatureAsset *multiSig,
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static StreamStatus internalDeserializeAsset(Transaction *transaction,
+static bool internalDeserializeAsset(Transaction *transaction,
                                              const uint8_t *buffer,
                                              const uint32_t length) {
 /////////
@@ -97,9 +95,9 @@ static StreamStatus internalDeserializeAsset(Transaction *transaction,
 ////////////////////////////////////////////////////////////////////////////////
 
 void setDisplayMultiSignature(const Transaction *transaction) {
-    os_memmove((char *)displayCtx.operation, "MultiSignature", 15U);
-    os_memmove((char *)displayCtx.title[0], "Key Count", 10U);
-    os_memmove((char *)displayCtx.title[1], "Fees", 5U);
+    bytecpy((char *)displayCtx.operation, "MultiSignature", 15);
+    bytecpy((char *)displayCtx.title[0], "Key Count", 10);
+    bytecpy((char *)displayCtx.title[1], "Fees", 5);
 
     // Key Count
     printAmount(transaction->asset.multiSignature.count,
@@ -109,7 +107,7 @@ void setDisplayMultiSignature(const Transaction *transaction) {
     // Fee
     printAmount(transaction->fee,
                 (uint8_t *)displayCtx.var[1], sizeof(displayCtx.var[1]),
-                TOKEN_NAME, TOKEN_NAME_LENGTH, TOKEN_DECIMALS);
+                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

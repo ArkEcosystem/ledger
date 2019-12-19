@@ -16,29 +16,42 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_TYPE_0_H
-#define ARK_OPERATIONS_TRANSACTION_TYPE_0_H
+#ifndef ARK_OPERATIONS_TRANSACTION_ASSETS_HTLC_REFUND_DISPLAY_H
+#define ARK_OPERATIONS_TRANSACTION_ASSETS_HTLC_REFUND_DISPLAY_H
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
 
-#include "operations/status.h"
+#include "operations/transactions/transaction.h"
+
+#include "ux/display_context.h"
+
+#include "utils/hex.h"
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct transfer_asset_t {
-    uint64_t    amount;
-    uint32_t    expiration;
-    uint8_t     recipient[ADDRESS_HASH_LENGTH];
-} Transfer;
+static const uint8_t STEPS_HTLC_REFUND = 1U;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-StreamStatus deserializeTransfer(Transfer *transfer,
-                                 const uint8_t *buffer,
-                                 size_t size);
+void displayHtlcRefund(const Transaction *transaction) {
+    const char *const LABEL     = "HTLC Refund";
+    const size_t LABEL_SIZE     = 12;
+
+    const char *const LABEL_LOCK_ID     = "Lock Id";
+    const size_t LABEL_LOCK_ID_SIZE     = 5;
+
+    bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
+    bytecpy((char *)displayCtx.title[0], LABEL_LOCK_ID, LABEL_LOCK_ID_SIZE);
+
+    // Lock Id
+    bytesToHex((char *)displayCtx.var[0],
+               transaction->asset.htlcRefund.id,
+               HASH_32_LEN);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -19,22 +19,16 @@
 #ifndef ARK_OPERATIONS_TRANSACTION_H
 #define ARK_OPERATIONS_TRANSACTION_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-
-#include <os.h>
-
-#include "operations/status.h"
 
 #include "transactions/deserializer.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void handleTransaction(const uint8_t *buffer, size_t size) {
-    if (deserialize(buffer, size) != USTREAM_FINISHED) {
-        // Deserialization failed
-        THROW(0x6A80);
-    }
+bool handleTransaction(const uint8_t *buffer, size_t size) {
+    return deserialize(buffer, size);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -19,8 +19,6 @@
 #ifndef ARK_OPERATIONS_TRANSACTIONS_DISPLAY_H
 #define ARK_OPERATIONS_TRANSACTIONS_DISPLAY_H
 
-#include <stdint.h>
-
 #include "transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////

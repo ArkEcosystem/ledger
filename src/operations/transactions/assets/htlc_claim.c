@@ -16,29 +16,45 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_TYPE_9_H
-#define ARK_OPERATIONS_TRANSACTION_TYPE_9_H
+#include "transactions/assets/htlc_claim.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
 
-#include "operations/status.h"
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct htlc_claim_asset_t {
-    uint8_t     id[HASH_32_LENGTH];
-    uint8_t     secret[HASH_32_LENGTH];
-} HtlcClaim;
+// Htlc Claim (Type 8) - 64 Bytes
+//
+// @param HtlcClaim *claim
+// @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
+// @param size_t size: The Asset Buffer Size.
+//
+// @return bool: true if deserialization was successful.
+//
+// ---
+// Internals:
+//
+// Lock Transaction Id - 32 Bytes:
+// - bytecpy(claim->id, &buffer[0], 32);
+//
+// Unlock Secret - 32 Bytes
+// - bytecpy(claim->secret, &buffer[32], 32);
+//
+// ---
+bool deserializeHtlcClaim(HtlcClaim *claim, const uint8_t *buffer, size_t size) {
+    if (size <= HASH_32_LEN) {
+        return false;
+    }
+
+    bytecpy(claim->id, &buffer[0], HASH_32_LEN);                    // 32 Bytes
+    bytecpy(claim->secret, &buffer[HASH_32_LEN], HASH_32_LEN);      // 32 Bytes
+
+    return true;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
-
-StreamStatus deserializeHtlcClaim(HtlcClaim *claim,
-                                  const uint8_t *buffer,
-                                  size_t size);
-
-////////////////////////////////////////////////////////////////////////////////
-
-#endif

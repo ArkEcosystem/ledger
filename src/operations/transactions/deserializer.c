@@ -18,23 +18,24 @@
 
 #include "transactions/deserializer.h"
 
+#include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
-
-#include <os.h>
+#include <string.h>
 
 #include "constants.h"
 
-#include "utils/unpack.h"
-
-#include "operations/status.h"
-
 #include "transactions/transaction.h"
 
-#include "transactions/assets/types.h"
+#include "transactions/offsets.h"
+
 #include "transactions/display.h"
 
 #include "transactions/legacy/deserialize_legacy.h"
 #include "transactions/legacy/display_legacy.h"
+
+#include "utils/unpack.h"
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -44,14 +45,14 @@ Transaction transaction;
 
 // Deserialize Common
 //
-// @param uint8_t *buffer: The serialized transactions buffer.
 // @param Transaction *transaction: A Transaction object.
+// @param uint8_t *buffer: The serialized transactions buffer.
 //
 // ---
 // Internals:
 //
 // Header - 1 Byte:
-// - Skip 0xFF Marker: buffer[0]
+// - 0xFF Marker: buffer[0]
 //
 // Transaction Version - 1 Byte:
 // - transaction->version = buffer[1];
@@ -59,17 +60,17 @@ Transaction transaction;
 // Network Version - 1 Byte:
 // - transaction->network = buffer[2];
 //
-// TypeGroup - 4 Bytes:
+// TypeGroup - 4 Bytes: Not Currently Needed
 // - transaction->typeGroup = U4LE(&buffer[3]);
 //
 // Transaction Type - 2 Bytes:
 // - transaction->type = U2LE(&buffer[7]);
 //
-// Nonce - 8 Bytes:
+// Nonce - 8 Bytes: Not Currently Needed
 // - transaction->nonce = U8LE(&buffer[9]);
 //
 // SenderPublicKey - 33 Bytes:
-// - os_memmove(transaction->senderPublicKey, &buffer[17], 33);
+// - bytecpy(transaction->senderPublicKey, &buffer[17], 33);
 //
 // Fee - 8 bytes
 // - transaction->fee = U8LE(buffer, 50);
@@ -77,158 +78,217 @@ Transaction transaction;
 // VendorField Length - 1 Byte:
 // transaction->vendorFieldLength = buffer[58];
 //
-// VendorField - 0 - 255 Bytes:
-// - os_memmove(transaction->vendorField, buffer + 58 + 1, MIN(VendorFieldLen, 64));
+// VendorField - 0 - 64 Bytes:
+// - transaction->vendorField = (uint8_t *)&buffer[59];
 //
 // ---
-static void internalDeserializeCommon(Transaction *transaction,
-                                      const uint8_t *buffer) {
-    transaction->header             = buffer[0];                    // 1 Byte
-    transaction->version            = buffer[1];                    // 1 Byte
-    transaction->type               = U2LE(buffer, 7U);             // 2 Bytes
-    os_memmove(transaction->senderPublicKey, &buffer[17], 33U);     // 33 Bytes
-    transaction->fee                = U8LE(buffer, 50U);            // 8 Bytes
-    transaction->vendorFieldLength  = buffer[58];                   // 1 Byte
-    transaction->vendorField        = (uint8_t *)&buffer[59];
+static void deserializeCommon(Transaction *transaction, const uint8_t *buffer) {
+    transaction->header             = buffer[HEADER_OFFSET];        // 1 Byte
+    transaction->version            = buffer[VERSION_OFFSET];       // 1 Byte
+    transaction->network            = buffer[NETWORK_OFFSET];       // 1 Byte
+    transaction->type               = U2LE(buffer, TYPE_OFFSET);    // 2 Bytes
+
+    bytecpy(transaction->senderPublicKey,                           // 33 Bytes
+            &buffer[SENDER_PUBLICKEY_OFFSET],
+            PUBLICKEY_COMPRESSED_LEN);
+
+    transaction->fee                = U8LE(buffer, FEE_OFFSET);     // 8 Bytes
+
+    transaction->vendorFieldLength  = buffer[VF_LEN_OFFSET];        // 1 Byte
+    // 0 <=> 64 Bytes
+    transaction->vendorField = (uint8_t *)&buffer[VF_OFFSET];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Deserialize Type
+// Deserialize Common v1
 //
-// @param Transaction *transaction: A Transaction object.
-// @param uint8_t *buffer: The serialized transactions buffer.
-// @param size_t size
+// @param TransactionData *data: The Transaction Data destination.
+// @param const uint8_t *buffer
+//
+// ---
+// Internals:
+//
+// Header - 1 Byte:
+// - data->header = buffer.at(0);
+//
+// Transaction Version - 1 Byte:
+// - data->version = buffer.at(1);
+//
+// Network Version - 1 Byte:
+// - data->network = buffer.at(2);
+//
+// Transaction Type - 1 Byte:
+// - data->type = buffer.at(3);
+//
+// Timestamp - 4 Bytes: Not Currently Needed
+// - data->timestamp = unpack4LE(buffer, 4);
+//
+// SenderPublicKey - 33 Bytes:
+// - std::copy_n(&buffer.at(8), 33, data->senderPublicKey.begin());
+//
+// Fee - 8 bytes
+// - data->fee = unpack8LE(buffer, 41);
+//
+// VendorField Length - 1 Byte:
+// - buffer.at(49)
+//
+// VendorField - 0 - 255 Bytes:
+// - data->vendorField.insert(data->vendorField.begin(), &buffer.at(50), &buffer.at(50 + buffer.at(49)));
+//
+// ---
+static void deserializeCommonV1(Transaction *transaction,
+                                const uint8_t *buffer) {
+    transaction->header             = buffer[HEADER_OFFSET];        // 1 Byte
+    transaction->version            = buffer[VERSION_OFFSET];       // 1 Byte
+    transaction->network            = buffer[NETWORK_OFFSET];       // 1 Byte
+    transaction->type               = buffer[TYPE_OFFSET_V1];       // 1 Byte
+
+    bytecpy(transaction->senderPublicKey,                           // 33 Bytes
+            &buffer[SENDER_PUBLICKEY_OFFSET_V1],
+            PUBLICKEY_COMPRESSED_LEN);
+
+    transaction->fee                = U8LE(buffer, FEE_OFFSET_V1);  // 8 Bytes
+
+    transaction->vendorFieldLength  = buffer[VF_LEN_OFFSET_V1];     // 1 Byte
+    // vendorField: 0 <=> 64 Bytes
+    transaction->vendorField = (uint8_t *)&buffer[VF_OFFSET_V1];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+// Deserialize Asset
+//
+// @param Transaction *transaction
+// @param uint8_t *buffer: The serialized buffer at the asset offset.
+// @param size_t size: The Asset Buffer Size.
+//
+// @return bool: true if successful
 //
 // ---
 // Internals:
 //
 // - case TRANSFER
 // - case SECOND_SIGNATURE
-// - case DELEGATE_REGISTRATION
 // - case VOTE
-// - case MULTI_SIGNATURE
 // - case IPFS
-// - case MULTIPAYMENT
-// - case DELEGATE_RESIGNATION
 // - case HTLC_LOCK
 // - case HTLC_CLAIM
 // - case HTLC_REFUND
 //
 // ---
-static StreamStatus internalDeserializeAsset(Transaction *transaction,
-                                             const uint8_t *buffer,
-                                             size_t size) {
-    StreamStatus status = USTREAM_FAULT;
-
-    size_t assetOffset = 58U + transaction->vendorFieldLength + 1U;
-    size_t assetSize = size - assetOffset;
-
+static bool deserializeAsset(Transaction *transaction,
+                                     const uint8_t *buffer,
+                                     size_t size) {
     switch (transaction->type) {
-        case TRANSACTION_TYPE_TRANSFER:
-            status = deserializeTransfer(&transaction->asset.transfer,
-                                         &buffer[assetOffset],
-                                         assetSize);
-            break;
+        // Transfer
+        case TRANSFER_TYPE:
+            return deserializeTransfer(
+                    &transaction->asset.transfer, buffer, size);
 
-        case TRANSACTION_TYPE_SECOND_SIGNATURE:
-            status = deserializeSecondSignature(
-                    &transaction->asset.secondSignature,
-                    &buffer[assetOffset],
-                    assetSize);
-            break;
+        // Second Signature Registration
+        case SECOND_SIGNATURE_TYPE:
+            return deserializeSecondSignature(
+                    &transaction->asset.secondSignature, buffer, size);
 
-        case TRANSACTION_TYPE_VOTE:
-            status = deserializeVote(&transaction->asset.vote,
-                                     &buffer[assetOffset],
-                                     assetSize);
-            break;
+        // Vote
+        case VOTE_TYPE:
+            return deserializeVote(
+                    &transaction->asset.vote, buffer, size);
 
-        case TRANSACTION_TYPE_IPFS:
-            status = deserializeIpfs(&transaction->asset.ipfs,
-                                     &buffer[assetOffset],
-                                     assetSize);
-            break;
+        // Ipfs
+        case IPFS_TYPE:
+            return deserializeIpfs(
+                    &transaction->asset.ipfs, buffer, size);
 
-        case TRANSACTION_TYPE_HTLC_LOCK:
-            status = deserializeHtlcLock(&transaction->asset.htlcLock,
-                                         &buffer[assetOffset],
-                                         assetSize);
-            break;
+        // Htlc Lock
+        case HTLC_LOCK_TYPE:
+            return deserializeHtlcLock(
+                    &transaction->asset.htlcLock, buffer, size);
 
-        case TRANSACTION_TYPE_HTLC_CLAIM:
-            status = deserializeHtlcClaim(&transaction->asset.htlcClaim,
-                                          &buffer[assetOffset],
-                                          assetSize);
-            break;
+        // Htlc Claim
+        case HTLC_CLAIM_TYPE:
+            return deserializeHtlcClaim(
+                    &transaction->asset.htlcClaim, buffer, size);
 
-        case TRANSACTION_TYPE_HTLC_REFUND:
-            status = deserializeHtlcRefund(&transaction->asset.htlcRefund,
-                                           &buffer[assetOffset],
-                                           assetSize);
-            break;
+        // Htlc Refund
+        case HTLC_REFUND_TYPE:
+            return deserializeHtlcRefund(
+                    &transaction->asset.htlcRefund, buffer, size);
 
-        default: break;
+        // Unknown Transaction Type
+        default: return false;
     };
-
-    return status;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static StreamStatus internalDeserialize(Transaction *transaction,
+// v2 and v1 Transactions
+static bool internalDeserialize(Transaction *transaction,
                                         const uint8_t *buffer,
                                         size_t size) {
-    StreamStatus status = USTREAM_FAULT;
+    size_t assetOffset = 0;
+    switch (buffer[VERSION_OFFSET]) {
+        // v2
+        case TRANSACTION_VERSION_TYPE_2:
+            deserializeCommon(transaction, buffer);
+            assetOffset = VF_OFFSET + transaction->vendorFieldLength;
+            break;
 
-    // V2 Transactions
-    if (buffer[0] == 0xFF && buffer[1] == TRANSACTION_VERSION_TYPE_2) {
-        internalDeserializeCommon(transaction, buffer);
-        status = internalDeserializeAsset(transaction, buffer, size);
-        if (status == USTREAM_FINISHED) {
-            setDisplay(transaction);
-        }
+        // v1
+        case TRANSACTION_VERSION_TYPE_1:
+            deserializeCommonV1(transaction, buffer);
+            assetOffset = VF_OFFSET_V1 + transaction->vendorFieldLength;
+            break;
+
+        default: return false;
     }
 
-    // V1 or LegacyTransactions
-    else if (buffer[0] != 0xFF ||
-            (buffer[0] == 0xFF && buffer[1] == TRANSACTION_VERSION_TYPE_1)) {
-
-        status = deserializeLegacy(transaction, buffer, size);
-
-        // Transfer
-        if (transaction->type == TRANSACTION_TYPE_TRANSFER) {
-            setTransferLegacy(transaction);
-        }
-        // Vote
-        else if (transaction->type == TRANSACTION_TYPE_VOTE) {
-            setVoteLegacy(transaction);
-        }
+    if (deserializeAsset(transaction,
+                         &buffer[assetOffset],
+                         size - assetOffset)) {
+        setDisplay(transaction);
+        return true;
     }
 
-    return status;
+    // Unknown Transaction Version
+    return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-StreamStatus deserialize(const uint8_t *buffer, size_t size) {
-    StreamStatus result;
-    BEGIN_TRY {
-        TRY {
-            os_memset(&transaction, 0U, sizeof(Transaction));
-            result = internalDeserialize(&transaction, buffer, size);
-        }
+// Legacy Transactions
+static bool internalDeserializeLegacy(Transaction *transaction,
+                                              const uint8_t *buffer,
+                                              size_t size) {
+    if (buffer[HEADER_OFFSET] == TRANSFER_TYPE ||
+        buffer[HEADER_OFFSET] == VOTE_TYPE) {
+        deserializeCommonLegacy(transaction, buffer, size);
 
-        CATCH_OTHER(e) {
-            os_memset(&transaction, 0U, sizeof(Transaction));
-            result = USTREAM_FAULT;
-        }
+        transaction->assetOffset = ASSET_OFFSET_LEGACY;
+        transaction->assetPtr = (uint8_t*)&buffer[transaction->assetOffset];
 
-        FINALLY {}
+        setDisplayLegacy(transaction);
+
+        return true;
     }
-    END_TRY;
 
-    return result;
+    // Unknown Transaction Version and Type
+    return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+bool deserialize(const uint8_t *buffer, size_t size) {
+    bool successful = buffer[HEADER_OFFSET] == TRANSACTION_HEADER
+            ? internalDeserialize(&transaction, buffer, size)
+            : internalDeserializeLegacy(&transaction, buffer, size);
+
+    if (!successful) {
+        explicit_bzero(&transaction, sizeof(transaction));
+    }
+
+    return successful;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

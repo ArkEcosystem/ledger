@@ -32,8 +32,6 @@
 
 #include "constants.h"
 
-#include "operations/status.h"
-
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef struct delegate_resignation_asset_t {} DelegateResignationAsset;

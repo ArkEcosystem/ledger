@@ -27,7 +27,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 // Generate a Ripemd160 hash
-void hash160(uint8_t WIDE *in, size_t inSize, uint8_t *out) {
+void hash160(uint8_t *in, size_t inSize, uint8_t *out) {
     cx_ripemd160_t ripeHash;
     cx_ripemd160_init(&ripeHash);
     cx_hash(&ripeHash.header, CX_LAST, in, inSize, out, CX_SHA256_SIZE);
@@ -35,12 +35,20 @@ void hash160(uint8_t WIDE *in, size_t inSize, uint8_t *out) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void hash256(cx_sha256_t *ctx,
-             uint8_t WIDE *in,
-             size_t inSize,
-             uint8_t *out) {
-    cx_sha256_init(ctx);
-    cx_hash(&ctx->header, CX_LAST, in, inSize, out, CX_SHA256_SIZE);
+void hash256(uint8_t *in, size_t inSize, uint8_t *out) {
+    cx_sha256_t ctx;
+    cx_sha256_init(&ctx);
+    cx_hash(&ctx.header, CX_LAST, in, inSize, out, CX_SHA256_SIZE);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void doubleHash256(uint8_t *in, size_t inSize, uint8_t *out) {
+    cx_sha256_t ctx;
+    uint8_t checksum[CX_SHA256_SIZE];
+    cx_sha256_init(&ctx);
+    cx_hash(&ctx.header, 0, in, inSize, checksum, CX_SHA256_SIZE);
+    cx_hash(&ctx.header, CX_LAST, checksum, CX_SHA256_SIZE, out, CX_SHA256_SIZE);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

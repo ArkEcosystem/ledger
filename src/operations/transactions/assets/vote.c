@@ -16,54 +16,45 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/type_0.h"
+#include "transactions/assets/vote.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <os.h>
-
 #include "constants.h"
 
-#include "utils/unpack.h"
-
-#include "operations/status.h"
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Deserialize Transfer (Type 0) - 33 bytes
+// Vote (Type 3) - 34 Bytes
 //
-// @param Transfer *transfer: The Transfer (Type 0) Asset.
-// @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
+// @param Vote *vote
+// @param const uint8_t *buffer: The serialized buffer at the Assets offset.
 // @param size_t size: The Asset Buffer Size.
+//
+// @return bool: true if deserialization was successful.
 //
 // ---
 // Internals:
 //
-// Amount - 8 Bytes:
-// - transfer->amount = U8LE(buffer, 0U);
+// Number of Votes - 1 Byte: Not Needed
+// - vote->n_votes = buffer[0];
 //
-// Expiration - 4 Bytes:
-// - transfer->expiration = U4LE(buffer, sizeof(uint64_t));
-//
-// Recipient - 21 Bytes:
-// - os_memmove(transfer->recipient, &buffer[sizeof(uint64_t) + sizeof(uint32_t)], ADDRESS_HASH_LENGTH);
+// Vote - 1 + 33(Compressed PublicKey) Bytes:
+// - bytecpy(vote->data, &buffer[1], 34);
 //
 // ---
-StreamStatus deserializeTransfer(Transfer *transfer,
-                                 const uint8_t *buffer,
-                                 size_t size) {
-    if (size != 33) {
-        return USTREAM_FAULT;
+bool deserializeVote(Vote *vote, const uint8_t *buffer, size_t size) {
+    if (size != sizeof(uint8_t) + VOTE_LEN) {
+        return false;
     }
 
-    transfer->amount        = U8LE(buffer, 0);
-    transfer->expiration    = U4LE(buffer, sizeof(uint64_t));
-    os_memmove(transfer->recipient,
-               &buffer[sizeof(uint64_t) + sizeof(uint32_t)],
-               ADDRESS_HASH_LENGTH);
+    // skip vote count
+    bytecpy(vote->data, &buffer[sizeof(uint8_t)], VOTE_LEN);        // 34 Bytes
 
-    return USTREAM_FINISHED;
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

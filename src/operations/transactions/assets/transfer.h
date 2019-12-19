@@ -16,49 +16,31 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/type_9.h"
+#ifndef ARK_OPERATIONS_TRANSACTIONS_ASSETS_TRANSFER_H
+#define ARK_OPERATIONS_TRANSACTIONS_ASSETS_TRANSFER_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <os.h>
-#include <cx.h>
-
 #include "constants.h"
 
-#include "crypto/hashing.h"
+////////////////////////////////////////////////////////////////////////////////
 
-#include "operations/status.h"
+static const size_t TRANSACTION_TYPE_TRANSFER_SIZE = 33;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Htlc Claim (Type 8) - 64 Bytes
-//
-// @param HtlcClaim *claim: The Htlc Claim (Type 8) Asset.
-// @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
-// @param size_t size: The Asset Buffer Size.
-//
-// ---
-// Internals:
-//
-// Lock Transaction Id - 32 Bytes:
-// - os_memmove(claim->id, &buffer[0], 32U);
-//
-// Unlock Secret - 32 Bytes
-// - os_memmove(claim->secret, &buffer[32], 64U - 32U);
-//
-// ---
-StreamStatus deserializeHtlcClaim(HtlcClaim *claim,
-                                  const uint8_t *buffer,
-                                  size_t size) {
-    if (size <= HASH_32_LENGTH) {
-        return USTREAM_FAULT;
-    }
-
-    os_memmove(claim->id, &buffer[0], HASH_32_LENGTH);
-    os_memmove(claim->secret, &buffer[HASH_32_LENGTH], size - HASH_32_LENGTH);
-
-    return USTREAM_FINISHED;
-}
+typedef struct transfer_asset_t {
+    uint64_t    amount;
+    uint32_t    expiration;
+    uint8_t     recipientId[ADDRESS_HASH_LEN];
+} Transfer;
 
 ////////////////////////////////////////////////////////////////////////////////
+
+bool deserializeTransfer(Transfer *transfer, const uint8_t *buffer, size_t size);
+
+////////////////////////////////////////////////////////////////////////////////
+
+#endif

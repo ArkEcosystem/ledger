@@ -16,26 +16,32 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_TYPE_5_H
-#define ARK_OPERATIONS_TRANSACTION_TYPE_5_H
+#ifndef ARK_OPERATIONS_TRANSACTION_ASSETS_HTLC_LOCK_H
+#define ARK_OPERATIONS_TRANSACTION_ASSETS_HTLC_LOCK_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
 
-#include "operations/status.h"
+////////////////////////////////////////////////////////////////////////////////
+
+static const size_t TRANSACTION_TYPE_HTLC_LOCK_SIZE = 66;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct ipfs_asset_t {
-  size_t    length;
-  uint8_t   dag[HASH_64_LENGTH];
-} Ipfs;
+typedef struct htlc_lock_asset_t {
+    uint64_t    amount;
+    uint8_t     expirationType;
+    uint32_t    expiration;
+    uint8_t     secretHash[HASH_32_LEN];
+    uint8_t     recipientId[ADDRESS_HASH_LEN];
+} HtlcLock;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-StreamStatus deserializeIpfs(Ipfs *ipfs, const uint8_t *buffer, size_t size);
+bool deserializeHtlcLock(HtlcLock *lock, const uint8_t *buffer, size_t size);
 
 ////////////////////////////////////////////////////////////////////////////////
 

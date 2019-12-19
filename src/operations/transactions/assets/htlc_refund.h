@@ -16,40 +16,27 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/type_1.h"
+#ifndef ARK_OPERATIONS_TRANSACTION_ASSETS_HTLC_REFUND_H
+#define ARK_OPERATIONS_TRANSACTION_ASSETS_HTLC_REFUND_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-
-#include <os.h>
 
 #include "constants.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Second Signature Registration (Type 1) - 33 Bytes
-//
-// @param SecondSignatureRegistration *registration: The Second Signature Registration (Type 1) Asset.
-// @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
-// @param size_t size: The Asset Buffer Size.
-//
-// ---
-// Internals:
-//
-// Second PublicKey - 33 Bytes:
-// - os_memmove(registration->publicKey, buffer, PUBLICKEY_COMPRESSED_LENGTH);
-//
-// ---
-StreamStatus deserializeSecondSignature(SecondSignatureRegistration *registration,
-                                        const uint8_t *buffer,
-                                        size_t size) {
-    if (size != 33) {
-        return USTREAM_FAULT;
-    }
-
-    os_memmove(registration->publicKey, buffer, PUBLICKEY_COMPRESSED_LENGTH);
-
-    return USTREAM_FINISHED;
-}
+typedef struct htlc_refund_asset_t {
+    uint8_t id[HASH_32_LEN];
+} HtlcRefund;
 
 ////////////////////////////////////////////////////////////////////////////////
+
+bool deserializeHtlcRefund(HtlcRefund *refund,
+                           const uint8_t *buffer,
+                           size_t size);
+
+////////////////////////////////////////////////////////////////////////////////
+
+#endif

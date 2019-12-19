@@ -32,6 +32,8 @@
 #include "transactions/transaction.h"
 #include "ux/display_context.h"
 
+#include "utils/utils.h"
+
 ////////////////////////////////////////////////////////////////////////////////
 
 ux_state_t ux;
@@ -121,7 +123,7 @@ unsigned int operation_menu_button(unsigned int button_mask,
     }
 
     // clear the display variables.
-    os_memset(&displayCtx, 0, sizeof(displayCtx));
+    explicit_bzero(&displayCtx, sizeof(displayCtx));
 
     return 0;
 }
@@ -146,7 +148,7 @@ const bagl_element_t *operation_prepro(const bagl_element_t *element) {
             case 0x02:
 
             case 0x12:
-                os_memmove(&tmp_element, element, sizeof(bagl_element_t));
+                bytecpy(&tmp_element, element, sizeof(bagl_element_t));
 
                 display = ux_step - 1U;
                 tmp_element.text =

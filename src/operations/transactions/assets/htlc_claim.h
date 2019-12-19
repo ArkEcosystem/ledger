@@ -16,27 +16,25 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_TYPE_10_H
-#define ARK_OPERATIONS_TRANSACTION_TYPE_10_H
+#ifndef ARK_OPERATIONS_TRANSACTION_ASSETS_HTLC_CLAIM_H
+#define ARK_OPERATIONS_TRANSACTION_ASSETS_HTLC_CLAIM_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
 
-#include "operations/status.h"
+////////////////////////////////////////////////////////////////////////////////
+
+typedef struct htlc_claim_asset_t {
+    uint8_t     id[HASH_32_LEN];
+    uint8_t     secret[HASH_32_LEN];
+} HtlcClaim;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct htlc_refund_asset_t {
-    uint8_t     id[HASH_32_LENGTH];
-} HtlcRefund;
-
-////////////////////////////////////////////////////////////////////////////////
-
-StreamStatus deserializeHtlcRefund(HtlcRefund *refund,
-                                   const uint8_t *buffer,
-                                   size_t size);
+bool deserializeHtlcClaim(HtlcClaim *claim, const uint8_t *buffer, size_t size);
 
 ////////////////////////////////////////////////////////////////////////////////
 

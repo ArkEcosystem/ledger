@@ -16,28 +16,19 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_TYPE_1_H
-#define ARK_OPERATIONS_TRANSACTION_TYPE_1_H
+#ifndef ARK_UTILS_H
+#define ARK_UTILS_H
 
-#include <stddef.h>
-#include <stdint.h>
+#if defined(HAVE_BOLOS_UX)
 
-#include "constants.h"
+    #include <os.h>
+    #define bytecpy os_memmove
 
-#include "operations/status.h"
+#else  // if not HAVE_BOLOS_UX
 
-////////////////////////////////////////////////////////////////////////////////
+    #include <string.h>
+    #define bytecpy memcpy
 
-typedef struct ss_registration_asset_t {
-    uint8_t publicKey[PUBLICKEY_COMPRESSED_LENGTH];
-} SecondSignatureRegistration;
+#endif  // #if defined(HAVE_BOLOS_UX)
 
-////////////////////////////////////////////////////////////////////////////////
-
-StreamStatus deserializeSecondSignature(SecondSignatureRegistration *registration,
-                                        const uint8_t *buffer,
-                                        size_t size);
-
-////////////////////////////////////////////////////////////////////////////////
-
-#endif
+#endif  // #ifndef ARK_UTILS_H

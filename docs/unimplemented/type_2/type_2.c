@@ -34,8 +34,6 @@
 
 #include "constants.h"
 
-#include "operations/status.h"
-
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -54,21 +52,21 @@
 // - registration->length = buffer[0];
 //
 // Username - 3 <=> 20 Bytes:
-// - os_memmove(registration->username, &buffer[1], registration->length)
+// - bytecpy(registration->username, &buffer[1], registration->length)
 //
 // ---
-StreamStatus deserializeDelegateRegistration(DelegateRegistration *registration,
+bool deserializeDelegateRegistration(DelegateRegistration *registration,
                                              const uint8_t *buffer,
                                              const uint32_t length) {
     // usernameLength + username
     if (length < 4U || length > 21U) {
-        return USTREAM_FAULT;  // Incorrect Username Length
+        return false;  // Incorrect Username Length
     }
 
     registration->length = (int)buffer[0];
-    os_memmove((void *)registration->username, &buffer[1], (int)registration->length);
+    bytecpy((void *)registration->username, &buffer[1], (int)registration->length);
 
-    return USTREAM_FINISHED;
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +74,7 @@ StreamStatus deserializeDelegateRegistration(DelegateRegistration *registration,
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static StreamStatus internalDeserializeAsset(Transaction *transaction,
+static bool internalDeserializeAsset(Transaction *transaction,
                                              const uint8_t *buffer,
                                              const uint32_t length) {
 /////////
@@ -95,20 +93,20 @@ static StreamStatus internalDeserializeAsset(Transaction *transaction,
 ////////////////////////////////////////////////////////////////////////////////
 
 void setDisplayDelegateRegistration(const Transaction *transaction,) {
-    os_memmove((char *)displayCtx.operation, "Delegate Registration", 22U);
-    os_memmove((char *)displayCtx.title[0], "Username", 9U);
-    os_memmove((char *)displayCtx.title[1], "Fees", 5U);
+    bytecpy((char *)displayCtx.operation, "Delegate Registration", 22);
+    bytecpy((char *)displayCtx.title[0], "Username", 9);
+    bytecpy((char *)displayCtx.title[1], "Fees", 5);
 
     // Username
-    os_memmove((char *)displayCtx.var[0],
-               transaction->asset.delegateRegistration.username,
-               transaction->asset.delegateRegistration.length);
+    bytecpy((char *)displayCtx.var[0],
+            transaction->asset.delegateRegistration.username,
+            transaction->asset.delegateRegistration.length);
     displayCtx.var[0][transaction->asset.delegateRegistration.length] = '\0';
 
     // Fee
     printAmount(transaction->fee,
                 (uint8_t *)displayCtx.var[1], sizeof(displayCtx.var[1]),
-                TOKEN_NAME, TOKEN_NAME_LENGTH, TOKEN_DECIMALS);
+                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

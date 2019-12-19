@@ -34,14 +34,14 @@ uint32_t signEcdsa(const cx_ecfp_private_key_t *privateKey,
     #if CX_APILEVEL >= 8U
         return cx_ecdsa_sign(privateKey,
                              CX_RND_RFC6979 | CX_LAST, CX_SHA256,
-                             hash, HASH_32_LENGTH,
+                             hash, HASH_32_LEN,
                              signature, signatureSize,
                              NULL);
     #else
         UNUSED(signatureLength);
         return cx_ecdsa_sign(&privateKey,
                              CX_RND_RFC6979 | CX_LAST, CX_SHA256,
-                             hash, HASH_32_LENGTH,
+                             hash, HASH_32_LEN,
                              signature);
         signature[0] = 0x30;
     #endif

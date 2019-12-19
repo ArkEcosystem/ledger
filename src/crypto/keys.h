@@ -20,10 +20,10 @@
 #define ARK_CRYPTO_KEYS
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
 #include <os.h>
-#include <cx.h>
 
 #include "constants.h"
 
@@ -32,7 +32,7 @@
 typedef struct public_key_context_t {
     cx_ecfp_public_key_t    data;
     uint8_t                 address[41];
-    uint8_t                 chainCode[HASH_32_LENGTH];
+    uint8_t                 chainCode[HASH_32_LEN];
     bool                    needsChainCode;
 } PublicKeyContext;
 

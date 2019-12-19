@@ -16,42 +16,43 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/type_10.h"
+#include "transactions/assets/htlc_refund.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <os.h>
-
 #include "constants.h"
 
-#include "operations/status.h"
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // Htlc Refund (Type 10) - 32 Bytes
 //
-// @param HtlcRefund *refund: The Htlc Refund (Type 10) Asset.
-// @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
+// @param HtlcRefund *refund
+// @param uint8_t *buffer: The serialized buffer at the Assets offset.
 // @param size_t size: The Asset Buffer Size.
+//
+// @return bool: true if deserialization was successful.
 //
 // ---
 // Internals:
 //
 // Lock Transaction Id - 32 Bytes:
-// - os_memmove(refund->id, &buffer[0], 32U);
+// - bytecpy(refund->id, &buffer[0], 32);
 //
 // ---
-StreamStatus deserializeHtlcRefund(HtlcRefund *refund,
-                                   const uint8_t *buffer,
-                                   size_t size) {
-    if (size != HASH_32_LENGTH) {
-        return USTREAM_FAULT;
+bool deserializeHtlcRefund(HtlcRefund *refund,
+                           const uint8_t *buffer,
+                           size_t size) {
+    if (size != HASH_32_LEN) {
+        return false;
     }
 
-    os_memmove(refund->id, &buffer[0], HASH_32_LENGTH);
+    bytecpy(refund->id, &buffer[0], HASH_32_LEN);               // 32 Bytes
 
-    return USTREAM_FINISHED;
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

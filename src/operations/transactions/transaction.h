@@ -19,6 +19,7 @@
 #ifndef ARK_OPERATIONS_TRANSACTION_H
 #define ARK_OPERATIONS_TRANSACTION_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
@@ -30,21 +31,22 @@
 typedef struct transaction_t {
     uint8_t     header;
     uint8_t     version;
+    uint8_t     network;
     uint16_t    type;
-    uint8_t     senderPublicKey[PUBLICKEY_COMPRESSED_LENGTH];
+    uint8_t     senderPublicKey[PUBLICKEY_COMPRESSED_LEN];
     uint64_t    fee;
     uint8_t     vendorFieldLength;
     uint8_t     *vendorField;
     union {
-        struct {  // v1 or Legacy
-            uint8_t     recipient[ADDRESS_HASH_LENGTH];
+        struct {  // v2
+            tx_asset_t  asset;
+        };
+        struct {  // Legacy
+            uint8_t     recipientId[ADDRESS_HASH_LEN];
             uint64_t    amount;
             size_t      assetOffset;
             size_t      assetSize;
             uint8_t     *assetPtr;
-        };
-        struct {  // v2
-            tx_asset_t  asset;
         };
     };
 } Transaction;

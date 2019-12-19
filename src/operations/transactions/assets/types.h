@@ -19,33 +19,38 @@
 #ifndef ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
 #define ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
 
-////////////////////////////////////////////////////////////////////////////////
-
-#include "transactions/assets/type_0.h"
-#include "transactions/assets/type_1.h"
-// #include "transactions/assets/type_2.h"
-#include "transactions/assets/type_3.h"
-// #include "transactions/assets/type_4.h"
-#include "transactions/assets/type_5.h"
-// #include "transactions/assets/type_6.h"
-// #include "transactions/assets/type_7.h"
-#include "transactions/assets/type_8.h"
-#include "transactions/assets/type_9.h"
-#include "transactions/assets/type_10.h"
+#include <stdint.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define TRANSACTION_TYPE_TRANSFER               0U
-#define TRANSACTION_TYPE_SECOND_SIGNATURE       1U
-// Delegate Registration                        2U
-#define TRANSACTION_TYPE_VOTE                   3U
-// MultiSignature                               4U
-#define TRANSACTION_TYPE_IPFS                   5U
-// MultiPayment                                 6U
-// Delegate Resignation                         7U
-#define TRANSACTION_TYPE_HTLC_LOCK              8U
-#define TRANSACTION_TYPE_HTLC_CLAIM             9U
-#define TRANSACTION_TYPE_HTLC_REFUND            10U
+#include "transactions/assets/transfer.h"
+#include "transactions/assets/second_signature.h"
+// #include "transactions/assets/delegate_registration.h"
+#include "transactions/assets/vote.h"
+// #include "transactions/assets/multi_signature.h"
+#include "transactions/assets/ipfs.h"
+// #include "transactions/assets/multi_payment.h"
+// #include "transactions/assets/delegate_resignation.h"
+#include "transactions/assets/htlc_lock.h"
+#include "transactions/assets/htlc_claim.h"
+#include "transactions/assets/htlc_refund.h"
+
+////////////////////////////////////////////////////////////////////////////////
+
+// ARK Transaction Types
+enum TransactionTypes : uint8_t {
+    TRANSFER_TYPE                   = 0U,
+    SECOND_SIGNATURE_TYPE           = 1U,
+    // DELEGATE_REGISTRATION_TYPE   = 2U,
+    VOTE_TYPE                       = 3U,
+    // MULTI_SIGNATURE_TYPE         = 4U,
+    IPFS_TYPE                       = 5U,
+    // MULTI_PAYMENT_TYPE           = 6U,
+    // DELEGATE_RESIGNATION_TYPE    = 7U,
+    HTLC_LOCK_TYPE                  = 8U,
+    HTLC_CLAIM_TYPE                 = 9U,
+    HTLC_REFUND_TYPE                = 10U
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 

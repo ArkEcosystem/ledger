@@ -16,60 +16,56 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/type_8.h"
+#include "transactions/assets/transfer.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-
-#include <os.h>
 
 #include "constants.h"
 
 #include "utils/unpack.h"
-
-#include "operations/status.h"
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Htlc Lock (Type 8) - 66 Bytes
+// Deserialize Transfer (Type 0) - 33 bytes
 //
-// @param HtlcLock *lock: The Htlc Lock (Type 8) Asset.
+// @param Transfer *transfer
 // @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
-// @param size_t size: The Asset Buffer Size.
+// @param size_t size: The Asset Size.
+//
+// @return bool: true if deserialization was successful.
 //
 // ---
 // Internals:
 //
 // Amount - 8 Bytes:
-// - lock->amount = U4LE(buffer, 0U);
+// - transfer->amount = U8LE(buffer, 0U);
 //
-// Secret Hash - 32 Bytes
-// - os_memmove(lock->secretHash, &buffer[8], 32U);
+// Expiration - 4 Bytes:
+// - transfer->expiration = U4LE(buffer, 8);
 //
-// Expiration Type- 1 Byte
-// - lock->expirationType = buffer[40];
-//
-// Expiration Value - 4 Bytes
-// - lock->expirationValue = U4LE(buffer, 41U);
-//
-// Recipient - 21 Bytes
-// - os_memmove(lock->recipient, &buffer[45], 21U);
+// RecipientId - 21 Bytes:
+// - bytecpy(transfer->recipientId, &buffer[12], 21);
 //
 // ---
-StreamStatus deserializeHtlcLock(HtlcLock *lock,
-                                 const uint8_t *buffer,
-                                 size_t size) {
-    if (size != 66) {
-        return USTREAM_FAULT;
+bool deserializeTransfer(Transfer *transfer,
+                         const uint8_t *buffer,
+                         size_t size) {
+    if (transfer == NULL ||
+        buffer == NULL ||
+        size != TRANSACTION_TYPE_TRANSFER_SIZE) {
+        return false;
     }
 
-    lock->amount            = U8LE(buffer, 0);
-    os_memmove(lock->secretHash, &buffer[8], HASH_32_LENGTH);
-    lock->expirationType    = buffer[40];
-    lock->expiration        = U4LE(buffer, 41);
-    os_memmove(lock->recipient, &buffer[45], ADDRESS_HASH_LENGTH);
+    transfer->amount        = U8LE(buffer, 0);                      // 8 Bytes
+    transfer->expiration    = U4LE(buffer, sizeof(uint64_t));       // 4 Bytes
+    bytecpy(transfer->recipientId,                                  // 21 Bytes
+            &buffer[sizeof(uint64_t) + sizeof(uint32_t)],
+            ADDRESS_HASH_LEN);
 
-    return USTREAM_FINISHED;
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

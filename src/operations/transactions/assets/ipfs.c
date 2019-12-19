@@ -16,24 +16,25 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/type_5.h"
+#include "transactions/assets/ipfs.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <os.h>
-
 #include "constants.h"
 
-#include "operations/status.h"
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// IPFS (Type 5) - 0 <=> 255 Bytes
+// IPFS (Type 5) - 0 <=> 64 Bytes
 //
-// @param Ipfs *ipfs: The Ipfs (Type 5) Asset.
-// @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
+// @param Ipfs *ipfs
+// @param uint8_t *buffer: The serialized buffer at the Assets offset.
 // @param size_t size: The Asset Buffer Size.
+//
+// @return bool: true if deserialization was successful.
 //
 // ---
 // Internals:
@@ -41,29 +42,27 @@
 // Length - 1 Byte
 // - ipfs->length = buffer[1] + 2U;
 //
-// Dag - 0 <=> 255 Bytes
-// - os_memmove(ipfs->dag, buffer, ipfs->length);
+// Dag - 0 <=> 64 Bytes
+// - bytecpy(ipfs->dag, buffer, ipfs->length);
 //
 // ---
-StreamStatus deserializeIpfs(Ipfs *ipfs,
-                             const uint8_t *buffer,
-                             size_t size) {
+bool deserializeIpfs(Ipfs *ipfs, const uint8_t *buffer, size_t size) {
     // 2nd byte of IPFS hash contains its len.
     //
     // byte[0] == hash-type (sha256).
     // byte[1] == hash-type length (32-bytes).
     // byte[[2...]] == 32-byte hash.
-    ipfs->length = buffer[1] + 2U;
+    ipfs->length = buffer[sizeof(uint8_t)] + 2;
 
-    // Let's make sure the length isn't > 255,
+    // Let's make sure the length isn't > 64,
     // and that the lengths match.
-    if (size > 255 || size != ipfs->length) {
-        return USTREAM_FAULT;
+    if (size > HASH_64_LEN || size != ipfs->length) {
+        return false;
     }
 
-    os_memmove(ipfs->dag, buffer, size);
+    bytecpy(ipfs->dag, buffer, size);                       // 0 <=> 64 Bytes
 
-    return USTREAM_FINISHED;
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

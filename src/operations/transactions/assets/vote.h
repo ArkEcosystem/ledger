@@ -16,31 +16,28 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_TYPE_8_H
-#define ARK_OPERATIONS_TRANSACTION_TYPE_8_H
+#ifndef ARK_OPERATIONS_TRANSACTION_ASSETS_VOTE_H
+#define ARK_OPERATIONS_TRANSACTION_ASSETS_VOTE_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
 
-#include "operations/status.h"
+////////////////////////////////////////////////////////////////////////////////
+
+static const size_t VOTE_LEN = sizeof(uint8_t) + PUBLICKEY_COMPRESSED_LEN;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct htlc_lock_asset_t {
-    uint64_t    amount;
-    uint8_t     expirationType;
-    uint32_t    expiration;
-    uint8_t     secretHash[HASH_32_LENGTH];
-    uint8_t     recipient[ADDRESS_HASH_LENGTH];
-} HtlcLock;
+typedef struct vote_asset_t {
+    uint8_t data[VOTE_LEN];  // ( '+/-' + publicKey[33])
+} Vote;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-StreamStatus deserializeHtlcLock(HtlcLock *lock,
-                                 const uint8_t *buffer,
-                                 size_t size);
+bool deserializeVote(Vote *vote, const uint8_t *buffer, size_t size);
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -18,39 +18,64 @@
 #ifndef ARK_CONSTANTS_H
 #define ARK_CONSTANTS_H
 
+#include <stddef.h>
+#include <stdint.h>
+
 ////////////////////////////////////////////////////////////////////////////////
 
 // General
-#define MAX_RAW_OPERATION   300U
-#define MAX_DISPLAY_BUFFER  255U
+static const size_t MAX_RAW_OPERATION       = 300;
+static const size_t MAX_DISPLAY_BUFFER      = 255;
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // Hash
-#define HASH_32_LENGTH  32U
-#define HASH_64_LENGTH  64U
+static const size_t HASH_20_LEN     = 20;
+static const size_t HASH_32_LEN     = 32;
+static const size_t HASH_64_LEN     = 64;
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // Identities
-#define ADDRESS_LENGTH              34U
-#define ADDRESS_HASH_LENGTH         21U
-#define ADDRESS_MAX_BIP32_PATH      10U
-#define PUBLICKEY_COMPRESSED_LENGTH 33U
+static const size_t ADDRESS_LEN                     = 34;
+static const size_t ADDRESS_HASH_LEN                = 21;
+static const size_t ADDRESS_MAX_BIP32_PATH          = 10;
+static const size_t PUBLICKEY_COMPRESSED_LEN        = 33;
+
+////////////////////////////////////////////////////////////////////////////////
+
+// Labels
+static const char *const LABEL_AMOUNT       = "Amount";
+static const size_t LABEL_AMOUNT_SIZE       = 7;
+
+static const char *const LABEL_ELLIPSES     = "...";
+static const size_t LABEL_ELLIPSES_SIZE     = 4;
+
+static const char *const LABEL_EXPIRATION       = "Expiration";
+static const size_t LABEL_EXPIRATION_SIZE       = 11;
+
+static const char *const LABEL_FEE      = "Fee";
+static const size_t LABEL_FEE_SIZE      = 4;
+
+static const char *const LABEL_TO       = "To";
+static const size_t LABEL_TO_SIZE       = 3;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // Token
-#define TOKEN_DECIMALS      8U
-#define TOKEN_NAME          "ARK "
-#define TOKEN_NAME_LENGTH   4U
-#define TOKEN_NETWORK_BYTE  0x1e  // ARK Mainnet
+static const size_t TOKEN_DECIMALS          = 8;
+static const char *const TOKEN_NAME         = "ARK ";
+static const size_t TOKEN_NAME_SIZE         = 4;  // sizeof - 1
+static const uint8_t TOKEN_NETWORK_BYTE     = 0x1e;  // ARK Mainnet
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // Transactions
-#define TRANSACTION_VERSION_LEGACY  0x00
-#define TRANSACTION_VERSION_TYPE_1  0x01
-#define TRANSACTION_VERSION_TYPE_2  0x02
+static const uint8_t TRANSACTION_HEADER             = 0xFF;
+
+static const uint8_t TRANSACTION_VERSION_LEGACY     = 0;
+static const uint8_t TRANSACTION_VERSION_TYPE_1     = 1;
+static const uint8_t TRANSACTION_VERSION_TYPE_2     = 2;
 
 #endif

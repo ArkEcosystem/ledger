@@ -16,43 +16,43 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/type_3.h"
+#include "transactions/assets/second_signature.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <os.h>
-
 #include "constants.h"
 
-#include "operations/status.h"
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Vote (Type 3) - 35 Bytes
+// Second Signature Registration (Type 1) - 33 Bytes
 //
-// @param Vote *vote: The Vote (Type 3) Asset.
+// @param SecondSignatureRegistration *registration
 // @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
 // @param size_t size: The Asset Buffer Size.
+//
+// @return bool: true if deserialization was successful.
 //
 // ---
 // Internals:
 //
-// Number of Votes: 1 Byte
-// - vote->n_votes = buffer[0];
-//
-// Vote - 1 + 33(Compressed PublicKey) Bytes:
-// - os_memmove(vote->data, &buffer[1], 1U + PUBLICKEY_COMPRESSED_LENGTH)
+// Second PublicKey - 33 Bytes:
+// - bytecpy(registration->publicKey, buffer, 33);
 //
 // ---
-StreamStatus deserializeVote(Vote *vote, const uint8_t *buffer, size_t size) {
-    if (size != 35) {
-        return USTREAM_FAULT;
+bool deserializeSecondSignature(SecondSignatureRegistration *registration,
+                                const uint8_t *buffer,
+                                size_t size) {
+    if (size != PUBLICKEY_COMPRESSED_LEN) {
+        return false;
     }
 
-    os_memmove(vote->data, &buffer[1], 1U + PUBLICKEY_COMPRESSED_LENGTH);
+    bytecpy(registration->publicKey, buffer, PUBLICKEY_COMPRESSED_LEN);
 
-    return USTREAM_FINISHED;
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
