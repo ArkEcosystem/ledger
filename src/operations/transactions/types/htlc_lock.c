@@ -16,7 +16,7 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/htlc_lock.h"
+#include "transactions/types/htlc_lock.h"
 
 #include <stdbool.h>
 #include <stddef.h>

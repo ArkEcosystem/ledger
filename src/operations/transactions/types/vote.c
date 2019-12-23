@@ -16,8 +16,7 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_ASSETS_HTLC_LOCK_H
-#define ARK_OPERATIONS_TRANSACTION_ASSETS_HTLC_LOCK_H
+#include "transactions/types/vote.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -25,24 +24,37 @@
 
 #include "constants.h"
 
-////////////////////////////////////////////////////////////////////////////////
-
-static const size_t TRANSACTION_TYPE_HTLC_LOCK_SIZE = 66;
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct htlc_lock_asset_t {
-    uint64_t    amount;
-    uint8_t     expirationType;
-    uint32_t    expiration;
-    uint8_t     secretHash[HASH_32_LEN];
-    uint8_t     recipientId[ADDRESS_HASH_LEN];
-} HtlcLock;
+// Vote (Type 3) - 34 Bytes
+//
+// @param Vote *vote
+// @param const uint8_t *buffer: The serialized buffer at the Assets offset.
+// @param size_t size: The Asset Buffer Size.
+//
+// @return bool: true if deserialization was successful.
+//
+// ---
+// Internals:
+//
+// Number of Votes - 1 Byte: Not Needed
+// - vote->n_votes = buffer[0];
+//
+// Vote - 1 + 33(Compressed PublicKey) Bytes:
+// - bytecpy(vote->data, &buffer[1], 34);
+//
+// ---
+bool deserializeVote(Vote *vote, const uint8_t *buffer, size_t size) {
+    if (size != sizeof(uint8_t) + VOTE_LEN) {
+        return false;
+    }
+
+    // skip vote count
+    bytecpy(vote->data, &buffer[sizeof(uint8_t)], VOTE_LEN);        // 34 Bytes
+
+    return true;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
-
-bool deserializeHtlcLock(HtlcLock *lock, const uint8_t *buffer, size_t size);
-
-////////////////////////////////////////////////////////////////////////////////
-
-#endif

@@ -28,14 +28,15 @@
 #include "transactions/transaction.h"
 
 #include "transactions/offsets.h"
-
-#include "transactions/display.h"
+#include "transactions/types/types.h"
 
 #include "transactions/legacy/deserialize_legacy.h"
 #include "transactions/legacy/display_legacy.h"
 
 #include "utils/unpack.h"
 #include "utils/utils.h"
+
+#include "transactions/ux/display_ux.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -16,41 +16,22 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
-#define ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
-
-#include <stdint.h>
+#ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
+#define ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "transactions/assets/transfer.h"
-#include "transactions/assets/second_signature.h"
-// #include "transactions/assets/delegate_registration.h"
-#include "transactions/assets/vote.h"
-// #include "transactions/assets/multi_signature.h"
-#include "transactions/assets/ipfs.h"
-// #include "transactions/assets/multi_payment.h"
-// #include "transactions/assets/delegate_resignation.h"
-#include "transactions/assets/htlc_lock.h"
-#include "transactions/assets/htlc_claim.h"
-#include "transactions/assets/htlc_refund.h"
-
-////////////////////////////////////////////////////////////////////////////////
-
-// ARK Transaction Types
-enum TransactionTypes : uint8_t {
-    TRANSFER_TYPE                   = 0U,
-    SECOND_SIGNATURE_TYPE           = 1U,
-    // DELEGATE_REGISTRATION_TYPE   = 2U,
-    VOTE_TYPE                       = 3U,
-    // MULTI_SIGNATURE_TYPE         = 4U,
-    IPFS_TYPE                       = 5U,
-    // MULTI_PAYMENT_TYPE           = 6U,
-    // DELEGATE_RESIGNATION_TYPE    = 7U,
-    HTLC_LOCK_TYPE                  = 8U,
-    HTLC_CLAIM_TYPE                 = 9U,
-    HTLC_REFUND_TYPE                = 10U
-};
+#include "transactions/types/transfer.h"
+#include "transactions/types/second_signature.h"
+// #include "transactions/types/delegate_registration.h"
+#include "transactions/types/vote.h"
+// #include "transactions/types/multi_signature.h"
+#include "transactions/types/ipfs.h"
+// #include "transactions/types/multi_payment.h"
+// #include "transactions/types/delegate_resignation.h"
+#include "transactions/types/htlc_lock.h"
+#include "transactions/types/htlc_claim.h"
+#include "transactions/types/htlc_refund.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 

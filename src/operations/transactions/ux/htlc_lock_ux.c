@@ -16,8 +16,7 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_ASSETS_HTLC_LOCK_DISPLAY_H
-#define ARK_OPERATIONS_TRANSACTION_ASSETS_HTLC_LOCK_DISPLAY_H
+#include "transactions/ux/htlc_lock_ux.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -26,16 +25,12 @@
 
 #include "operations/transactions/transaction.h"
 
-#include "ux/display_context.h"
-
 #include "utils/base58.h"
 #include "utils/hex.h"
 #include "utils/print.h"
 #include "utils/utils.h"
 
-////////////////////////////////////////////////////////////////////////////////
-
-static const uint8_t STEPS_HTLC_LOCK = 5U;
+#include "ux/display_context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -100,5 +95,3 @@ void displayHtlcLock(const Transaction *transaction) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-#endif

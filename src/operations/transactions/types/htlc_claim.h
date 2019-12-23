@@ -16,14 +16,25 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTIONS_DISPLAY_H
-#define ARK_OPERATIONS_TRANSACTIONS_DISPLAY_H
+#ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_HTLC_CLAIM_H
+#define ARK_OPERATIONS_TRANSACTIONS_TYPES_HTLC_CLAIM_H
 
-#include "transactions/transaction.h"
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+#include "constants.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void setDisplay(const Transaction *transaction);
+typedef struct htlc_claim_asset_t {
+    uint8_t     id[HASH_32_LEN];
+    uint8_t     secret[HASH_32_LEN];
+} HtlcClaim;
+
+////////////////////////////////////////////////////////////////////////////////
+
+bool deserializeHtlcClaim(HtlcClaim *claim, const uint8_t *buffer, size_t size);
 
 ////////////////////////////////////////////////////////////////////////////////
 

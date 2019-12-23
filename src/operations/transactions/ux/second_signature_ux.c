@@ -16,45 +16,43 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/vote.h"
+#include "transactions/ux/second_signature_ux.h"
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
 
+#include "operations/transactions/transaction.h"
+
+#include "utils/hex.h"
+#include "utils/print.h"
 #include "utils/utils.h"
+
+#include "ux/display_context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Vote (Type 3) - 34 Bytes
-//
-// @param Vote *vote
-// @param const uint8_t *buffer: The serialized buffer at the Assets offset.
-// @param size_t size: The Asset Buffer Size.
-//
-// @return bool: true if deserialization was successful.
-//
-// ---
-// Internals:
-//
-// Number of Votes - 1 Byte: Not Needed
-// - vote->n_votes = buffer[0];
-//
-// Vote - 1 + 33(Compressed PublicKey) Bytes:
-// - bytecpy(vote->data, &buffer[1], 34);
-//
-// ---
-bool deserializeVote(Vote *vote, const uint8_t *buffer, size_t size) {
-    if (size != sizeof(uint8_t) + VOTE_LEN) {
-        return false;
-    }
+void displaySecondSignature(const Transaction *transaction) {
+    const char *const LABEL     = "2nd Signature";
+    const size_t LABEL_SIZE     = 14;
 
-    // skip vote count
-    bytecpy(vote->data, &buffer[sizeof(uint8_t)], VOTE_LEN);        // 34 Bytes
+    const char *const LABEL_PUBLICKEY   = "PublicKey";
+    const size_t LABEL_PUBLICKEY_SIZE   = 10;
 
-    return true;
+    bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
+    bytecpy((char *)displayCtx.title[0], LABEL_PUBLICKEY, LABEL_PUBLICKEY_SIZE);
+    bytecpy((char *)displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
+
+    // PublicKey of Second Signature
+    bytesToHex((char *)displayCtx.var[0],
+                transaction->asset.secondSignature.publicKey,
+                PUBLICKEY_COMPRESSED_LEN);
+
+    // Fee
+    printAmount(transaction->fee,
+                (uint8_t *)displayCtx.var[1], sizeof(displayCtx.var[1]),
+                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

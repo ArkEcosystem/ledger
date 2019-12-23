@@ -16,8 +16,7 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_ASSETS_SECOND_SIGNATURE_DISPLAY_H
-#define ARK_OPERATIONS_TRANSACTION_ASSETS_SECOND_SIGNATURE_DISPLAY_H
+#include "transactions/ux/ipfs_ux.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -26,33 +25,35 @@
 
 #include "operations/transactions/transaction.h"
 
-#include "ux/display_context.h"
-
-#include "utils/hex.h"
+#include "utils/base58.h"
 #include "utils/print.h"
 #include "utils/utils.h"
 
-////////////////////////////////////////////////////////////////////////////////
-
-static const uint8_t STEPS_SECOND_SIGNATURE = 2U;
+#include "ux/display_context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void displaySecondSignature(const Transaction *transaction) {
-    const char *const LABEL     = "Second Signature Registration";
-    const size_t LABEL_SIZE     = 30;
+void displayIpfs(const Transaction *transaction) {
+    const char *const LABEL     = "IPFS";
+    const size_t LABEL_SIZE     = 5;
 
-    const char *const LABEL_PUBLICKEY   = "PublicKey";
-    const size_t LABEL_PUBLICKEY_SIZE   = 10;
+    const char *const LABEL_DAG     = "DAG";
+    const size_t LABEL_DAG_SIZE     = 4;
 
     bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
-    bytecpy((char *)displayCtx.title[0], LABEL_PUBLICKEY, LABEL_PUBLICKEY_SIZE);
+    bytecpy((char *)displayCtx.title[0], LABEL_DAG, LABEL_DAG_SIZE);
     bytecpy((char *)displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
 
-    // PublicKey of Second Signature
-    bytesToHex((char *)displayCtx.var[0],
-                transaction->asset.secondSignature.publicKey,
-                PUBLICKEY_COMPRESSED_LEN);
+    // DAG
+    encodeBase58((uint8_t *)transaction->asset.ipfs.dag,
+                 transaction->asset.ipfs.length,
+                 (uint8_t *)displayCtx.var[0], MIN(46, HASH_64_LEN));
+
+    // Let's truncate the DAG if it's longer than 64 bytes.
+    if (transaction->asset.ipfs.length > HASH_64_LEN) {
+        bytecpy((void *)&displayCtx.var[0][HASH_64_LEN],
+                LABEL_ELLIPSES, LABEL_ELLIPSES_SIZE);
+    }
 
     // Fee
     printAmount(transaction->fee,
@@ -61,5 +62,3 @@ void displaySecondSignature(const Transaction *transaction) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-#endif

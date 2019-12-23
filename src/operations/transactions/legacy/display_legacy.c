@@ -27,12 +27,14 @@
 
 #include "transactions/transaction.h"
 
-#include "ux.h"
-#include "ux/display_context.h"
+#include "transactions/types/types.h"
 
 #include "utils/base58.h"
 #include "utils/print.h"
 #include "utils/utils.h"
+
+#include "ux.h"
+#include "ux/display_context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Externally Declared Methods.

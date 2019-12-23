@@ -18,10 +18,9 @@
 
 #include "crypto/keys.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-
-#include <os.h>
 
 #include "constants.h"
 
@@ -29,20 +28,15 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void compressPublicKey(const cx_ecfp_public_key_t *publicKey,
-                       uint8_t *out,
-                       size_t outSize) {
+bool compressPublicKey(uint8_t *publicKey, uint8_t *out, size_t outSize) {
     if (outSize != PUBLICKEY_COMPRESSED_LEN) {
-        THROW(EXCEPTION_OVERFLOW);
+        return false;
     }
 
-    if (publicKey->curve == CX_CURVE_256K1) {
-        out[0] = ((publicKey->W[HASH_64_LEN] & 1U) ? 0x03 : 0x02);
-        bytecpy(out + 1U, publicKey->W + 1U, HASH_32_LEN);
-    }
-    else {
-        THROW(EXCEPTION);
-    }
+    out[0] = ((publicKey[HASH_64_LEN] & 1U) ? 0x03 : 0x02);
+    bytecpy(out + 1U, publicKey + 1U, HASH_32_LEN);
+
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -51,15 +45,14 @@ uint32_t setPublicKeyContext(PublicKeyContext *ctx, uint8_t *apduBuffer) {
     uint32_t tx = 0;
     apduBuffer[tx++] = PUBLICKEY_COMPRESSED_LEN;
 
-    compressPublicKey(&ctx->data,
-                      &apduBuffer[tx],
-                      PUBLICKEY_COMPRESSED_LEN);
+    compressPublicKey(ctx->data, &apduBuffer[tx], PUBLICKEY_COMPRESSED_LEN);
 
     tx += PUBLICKEY_COMPRESSED_LEN;
 
     apduBuffer[tx++] = ADDRESS_LEN;
 
     bytecpy(&apduBuffer[tx], ctx->address, ADDRESS_LEN);
+
     tx += ADDRESS_LEN;
 
     if (ctx->needsChainCode) {

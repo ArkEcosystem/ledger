@@ -16,43 +16,45 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/htlc_refund.h"
+#include "transactions/ux/htlc_claim_ux.h"
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
 
+#include "operations/transactions/transaction.h"
+
+#include "utils/hex.h"
 #include "utils/utils.h"
+
+#include "ux/display_context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Htlc Refund (Type 10) - 32 Bytes
-//
-// @param HtlcRefund *refund
-// @param uint8_t *buffer: The serialized buffer at the Assets offset.
-// @param size_t size: The Asset Buffer Size.
-//
-// @return bool: true if deserialization was successful.
-//
-// ---
-// Internals:
-//
-// Lock Transaction Id - 32 Bytes:
-// - bytecpy(refund->id, &buffer[0], 32);
-//
-// ---
-bool deserializeHtlcRefund(HtlcRefund *refund,
-                           const uint8_t *buffer,
-                           size_t size) {
-    if (size != HASH_32_LEN) {
-        return false;
-    }
+void displayHtlcClaim(const Transaction *transaction) {
+    const char *const LABEL     = "HTLC Claim";
+    const size_t LABEL_SIZE     = 12;
 
-    bytecpy(refund->id, &buffer[0], HASH_32_LEN);               // 32 Bytes
+    const char *const LABEL_LOCK_ID     = "Lock Id";
+    const size_t LABEL_LOCK_ID_SIZE     = 8;
 
-    return true;
+    const char *const LABEL_SECRET      = "Secret";
+    const size_t LABEL_SECRET_SIZE      = 7;
+
+    bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
+    bytecpy((char *)displayCtx.title[0], LABEL_LOCK_ID, LABEL_LOCK_ID_SIZE);
+    bytecpy((char *)displayCtx.title[1], LABEL_SECRET, LABEL_SECRET_SIZE);
+
+    // Id
+    bytesToHex((char *)displayCtx.var[0],
+               transaction->asset.htlcClaim.id,
+               HASH_32_LEN);
+
+    // Secret
+    bytecpy((char *)displayCtx.var[1],
+            transaction->asset.htlcClaim.secret,
+            HASH_32_LEN);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

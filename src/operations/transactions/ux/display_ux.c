@@ -16,23 +16,24 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/display.h"
+#include "transactions/ux/display_ux.h"
 
 #include <string.h>
 
 #include "transactions/transaction.h"
 
-#include "transactions/assets/transfer_display.h"
-#include "transactions/assets/second_signature_display.h"
-#include "transactions/assets/vote_display.h"
-#include "transactions/assets/ipfs_display.h"
-#include "transactions/assets/htlc_lock_display.h"
-#include "transactions/assets/htlc_claim_display.h"
-#include "transactions/assets/htlc_refund_display.h"
+#include "transactions/types/types.h"
 
-#include "ux/display_context.h"
+#include "transactions/ux/transfer_ux.h"
+#include "transactions/ux/second_signature_ux.h"
+#include "transactions/ux/vote_ux.h"
+#include "transactions/ux/ipfs_ux.h"
+#include "transactions/ux/htlc_lock_ux.h"
+#include "transactions/ux/htlc_claim_ux.h"
+#include "transactions/ux/htlc_refund_ux.h"
 
 #include "ux.h"
+#include "ux/display_context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 

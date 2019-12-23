@@ -16,7 +16,7 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/htlc_claim.h"
+#include "transactions/types/transfer.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -24,35 +24,46 @@
 
 #include "constants.h"
 
+#include "utils/unpack.h"
 #include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Htlc Claim (Type 8) - 64 Bytes
+// Deserialize Transfer (Type 0) - 33 bytes
 //
-// @param HtlcClaim *claim
+// @param Transfer *transfer
 // @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
-// @param size_t size: The Asset Buffer Size.
+// @param size_t size: The Asset Size.
 //
 // @return bool: true if deserialization was successful.
 //
 // ---
 // Internals:
 //
-// Lock Transaction Id - 32 Bytes:
-// - bytecpy(claim->id, &buffer[0], 32);
+// Amount - 8 Bytes:
+// - transfer->amount = U8LE(buffer, 0U);
 //
-// Unlock Secret - 32 Bytes
-// - bytecpy(claim->secret, &buffer[32], 32);
+// Expiration - 4 Bytes:
+// - transfer->expiration = U4LE(buffer, 8);
+//
+// RecipientId - 21 Bytes:
+// - bytecpy(transfer->recipientId, &buffer[12], 21);
 //
 // ---
-bool deserializeHtlcClaim(HtlcClaim *claim, const uint8_t *buffer, size_t size) {
-    if (size <= HASH_32_LEN) {
+bool deserializeTransfer(Transfer *transfer,
+                         const uint8_t *buffer,
+                         size_t size) {
+    if (transfer == NULL ||
+        buffer == NULL ||
+        size != TRANSACTION_TYPE_TRANSFER_SIZE) {
         return false;
     }
 
-    bytecpy(claim->id, &buffer[0], HASH_32_LEN);                    // 32 Bytes
-    bytecpy(claim->secret, &buffer[HASH_32_LEN], HASH_32_LEN);      // 32 Bytes
+    transfer->amount        = U8LE(buffer, 0);                      // 8 Bytes
+    transfer->expiration    = U4LE(buffer, sizeof(uint64_t));       // 4 Bytes
+    bytecpy(transfer->recipientId,                                  // 21 Bytes
+            &buffer[sizeof(uint64_t) + sizeof(uint32_t)],
+            ADDRESS_HASH_LEN);
 
     return true;
 }

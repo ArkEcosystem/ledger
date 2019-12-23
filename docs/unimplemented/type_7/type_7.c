@@ -26,7 +26,7 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/type_7.h"
+#include "transactions/types/type_7.h"
 
 #include <stdint.h>
 

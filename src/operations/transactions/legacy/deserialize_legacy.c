@@ -23,10 +23,8 @@
 
 #include "constants.h"
 
-#include "transactions/offsets.h"
 #include "transactions/transaction.h"
-
-#include "ux.h"
+#include "transactions/offsets.h"
 
 #include "utils/unpack.h"
 #include "utils/utils.h"

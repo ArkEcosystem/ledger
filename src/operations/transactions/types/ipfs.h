@@ -16,7 +16,8 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/ipfs.h"
+#ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_IPFS_H
+#define ARK_OPERATIONS_TRANSACTIONS_TYPES_IPFS_H
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -24,45 +25,17 @@
 
 #include "constants.h"
 
-#include "utils/utils.h"
+////////////////////////////////////////////////////////////////////////////////
+
+typedef struct ipfs_asset_t {
+  size_t    length;
+  uint8_t   dag[HASH_64_LEN];
+} Ipfs;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// IPFS (Type 5) - 0 <=> 64 Bytes
-//
-// @param Ipfs *ipfs
-// @param uint8_t *buffer: The serialized buffer at the Assets offset.
-// @param size_t size: The Asset Buffer Size.
-//
-// @return bool: true if deserialization was successful.
-//
-// ---
-// Internals:
-//
-// Length - 1 Byte
-// - ipfs->length = buffer[1] + 2U;
-//
-// Dag - 0 <=> 64 Bytes
-// - bytecpy(ipfs->dag, buffer, ipfs->length);
-//
-// ---
-bool deserializeIpfs(Ipfs *ipfs, const uint8_t *buffer, size_t size) {
-    // 2nd byte of IPFS hash contains its len.
-    //
-    // byte[0] == hash-type (sha256).
-    // byte[1] == hash-type length (32-bytes).
-    // byte[[2...]] == 32-byte hash.
-    ipfs->length = buffer[sizeof(uint8_t)] + 2;
-
-    // Let's make sure the length isn't > 64,
-    // and that the lengths match.
-    if (size > HASH_64_LEN || size != ipfs->length) {
-        return false;
-    }
-
-    bytecpy(ipfs->dag, buffer, size);                       // 0 <=> 64 Bytes
-
-    return true;
-}
+bool deserializeIpfs(Ipfs *ipfs, const uint8_t *buffer, size_t size);
 
 ////////////////////////////////////////////////////////////////////////////////
+
+#endif

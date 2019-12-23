@@ -16,25 +16,20 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_ASSETS_TRANSFER_DISPLAY_H
-#define ARK_OPERATIONS_TRANSACTION_ASSETS_TRANSFER_DISPLAY_H
+#include "transactions/ux/transfer_ux.h"
 
+#include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 
 #include "constants.h"
 
 #include "operations/transactions/transaction.h"
 
-#include "ux/display_context.h"
-
 #include "utils/base58.h"
 #include "utils/print.h"
 #include "utils/utils.h"
 
-////////////////////////////////////////////////////////////////////////////////
-
-static const uint8_t STEPS_TRANSFER_MIN = 4U;
+#include "ux/display_context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -108,5 +103,3 @@ void displayTransfer(const Transaction *transaction) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-#endif

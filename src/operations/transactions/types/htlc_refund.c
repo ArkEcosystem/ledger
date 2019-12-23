@@ -16,43 +16,43 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_ASSETS_HTLC_REFUND_DISPLAY_H
-#define ARK_OPERATIONS_TRANSACTION_ASSETS_HTLC_REFUND_DISPLAY_H
+#include "transactions/types/htlc_refund.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
 
-#include "operations/transactions/transaction.h"
-
-#include "ux/display_context.h"
-
-#include "utils/hex.h"
 #include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static const uint8_t STEPS_HTLC_REFUND = 1U;
+// Htlc Refund (Type 10) - 32 Bytes
+//
+// @param HtlcRefund *refund
+// @param uint8_t *buffer: The serialized buffer at the Assets offset.
+// @param size_t size: The Asset Buffer Size.
+//
+// @return bool: true if deserialization was successful.
+//
+// ---
+// Internals:
+//
+// Lock Transaction Id - 32 Bytes:
+// - bytecpy(refund->id, &buffer[0], 32);
+//
+// ---
+bool deserializeHtlcRefund(HtlcRefund *refund,
+                           const uint8_t *buffer,
+                           size_t size) {
+    if (size != HASH_32_LEN) {
+        return false;
+    }
 
-////////////////////////////////////////////////////////////////////////////////
+    bytecpy(refund->id, &buffer[0], HASH_32_LEN);               // 32 Bytes
 
-void displayHtlcRefund(const Transaction *transaction) {
-    const char *const LABEL     = "HTLC Refund";
-    const size_t LABEL_SIZE     = 12;
-
-    const char *const LABEL_LOCK_ID     = "Lock Id";
-    const size_t LABEL_LOCK_ID_SIZE     = 5;
-
-    bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
-    bytecpy((char *)displayCtx.title[0], LABEL_LOCK_ID, LABEL_LOCK_ID_SIZE);
-
-    // Lock Id
-    bytesToHex((char *)displayCtx.var[0],
-               transaction->asset.htlcRefund.id,
-               HASH_32_LEN);
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-#endif

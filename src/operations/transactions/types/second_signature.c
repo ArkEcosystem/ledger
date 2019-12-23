@@ -16,8 +16,7 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_CRYPTO_KEYS
-#define ARK_CRYPTO_KEYS
+#include "transactions/types/second_signature.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -25,21 +24,35 @@
 
 #include "constants.h"
 
-////////////////////////////////////////////////////////////////////////////////
-
-typedef struct public_key_context_t {
-    uint8_t             data[HASH_64_LEN];
-    uint8_t             address[41];
-    uint8_t             chainCode[HASH_32_LEN];
-    bool                needsChainCode;
-} PublicKeyContext;
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool compressPublicKey(uint8_t *publicKey, uint8_t *out, size_t outSize);
+// Second Signature Registration (Type 1) - 33 Bytes
+//
+// @param SecondSignatureRegistration *registration
+// @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
+// @param size_t size: The Asset Buffer Size.
+//
+// @return bool: true if deserialization was successful.
+//
+// ---
+// Internals:
+//
+// Second PublicKey - 33 Bytes:
+// - bytecpy(registration->publicKey, buffer, 33);
+//
+// ---
+bool deserializeSecondSignature(SecondSignatureRegistration *registration,
+                                const uint8_t *buffer,
+                                size_t size) {
+    if (size != PUBLICKEY_COMPRESSED_LEN) {
+        return false;
+    }
 
-uint32_t setPublicKeyContext(PublicKeyContext *ctx, uint8_t *apduBuffer);
+    bytecpy(registration->publicKey, buffer, PUBLICKEY_COMPRESSED_LEN);
+
+    return true;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
-
-#endif

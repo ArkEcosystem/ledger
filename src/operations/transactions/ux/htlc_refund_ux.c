@@ -16,8 +16,7 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_ASSETS_HTLC_CLAIM_DISPLAY_H
-#define ARK_OPERATIONS_TRANSACTION_ASSETS_HTLC_CLAIM_DISPLAY_H
+#include "transactions/ux/htlc_refund_ux.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -26,42 +25,27 @@
 
 #include "operations/transactions/transaction.h"
 
-#include "ux/display_context.h"
-
 #include "utils/hex.h"
 #include "utils/utils.h"
 
-////////////////////////////////////////////////////////////////////////////////
-
-static const uint8_t STEPS_HTLC_CLAIM = 2U;
+#include "ux/display_context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static void displayHtlcClaim(const Transaction *transaction) {
-    const char *const LABEL     = "HTLC Claim";
+void displayHtlcRefund(const Transaction *transaction) {
+    const char *const LABEL     = "HTLC Refund";
     const size_t LABEL_SIZE     = 12;
 
     const char *const LABEL_LOCK_ID     = "Lock Id";
-    const size_t LABEL_LOCK_ID_SIZE     = 8;
-
-    const char *const LABEL_SECRET      = "Secret";
-    const size_t LABEL_SECRET_SIZE      = 7;
+    const size_t LABEL_LOCK_ID_SIZE     = 5;
 
     bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
     bytecpy((char *)displayCtx.title[0], LABEL_LOCK_ID, LABEL_LOCK_ID_SIZE);
-    bytecpy((char *)displayCtx.title[1], LABEL_SECRET, LABEL_SECRET_SIZE);
 
-    // Id
+    // Lock Id
     bytesToHex((char *)displayCtx.var[0],
-               transaction->asset.htlcClaim.id,
+               transaction->asset.htlcRefund.id,
                HASH_32_LEN);
-
-    // Secret
-    bytecpy((char *)displayCtx.var[1],
-            transaction->asset.htlcClaim.secret,
-            HASH_32_LEN);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-#endif

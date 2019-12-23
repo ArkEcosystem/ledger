@@ -16,8 +16,7 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_ASSETS_VOTE_DISPLAY_H
-#define ARK_OPERATIONS_TRANSACTION_ASSETS_VOTE_DISPLAY_H
+#include "transactions/ux/vote_ux.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -27,15 +26,11 @@
 
 #include "operations/transactions/transaction.h"
 
-#include "ux/display_context.h"
-
 #include "utils/hex.h"
 #include "utils/print.h"
 #include "utils/utils.h"
 
-////////////////////////////////////////////////////////////////////////////////
-
-static const uint8_t STEPS_VOTE = 2U;
+#include "ux/display_context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -71,5 +66,3 @@ void displayVote(const Transaction *transaction) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-#endif

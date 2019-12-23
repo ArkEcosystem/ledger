@@ -16,25 +16,25 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_ASSETS_IPFS_H
-#define ARK_OPERATIONS_TRANSACTION_ASSETS_IPFS_H
-
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-
-#include "constants.h"
+#ifndef ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
+#define ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct ipfs_asset_t {
-  size_t    length;
-  uint8_t   dag[HASH_64_LEN];
-} Ipfs;
-
-////////////////////////////////////////////////////////////////////////////////
-
-bool deserializeIpfs(Ipfs *ipfs, const uint8_t *buffer, size_t size);
+// ARK Transaction Types
+enum TransactionTypes {
+    TRANSFER_TYPE                   = 0,
+    SECOND_SIGNATURE_TYPE           = 1,
+    // DELEGATE_REGISTRATION_TYPE   = 2,
+    VOTE_TYPE                       = 3,
+    // MULTI_SIGNATURE_TYPE         = 4,
+    IPFS_TYPE                       = 5,
+    // MULTI_PAYMENT_TYPE           = 6,
+    // DELEGATE_RESIGNATION_TYPE    = 7,
+    HTLC_LOCK_TYPE                  = 8,
+    HTLC_CLAIM_TYPE                 = 9,
+    HTLC_REFUND_TYPE                = 10
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 

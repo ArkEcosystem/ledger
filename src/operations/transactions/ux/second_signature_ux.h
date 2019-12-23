@@ -16,43 +16,21 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/second_signature.h"
+#ifndef ARK_OPERATIONS_TRANSACTION_UX_SECOND_SIGNATURE_UX_H
+#define ARK_OPERATIONS_TRANSACTION_UX_SECOND_SIGNATURE_UX_H
 
-#include <stdbool.h>
-#include <stddef.h>
 #include <stdint.h>
 
-#include "constants.h"
-
-#include "utils/utils.h"
+#include "operations/transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Second Signature Registration (Type 1) - 33 Bytes
-//
-// @param SecondSignatureRegistration *registration
-// @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
-// @param size_t size: The Asset Buffer Size.
-//
-// @return bool: true if deserialization was successful.
-//
-// ---
-// Internals:
-//
-// Second PublicKey - 33 Bytes:
-// - bytecpy(registration->publicKey, buffer, 33);
-//
-// ---
-bool deserializeSecondSignature(SecondSignatureRegistration *registration,
-                                const uint8_t *buffer,
-                                size_t size) {
-    if (size != PUBLICKEY_COMPRESSED_LEN) {
-        return false;
-    }
-
-    bytecpy(registration->publicKey, buffer, PUBLICKEY_COMPRESSED_LEN);
-
-    return true;
-}
+static const uint8_t STEPS_SECOND_SIGNATURE = 2U;
 
 ////////////////////////////////////////////////////////////////////////////////
+
+void displaySecondSignature(const Transaction *transaction);
+
+////////////////////////////////////////////////////////////////////////////////
+
+#endif

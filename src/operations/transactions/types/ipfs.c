@@ -16,7 +16,7 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/transfer.h"
+#include "transactions/types/ipfs.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -24,46 +24,43 @@
 
 #include "constants.h"
 
-#include "utils/unpack.h"
 #include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Deserialize Transfer (Type 0) - 33 bytes
+// IPFS (Type 5) - 0 <=> 64 Bytes
 //
-// @param Transfer *transfer
-// @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
-// @param size_t size: The Asset Size.
+// @param Ipfs *ipfs
+// @param uint8_t *buffer: The serialized buffer at the Assets offset.
+// @param size_t size: The Asset Buffer Size.
 //
 // @return bool: true if deserialization was successful.
 //
 // ---
 // Internals:
 //
-// Amount - 8 Bytes:
-// - transfer->amount = U8LE(buffer, 0U);
+// Length - 1 Byte
+// - ipfs->length = buffer[1] + 2U;
 //
-// Expiration - 4 Bytes:
-// - transfer->expiration = U4LE(buffer, 8);
-//
-// RecipientId - 21 Bytes:
-// - bytecpy(transfer->recipientId, &buffer[12], 21);
+// Dag - 0 <=> 64 Bytes
+// - bytecpy(ipfs->dag, buffer, ipfs->length);
 //
 // ---
-bool deserializeTransfer(Transfer *transfer,
-                         const uint8_t *buffer,
-                         size_t size) {
-    if (transfer == NULL ||
-        buffer == NULL ||
-        size != TRANSACTION_TYPE_TRANSFER_SIZE) {
+bool deserializeIpfs(Ipfs *ipfs, const uint8_t *buffer, size_t size) {
+    // 2nd byte of IPFS hash contains its len.
+    //
+    // byte[0] == hash-type (sha256).
+    // byte[1] == hash-type length (32-bytes).
+    // byte[[2...]] == 32-byte hash.
+    ipfs->length = buffer[sizeof(uint8_t)] + 2;
+
+    // Let's make sure the length isn't > 64,
+    // and that the lengths match.
+    if (size > HASH_64_LEN || size != ipfs->length) {
         return false;
     }
 
-    transfer->amount        = U8LE(buffer, 0);                      // 8 Bytes
-    transfer->expiration    = U4LE(buffer, sizeof(uint64_t));       // 4 Bytes
-    bytecpy(transfer->recipientId,                                  // 21 Bytes
-            &buffer[sizeof(uint64_t) + sizeof(uint32_t)],
-            ADDRESS_HASH_LEN);
+    bytecpy(ipfs->dag, buffer, size);                       // 0 <=> 64 Bytes
 
     return true;
 }
