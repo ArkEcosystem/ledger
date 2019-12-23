@@ -23,20 +23,24 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <os.h>
+
 #include "constants.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef struct public_key_context_t {
-    uint8_t             data[HASH_64_LEN];
-    uint8_t             address[41];
-    uint8_t             chainCode[HASH_32_LEN];
-    bool                needsChainCode;
+    cx_ecfp_public_key_t    data;
+    uint8_t                 address[41];
+    uint8_t                 chainCode[HASH_32_LEN];
+    bool                    needsChainCode;
 } PublicKeyContext;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool compressPublicKey(uint8_t *publicKey, uint8_t *out, size_t outSize);
+void compressPublicKey(const cx_ecfp_public_key_t *publicKey,
+                       uint8_t *out,
+                       size_t outSize);
 
 uint32_t setPublicKeyContext(PublicKeyContext *ctx, uint8_t *apduBuffer);
 
