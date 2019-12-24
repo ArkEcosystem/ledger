@@ -47,7 +47,7 @@ void doubleHash256(uint8_t *in, size_t inSize, uint8_t *out) {
     cx_sha256_t ctx;
     uint8_t checksum[CX_SHA256_SIZE];
     cx_sha256_init(&ctx);
-    cx_hash(&ctx.header, 0, in, inSize, checksum, CX_SHA256_SIZE);
+    cx_hash(&ctx.header, CX_LAST, in, inSize, checksum, CX_SHA256_SIZE);
     cx_hash(&ctx.header, CX_LAST, checksum, CX_SHA256_SIZE, out, CX_SHA256_SIZE);
 }
 
