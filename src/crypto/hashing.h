@@ -28,8 +28,6 @@ void hash160(uint8_t *in, size_t inSize, uint8_t *out);
 
 void hash256(uint8_t *in, size_t inSize, uint8_t *out);
 
-void doubleHash256(uint8_t *in, size_t inSize, uint8_t *out);
-
 ////////////////////////////////////////////////////////////////////////////////
 
 #endif

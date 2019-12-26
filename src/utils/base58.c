@@ -125,7 +125,8 @@ uint16_t encodeBase58PublicKey(uint8_t *in,
         bytecpy(&temp[versionSize], &in[versionSize], HASH_20_LEN);
     }
 
-    doubleHash256(temp, ripeLength, checksum);
+    hash256(temp, ripeLength, checksum);
+    hash256(checksum, HASH_32_LEN, checksum);
 
     bytecpy(&temp[ripeLength], checksum, 4);
 
