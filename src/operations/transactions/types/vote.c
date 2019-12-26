@@ -16,27 +16,45 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_TYPE_5_H
-#define ARK_OPERATIONS_TRANSACTION_TYPE_5_H
+#include "transactions/types/vote.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
 
-#include "operations/status.h"
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct ipfs_asset_t {
-  size_t    length;
-  uint8_t   dag[HASH_64_LENGTH];
-} Ipfs;
+// Vote (Type 3) - 34 Bytes
+//
+// @param Vote *vote
+// @param const uint8_t *buffer: The serialized buffer at the Assets offset.
+// @param size_t size: The Asset Buffer Size.
+//
+// @return bool: true if deserialization was successful.
+//
+// ---
+// Internals:
+//
+// Number of Votes - 1 Byte: Not Needed
+// - vote->n_votes = buffer[0];
+//
+// Vote - 1 + 33(Compressed PublicKey) Bytes:
+// - bytecpy(vote->data, &buffer[1], 34);
+//
+// ---
+bool deserializeVote(Vote *vote, const uint8_t *buffer, size_t size) {
+    if (size != sizeof(uint8_t) + VOTE_LEN) {
+        return false;
+    }
+
+    // skip vote count
+    bytecpy(vote->data, &buffer[sizeof(uint8_t)], VOTE_LEN);        // 34 Bytes
+
+    return true;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
-
-StreamStatus deserializeIpfs(Ipfs *ipfs, const uint8_t *buffer, size_t size);
-
-////////////////////////////////////////////////////////////////////////////////
-
-#endif

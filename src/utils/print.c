@@ -22,9 +22,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <os.h>
-
 #include "constants.h"
+
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -121,7 +121,7 @@ size_t printAmount(uint64_t amount,
                    const char *tokenName,
                    size_t tokenNameSize,
                    uint8_t decimals) {
-    uint8_t tmp[21];
+    uint8_t tmp[ADDRESS_HASH_LEN];
     uint8_t tmp2[sizeof(tmp) + tokenNameSize];
     size_t numDigits = 0, i;
     uint64_t base = 1ULL;
@@ -132,7 +132,7 @@ size_t printAmount(uint64_t amount,
     }
 
     if (numDigits > sizeof(tmp) - 1) {
-        THROW(EXCEPTION);
+        return 0;
     }
 
     base /= 0x0A;
@@ -144,7 +144,7 @@ size_t printAmount(uint64_t amount,
     tmp[i] = '\0';
 
     if (tokenNameSize > 0) {
-        os_memmove(tmp2, tokenName, tokenNameSize);
+        bytecpy(tmp2, tokenName, tokenNameSize);
     }
 
     adjustDecimals((char *)tmp, i,
@@ -152,9 +152,8 @@ size_t printAmount(uint64_t amount,
                    sizeof(tmp2) - tokenNameSize,
                    decimals);
 
-
     if (sizeof(tmp2) < outSize - 1) {
-        os_memmove(out, tmp2, sizeof(tmp2));
+        bytecpy(out, tmp2, sizeof(tmp2));
     } else {
         out[0] = '\0';
     }

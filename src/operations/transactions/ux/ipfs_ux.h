@@ -1,13 +1,3 @@
-
-////////////////////////////////////////////////////////////////////////////////
-
-// The Following are only examples and places where this code could be implemented.
-//  It is not final or guaranteed working.
-//  This should only serve as a reference for implementing.
-
-////////////////////////////////////////////////////////////////////////////////
-
-
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
@@ -26,15 +16,20 @@
 *  limitations under the License.
 ********************************************************************************/
 
+#ifndef ARK_OPERATIONS_TRANSACTION_UX_IPFS_UX_H
+#define ARK_OPERATIONS_TRANSACTION_UX_IPFS_UX_H
+
 #include <stdint.h>
 
-#include <os.h>
-
-#include "constants.h"
+#include "operations/transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct delegate_resignation_asset_t {} DelegateResignationAsset;
+static const uint8_t STEPS_IPFS = 2U;
+
+////////////////////////////////////////////////////////////////////////////////
+
+void displayIpfs(const Transaction *transaction);
 
 ////////////////////////////////////////////////////////////////////////////////
 

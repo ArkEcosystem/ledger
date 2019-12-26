@@ -45,7 +45,7 @@ extern void ui_idle(void);
 unsigned int ioApprove(const bagl_element_t *e) {
     uint32_t tx = 0;
     cx_ecfp_private_key_t privateKey;
-    uint8_t privateKeyData[HASH_64_LENGTH];
+    uint8_t privateKeyData[HASH_64_LEN];
 
     os_perso_derive_node_bip32(CX_CURVE_256K1,
                                tmpCtx.signing.bip32Path,
@@ -55,19 +55,16 @@ unsigned int ioApprove(const bagl_element_t *e) {
 
     cx_ecfp_init_private_key(tmpCtx.signing.curve,
                              privateKeyData,
-                             HASH_32_LENGTH,
+                             HASH_32_LEN,
                              &privateKey);
 
-    os_memset(privateKeyData, 0, sizeof(privateKeyData));
-
+    explicit_bzero(privateKeyData, sizeof(privateKeyData));
 
     setPublicKeyContext(&tmpCtx.publicKey, G_io_apdu_buffer);
 
     if (tmpCtx.signing.curve == CX_CURVE_256K1) {
-        cx_sha256_t hashCtx;
         uint8_t hash[CX_SHA256_SIZE];
-        hash256(&hashCtx,
-                tmpCtx.signing.data,
+        hash256(tmpCtx.signing.data,
                 tmpCtx.signing.dataLength,
                 hash);
 
@@ -76,7 +73,7 @@ unsigned int ioApprove(const bagl_element_t *e) {
                        sizeof(G_io_apdu_buffer));
     }
 
-    os_memset(&privateKey, 0, sizeof(privateKey));
+    explicit_bzero(&privateKey, sizeof(privateKey));
 
     G_io_apdu_buffer[tx++] = 0x90;
     G_io_apdu_buffer[tx++] = 0x00;

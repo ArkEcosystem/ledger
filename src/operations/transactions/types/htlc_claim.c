@@ -16,54 +16,45 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/type_0.h"
+#include "transactions/types/htlc_claim.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <os.h>
-
 #include "constants.h"
 
-#include "utils/unpack.h"
-
-#include "operations/status.h"
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Deserialize Transfer (Type 0) - 33 bytes
+// Htlc Claim (Type 8) - 64 Bytes
 //
-// @param Transfer *transfer: The Transfer (Type 0) Asset.
+// @param HtlcClaim *claim
 // @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
 // @param size_t size: The Asset Buffer Size.
+//
+// @return bool: true if deserialization was successful.
 //
 // ---
 // Internals:
 //
-// Amount - 8 Bytes:
-// - transfer->amount = U8LE(buffer, 0U);
+// Lock Transaction Id - 32 Bytes:
+// - bytecpy(claim->id, &buffer[0], 32);
 //
-// Expiration - 4 Bytes:
-// - transfer->expiration = U4LE(buffer, sizeof(uint64_t));
-//
-// Recipient - 21 Bytes:
-// - os_memmove(transfer->recipient, &buffer[sizeof(uint64_t) + sizeof(uint32_t)], ADDRESS_HASH_LENGTH);
+// Unlock Secret - 32 Bytes
+// - bytecpy(claim->secret, &buffer[32], 32);
 //
 // ---
-StreamStatus deserializeTransfer(Transfer *transfer,
-                                 const uint8_t *buffer,
-                                 size_t size) {
-    if (size != 33) {
-        return USTREAM_FAULT;
+bool deserializeHtlcClaim(HtlcClaim *claim, const uint8_t *buffer, size_t size) {
+    if (size <= HASH_32_LEN) {
+        return false;
     }
 
-    transfer->amount        = U8LE(buffer, 0);
-    transfer->expiration    = U4LE(buffer, sizeof(uint64_t));
-    os_memmove(transfer->recipient,
-               &buffer[sizeof(uint64_t) + sizeof(uint32_t)],
-               ADDRESS_HASH_LENGTH);
+    bytecpy(claim->id, &buffer[0], HASH_32_LEN);                    // 32 Bytes
+    bytecpy(claim->secret, &buffer[HASH_32_LEN], HASH_32_LEN);      // 32 Bytes
 
-    return USTREAM_FINISHED;
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

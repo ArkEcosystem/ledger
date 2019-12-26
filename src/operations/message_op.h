@@ -19,17 +19,15 @@
 #ifndef ARK_OPERATIONS_MESSAGE_H
 #define ARK_OPERATIONS_MESSAGE_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <os.h>
-
 #include "constants.h"
-
-#include "operations/status.h"
 
 #include "utils/hex.h"
 #include "utils/print.h"
+#include "utils/utils.h"
 
 #include "ux.h"
 #include "ux/display_context.h"
@@ -40,17 +38,8 @@ extern void setDisplaySteps(uint8_t steps);
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define ELLIPSES            "..."
-#define ELLIPSES_SIZE       sizeof(ELLIPSES)
-
-#define MSG_TITLE           "message:"
-#define MSG_TITLE_SIZE      sizeof(MSG_TITLE)
-
-#define MSG_TITLE_EXTRA         " pt  :"
-#define MSG_TITLE_EXTRA_SIZE    sizeof(MSG_TITLE_EXTRA)
-
-#define MSG_NUM_OFFSET      MSG_TITLE_SIZE - 2 + MSG_TITLE_EXTRA_SIZE - 3
-#define ASCII_OFFSET        48
+static const char *const LABEL_MESSAGE = "Message";
+static const size_t LABEL_MESSAGE_SIZE = 8;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -66,17 +55,23 @@ extern void setDisplaySteps(uint8_t steps);
 // - screen 2..N: \"message pt N:\"
 //
 // ---
-static void internalSetMessageTitle(uint8_t *dst, uint8_t msgScreen) {
-    os_memmove((char *)dst, MSG_TITLE, MSG_TITLE_SIZE);
+static void setMessageTitle(uint8_t *dst, uint8_t msgScreen) {
+    bytecpy((char *)dst, LABEL_MESSAGE, LABEL_MESSAGE_SIZE);
 
     if (msgScreen > 1U) {
-        os_memmove(&dst[MSG_TITLE_SIZE - 2U],
-                    MSG_TITLE_EXTRA,
-                    MSG_TITLE_EXTRA_SIZE);
+        const char *const LABEL_EXTRA       = " pt  :";
+        const size_t LABEL_EXTRA_SIZE       = 7;
+
+        bytecpy(&dst[LABEL_MESSAGE_SIZE - 1], LABEL_EXTRA, LABEL_EXTRA_SIZE);
+
         // Step to ascii
         // - add '48' to step(uint8_t) for ASCII char.
         //   - uint8_t(1)   + 48 == '1'
+        //   - uint8_t(4)   + 48 == '4'
         //   - uint8_t(16)  + 48 == '16'
+        const size_t ASCII_OFFSET = 48;
+        const size_t MSG_NUM_OFFSET = LABEL_MESSAGE_SIZE - 1 +
+                                      LABEL_EXTRA_SIZE - 3;
         dst[MSG_NUM_OFFSET] = msgScreen + ASCII_OFFSET;
     }
 }
@@ -122,33 +117,39 @@ static void internalSetMessageTitle(uint8_t *dst, uint8_t msgScreen) {
 // - screen 5: \"...message\"
 //
 // ---
-static void internalHandleMessage(const uint8_t *buffer, size_t length) {
+static bool internalHandleMessage(const uint8_t *buffer, size_t length) {
     if (length == 0 || length > MAX_DISPLAY_BUFFER) {
-        THROW(0x6A80);
+        explicit_bzero(&displayCtx, sizeof(displayCtx));
+        return false;
     }
 
+    const char *const LABEL_LENGTH = "length:";
+    const size_t LABEL_LENGTH_SIZE = 8;
+
+    const size_t MSG_ELLIPSES_SIZE = LABEL_ELLIPSES_SIZE - 1;
+
     // Set the operation title.
-    os_memmove(displayCtx.operation, "Message", 8);
+    bytecpy(displayCtx.operation, LABEL_MESSAGE, LABEL_MESSAGE_SIZE);
 
     // Set the Message Length for display.
-    os_memmove(displayCtx.title[0], "length:", 8);
+    bytecpy(displayCtx.title[0], LABEL_LENGTH, LABEL_LENGTH_SIZE);
     printAmount(length,
                 displayCtx.var[0], sizeof(displayCtx.var[0]),
                 "", 0U, 0U);
 
     // Calculate the usable space inside a screen var.
     const size_t usableSize = sizeof(displayCtx.var[1]) -
-                              (2 * ELLIPSES_SIZE - 1);
+                              (2 * LABEL_ELLIPSES_SIZE - 1);
 
     // Set the first Message Title.
-    internalSetMessageTitle(displayCtx.title[1], 1);
+    setMessageTitle(displayCtx.title[1], 1);
 
     // Set the first part of the Message.
     // First screen will always have at least usableSize + 3.
-    os_memmove(displayCtx.var[1],
-               buffer,
-               MIN(length, usableSize + ELLIPSES_SIZE - 1));
-    displayCtx.var[1][MIN(length, usableSize + ELLIPSES_SIZE - 1)] = '\0';
+    bytecpy(displayCtx.var[1],
+            buffer,
+            MIN(length, usableSize + MSG_ELLIPSES_SIZE));
+    displayCtx.var[1][MIN(length, usableSize + MSG_ELLIPSES_SIZE)] = '\0';
 
     // - 1 step for Length Display.
     // - 2..5 Steps for Message.
@@ -170,28 +171,31 @@ static void internalHandleMessage(const uint8_t *buffer, size_t length) {
         // - append ellipses to the end of the last var.
         //   - if last var is screen 1:     (msg) + '...'
         //   - if last var is screen 2..3:  ('...' + msg) + '...'
-        os_memmove(&displayCtx
-                        .var[i + 1][usableSize + (i ? ELLIPSES_SIZE - 1 : 0)],
-                   ELLIPSES,
-                   ELLIPSES_SIZE);
+        bytecpy(&displayCtx
+                    .var[i + 1][usableSize + (i ? MSG_ELLIPSES_SIZE : 0)],
+                LABEL_ELLIPSES,
+                LABEL_ELLIPSES_SIZE);
 
         // Set the current title.
-        internalSetMessageTitle(displayCtx.title[step], step);
+        setMessageTitle(displayCtx.title[step], step);
 
         // Prepend the current var with ellipses.
-        os_memmove((char *)displayCtx.var[step], ELLIPSES, ELLIPSES_SIZE - 1);
+        bytecpy((char *)displayCtx.var[step], LABEL_ELLIPSES,
+                                              MSG_ELLIPSES_SIZE);
 
         // Set the current var.
-        os_memmove((char *)&displayCtx.var[step][ELLIPSES_SIZE - 1],
-                    buffer + pos,
-                    length - pos);
+        bytecpy((char *)&displayCtx.var[step][MSG_ELLIPSES_SIZE],
+                buffer + pos,
+                length - pos);
 
         // Null-terminate the prepended step var.
         // - (... + var + \0)
-        displayCtx.var[step][ELLIPSES_SIZE - 1 + length - pos] = '\0';
+        displayCtx.var[step][MSG_ELLIPSES_SIZE + length - pos] = '\0';
     }
 
     setDisplaySteps(steps);
+
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -204,19 +208,8 @@ static void internalHandleMessage(const uint8_t *buffer, size_t length) {
 // - Multiple steps prepended/appended by ellipses (...)
 //
 // ---
-void handleMessage(const uint8_t *buffer, size_t length) {
-    BEGIN_TRY {
-        TRY {
-            internalHandleMessage(buffer, length);
-        }
-
-        CATCH_OTHER(e) {
-            explicit_bzero(&displayCtx, sizeof(displayCtx));
-        }
-
-        FINALLY {}
-    }
-    END_TRY;
+bool handleMessage(const uint8_t *buffer, size_t length) {
+    return internalHandleMessage(buffer, length);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

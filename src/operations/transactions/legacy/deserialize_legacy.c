@@ -22,106 +22,42 @@
 #include <stdint.h>
 
 #include "constants.h"
-#include "utils/unpack.h"
 
-#include "operations/status.h"
 #include "transactions/transaction.h"
+#include "transactions/offsets.h"
 
-#include "ux.h"
+#include "utils/unpack.h"
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-StreamStatus deserializeLegacy(Transaction *transaction,
-                               const uint8_t *buffer,
-                               size_t size) {
-    // V1
-    if (buffer[0] == 0xFF) {
-        // Deserialize Common
-        transaction->header             = buffer[0];
-        transaction->version            = buffer[1];
-        transaction->type               = buffer[3];
-        transaction->fee                = U8LE(buffer, 41U);
+void deserializeCommonLegacy(Transaction *transaction,
+                             const uint8_t *buffer,
+                             size_t size) {
+    // Deserialize Common
+    transaction->version        = TRANSACTION_VERSION_LEGACY;
+    transaction->type           = buffer[TYPE_OFFSET_LEGACY];
 
-        transaction->vendorFieldLength  = buffer[49];
-        transaction->vendorField        = (uint8_t *)&buffer[50];
+    bytecpy(transaction->recipientId,
+            &buffer[RECIPIENT_OFFSET_LEGACY],
+            ADDRESS_HASH_LEN);
 
-        transaction->assetOffset        = (49U + buffer[49U] + 1U);
-        transaction->assetSize          = size - (transaction->assetOffset);
-
-        // Type 0: Transfer
-        if (transaction->type == 0U) {
-            if (transaction->assetSize != 33) {
-                return USTREAM_FAULT;
-            }
-
-            transaction->amount = U8LE(
-                    buffer, transaction->assetOffset);
-
-            os_memmove(transaction->recipient,
-                       &buffer[transaction->assetOffset + 12U],
-                       ADDRESS_HASH_LENGTH);
-        }
-        // Type 3: Vote
-        else if (transaction->type == 3U) { 
-            if (transaction->assetSize != 35) {
-                return USTREAM_FAULT;
-            }
-        }
-
-        // Unknown Transaction Type
-        else {
-            return USTREAM_FAULT;
+    transaction->vendorField = (uint8_t *)&buffer[VF_OFFSET];
+    if (buffer[VF_OFFSET] != 0) {
+        uint8_t *ptr = transaction->vendorField;
+        while (*ptr++) {
+            ++transaction->vendorFieldLength;
         }
     }
-
-    // Legacy
     else {
-        // Deserialize Common
-        transaction->version        = 0U;
-        transaction->type           = buffer[0];
-
-        os_memmove(transaction->recipient, &buffer[38], ADDRESS_HASH_LENGTH);
-
-        transaction->vendorField = (uint8_t *)&buffer[59];
-        if (transaction->vendorField != 0) {
-            uint8_t *ptr = transaction->vendorField;
-            while (*ptr++) {
-                ++transaction->vendorFieldLength;
-            }
-        }
-        else {
-            transaction->vendorFieldLength = 0U;
-        }
-
-        transaction->amount         = U8LE(buffer, 123);
-        transaction->fee            = U8LE(buffer, 131);
-
-        transaction->assetOffset    = 139;
-        transaction->assetSize      = size - transaction->assetOffset;
-
-        // Type 0: Transfer
-        if (transaction->type == 0U) {
-            if (transaction->assetSize != 0U) {
-                return USTREAM_FAULT;
-            }
-        }
-
-        // Type 3: Vote
-        else if (transaction->type == 3U){
-            if (transaction->assetSize != 67) {
-                return USTREAM_FAULT;
-            }
-        }
-
-        // Unknown Transaction Type
-        else {
-            return USTREAM_FAULT;
-        }
+        transaction->vendorFieldLength = 0U;
     }
 
-    transaction->assetPtr = (uint8_t*)&buffer[transaction->assetOffset];
+    transaction->amount         = U8LE(buffer, AMOUNT_OFFSET_LEGACY);
+    transaction->fee            = U8LE(buffer, FEE_OFFSET_LEGACY);
 
-    return USTREAM_FINISHED;
+    transaction->assetOffset    = ASSET_OFFSET_LEGACY;
+    transaction->assetSize      = size - transaction->assetOffset;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

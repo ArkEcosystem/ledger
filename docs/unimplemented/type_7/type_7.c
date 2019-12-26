@@ -26,7 +26,7 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/type_7.h"
+#include "transactions/types/type_7.h"
 
 #include <stdint.h>
 
@@ -34,15 +34,13 @@
 
 #include "constants.h"
 
-#include "operations/status.h"
-
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static StreamStatus internalDeserializeAsset(Transaction *transaction,
+static bool internalDeserializeAsset(Transaction *transaction,
                                              const uint8_t *buffer,
                                              const uint32_t length) {
 /////////
@@ -59,19 +57,19 @@ static StreamStatus internalDeserializeAsset(Transaction *transaction,
 ////////////////////////////////////////////////////////////////////////////////
 
 void setDisplayDelegateResignation(const Transaction *transaction) {
-    os_memmove((char *)displayCtx.operation, "Delegate Resignation", 21U);
-    os_memmove((char *)displayCtx.title[0], "PublicKey", 10U);
-    os_memmove((char *)displayCtx.title[1], "Fees", 5U);
+    bytecpy((char *)displayCtx.operation, "Delegate Resignation", 21);
+    bytecpy((char *)displayCtx.title[0], "PublicKey", 10);
+    bytecpy((char *)displayCtx.title[1], "Fees", 5);
 
     // Delegate PublicKey
     bytesToHex((char *)displayCtx.var[0],
                transaction->senderPublicKey,
-               PUBLICKEY_COMPRESSED_LENGTH);
+               PUBLICKEY_COMPRESSED_LEN);
 
     // Fees
     printAmount(transaction->fee,
                 (uint8_t *)displayCtx.var[1], sizeof(displayCtx.var[1]),
-                TOKEN_NAME, TOKEN_NAME_LENGTH, TOKEN_DECIMALS);
+                TOKEN_NAME, TOKEN_NAME_SIZE, ARK_TOKEN_DECIMALS);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -1,13 +1,3 @@
-
-////////////////////////////////////////////////////////////////////////////////
-
-// The Following are only examples and places where this code could be implemented.
-//  It is not final or guaranteed working.
-//  This should only serve as a reference for implementing.
-
-////////////////////////////////////////////////////////////////////////////////
-
-
 /*******************************************************************************
 *   Ark Wallet
 *   (c) 2017 Ledger
@@ -26,15 +16,26 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include <stdint.h>
+#ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_SECOND_SIGNATURE_H
+#define ARK_OPERATIONS_TRANSACTIONS_TYPES_SECOND_SIGNATURE_H
 
-#include <os.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #include "constants.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct delegate_resignation_asset_t {} DelegateResignationAsset;
+typedef struct ss_registration_asset_t {
+    uint8_t publicKey[PUBLICKEY_COMPRESSED_LEN];
+} SecondSignatureRegistration;
+
+////////////////////////////////////////////////////////////////////////////////
+
+bool deserializeSecondSignature(SecondSignatureRegistration *registration,
+                                const uint8_t *buffer,
+                                size_t size);
 
 ////////////////////////////////////////////////////////////////////////////////
 

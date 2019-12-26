@@ -16,21 +16,22 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include <os.h>
+#include "transactions/legacy/display_legacy.h"
 
 #include <stdint.h>
-
-#include "transactions/legacy/display_legacy.h"
+#include <string.h>
 
 #include "constants.h"
 
 #include "crypto/keys.h"
 
-#include "utils/base58.h"
-#include "utils/hex.h"
-#include "utils/print.h"
-
 #include "transactions/transaction.h"
+
+#include "transactions/types/types.h"
+
+#include "utils/base58.h"
+#include "utils/print.h"
+#include "utils/utils.h"
 
 #include "ux.h"
 #include "ux/display_context.h"
@@ -42,42 +43,40 @@ extern void setDisplaySteps(uint8_t steps);
 ////////////////////////////////////////////////////////////////////////////////
 
 static void setVendorField(const Transaction *transaction) {
-    os_memmove((char *)displayCtx.title[1], "VendorField", 12U);
+    bytecpy((char *)displayCtx.title[1], "VendorField", 12);
 
-    os_memmove((char *)displayCtx.var[1],
-               (uint8_t *)transaction->vendorField,
-               MIN(transaction->vendorFieldLength, HASH_64_LENGTH));
+    bytecpy((char *)displayCtx.var[1],
+            (uint8_t *)transaction->vendorField,
+            MIN(transaction->vendorFieldLength, HASH_64_LEN));
 
-    if (transaction->vendorFieldLength > HASH_64_LENGTH) {
-        os_memmove((char *)&displayCtx.var[1][HASH_64_LENGTH], (char *)"...", 4U);
+    if (transaction->vendorFieldLength > HASH_64_LEN) {
+        bytecpy((char *)&displayCtx.var[1][HASH_64_LEN], (char *)"...", 4);
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void setTransferLegacy(const Transaction *transaction) {
-    os_memset(&displayCtx, 0, sizeof(displayCtx));
-
-    os_memmove((char*)displayCtx.operation, "Transfer", 9U);
-    os_memmove((char*)displayCtx.title[0], "To", 3U);
+    bytecpy((char*)displayCtx.operation, "Transfer", 9);
+    bytecpy((char*)displayCtx.title[0], "To", 3);
 
     // Let's offset the screen variables if there's a VendorField.
     // offset == 1 if VendorField; otherwise, 0.
-    uint8_t offset = (transaction->vendorFieldLength != 0U);
+    size_t offset = (transaction->vendorFieldLength > 0);
 
-    os_memmove((char*)displayCtx.title[1U + offset], "Amount", 7U);
-    os_memmove((char*)displayCtx.title[2U + offset], "Fees", 5U);
+    bytecpy((char*)displayCtx.title[1 + offset], "Amount", 7);
+    bytecpy((char*)displayCtx.title[2 + offset], "Fees", 5);
 
-    // Recipient
-    encodeBase58PublicKey((uint8_t*)transaction->recipient,
-                          ADDRESS_HASH_LENGTH,
+    // RecipientId
+    encodeBase58PublicKey((uint8_t*)transaction->recipientId,
+                          ADDRESS_HASH_LEN,
                           (uint8_t*)displayCtx.var[0],
                           sizeof(displayCtx.var[0]),
-                          transaction->recipient[0],
+                          transaction->recipientId[0],
                           1U);
     // somehow prevents displaying bad chars?
     // legacy, so let's not spend too much time on it.
-    displayCtx.var[0][ADDRESS_LENGTH]  = ' ';
+    displayCtx.var[0][ADDRESS_LEN]  = ' ';
 
     // VendorField
     if (offset) {
@@ -86,50 +85,51 @@ void setTransferLegacy(const Transaction *transaction) {
 
     // Amount
     printAmount(transaction->amount,
-                displayCtx.var[1U + offset],
-                sizeof(displayCtx.var[1U + offset]),
-                TOKEN_NAME, TOKEN_NAME_LENGTH, TOKEN_DECIMALS);
+                displayCtx.var[1 + offset],
+                sizeof(displayCtx.var[1 + offset]),
+                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
 
     // Fee
     printAmount(transaction->fee,
-                displayCtx.var[2U + offset],
-                sizeof(displayCtx.var[2U + offset]),
-                TOKEN_NAME, TOKEN_NAME_LENGTH, TOKEN_DECIMALS);
-
-    setDisplaySteps(3U  + (transaction->vendorFieldLength != 0U));
+                displayCtx.var[2 + offset],
+                sizeof(displayCtx.var[2 + offset]),
+                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void setVoteLegacy(const Transaction *transaction) {
-    os_memset(&displayCtx, 0, sizeof(displayCtx));
+static void setVoteLegacy(const Transaction *transaction) {
+    bytecpy((char*)displayCtx.operation, "Vote", 5);
+    bytecpy((char*)displayCtx.title[0], "Vote", 5);
+    bytecpy((char*)displayCtx.title[1], "Fees", 5);
 
-    os_memmove((char*)displayCtx.operation, "Vote", 5U);
-    os_memmove((char*)displayCtx.title[0], "Vote", 5U);
-    os_memmove((char*)displayCtx.title[1], "Fees", 5U);
-
-    // V1
-    if (transaction->version == TRANSACTION_VERSION_TYPE_1) {
-        displayCtx.var[0][0] = (transaction->assetPtr[0] == 1U) ? '+' : '-';
-
-        bytesToHex((char*)&displayCtx.var[0][1],
-                    &transaction->assetPtr[1],
-                    PUBLICKEY_COMPRESSED_LENGTH);
-    }
-
-    // Legacy
-    else {
-        os_memmove((char*)displayCtx.var[0], transaction->assetPtr, 67U);
-    }
+    const size_t voteOffset = 67;
+    bytecpy((char*)displayCtx.var[0], transaction->assetPtr, voteOffset);
 
     printAmount(transaction->fee,
                 displayCtx.var[1],
                 sizeof(displayCtx.var[1]),
                 TOKEN_NAME,
-                TOKEN_NAME_LENGTH,
+                TOKEN_NAME_SIZE,
                 TOKEN_DECIMALS);
-
-    setDisplaySteps(2U);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+
+void setDisplayLegacy(const Transaction *transaction) {
+    explicit_bzero(&displayCtx, sizeof(displayCtx));
+
+    switch (transaction->type) {
+        case TRANSFER_TYPE:
+            setTransferLegacy(transaction);
+            setDisplaySteps(3 + (transaction->vendorFieldLength != 0U));
+            break;
+
+        case VOTE_TYPE:
+            setVoteLegacy(transaction);
+            setDisplaySteps(2);
+            break;
+
+        default: break;
+    };
+}

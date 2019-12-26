@@ -21,11 +21,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <os.h>
-
 ////////////////////////////////////////////////////////////////////////////////
 
-const uint8_t hexDigits[] = {
+static const uint8_t hexDigits[] = {
     '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
     'a', 'b', 'c', 'd', 'e', 'f'
 };
@@ -36,7 +34,7 @@ const uint8_t hexDigits[] = {
 // NULL terminator is added at (hexStringLen + 1)
 void bytesToHex(char *dest, const uint8_t *src, size_t length) {
     while (length--) {
-        *dest++ = hexDigits[(*src >> 0x04) & 0xF];
+        *dest++ = hexDigits[(*src >> 4) & 0xF];
         *dest++ = hexDigits[*src & 0xF];
         ++src;
     }

@@ -16,30 +16,19 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_TYPE_0_H
-#define ARK_OPERATIONS_TRANSACTION_TYPE_0_H
+#ifndef ARK_UTILS_H
+#define ARK_UTILS_H
 
-#include <stddef.h>
-#include <stdint.h>
+#if defined(HAVE_BOLOS_UX)
 
-#include "constants.h"
+    #include <os.h>
+    #define bytecpy os_memmove
 
-#include "operations/status.h"
+#else  // if not HAVE_BOLOS_UX
 
-////////////////////////////////////////////////////////////////////////////////
+    #include <string.h>
+    #define bytecpy memcpy
 
-typedef struct transfer_asset_t {
-    uint64_t    amount;
-    uint32_t    expiration;
-    uint8_t     recipient[ADDRESS_HASH_LENGTH];
-} Transfer;
+#endif  // #if defined(HAVE_BOLOS_UX)
 
-////////////////////////////////////////////////////////////////////////////////
-
-StreamStatus deserializeTransfer(Transfer *transfer,
-                                 const uint8_t *buffer,
-                                 size_t size);
-
-////////////////////////////////////////////////////////////////////////////////
-
-#endif
+#endif  // #ifndef ARK_UTILS_H

@@ -16,60 +16,43 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/type_8.h"
+#include "transactions/types/second_signature.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <os.h>
-
 #include "constants.h"
 
-#include "utils/unpack.h"
-
-#include "operations/status.h"
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Htlc Lock (Type 8) - 66 Bytes
+// Second Signature Registration (Type 1) - 33 Bytes
 //
-// @param HtlcLock *lock: The Htlc Lock (Type 8) Asset.
+// @param SecondSignatureRegistration *registration
 // @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
 // @param size_t size: The Asset Buffer Size.
+//
+// @return bool: true if deserialization was successful.
 //
 // ---
 // Internals:
 //
-// Amount - 8 Bytes:
-// - lock->amount = U4LE(buffer, 0U);
-//
-// Secret Hash - 32 Bytes
-// - os_memmove(lock->secretHash, &buffer[8], 32U);
-//
-// Expiration Type- 1 Byte
-// - lock->expirationType = buffer[40];
-//
-// Expiration Value - 4 Bytes
-// - lock->expirationValue = U4LE(buffer, 41U);
-//
-// Recipient - 21 Bytes
-// - os_memmove(lock->recipient, &buffer[45], 21U);
+// Second PublicKey - 33 Bytes:
+// - bytecpy(registration->publicKey, buffer, 33);
 //
 // ---
-StreamStatus deserializeHtlcLock(HtlcLock *lock,
-                                 const uint8_t *buffer,
-                                 size_t size) {
-    if (size != 66) {
-        return USTREAM_FAULT;
+bool deserializeSecondSignature(SecondSignatureRegistration *registration,
+                                const uint8_t *buffer,
+                                size_t size) {
+    if (size != PUBLICKEY_COMPRESSED_LEN) {
+        return false;
     }
 
-    lock->amount            = U8LE(buffer, 0);
-    os_memmove(lock->secretHash, &buffer[8], HASH_32_LENGTH);
-    lock->expirationType    = buffer[40];
-    lock->expiration        = U4LE(buffer, 41);
-    os_memmove(lock->recipient, &buffer[45], ADDRESS_HASH_LENGTH);
+    bytecpy(registration->publicKey, buffer, PUBLICKEY_COMPRESSED_LEN);
 
-    return USTREAM_FINISHED;
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

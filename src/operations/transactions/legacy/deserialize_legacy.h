@@ -22,14 +22,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "operations/status.h"
 #include "transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-StreamStatus deserializeLegacy(Transaction *transaction,
-                               const uint8_t *buffer,
-                               size_t size);
+void deserializeCommonLegacy(Transaction *transaction,
+                             const uint8_t *buffer,
+                             size_t size);
 
 ////////////////////////////////////////////////////////////////////////////////
 

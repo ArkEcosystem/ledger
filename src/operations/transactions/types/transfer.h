@@ -16,31 +16,30 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_TYPE_8_H
-#define ARK_OPERATIONS_TRANSACTION_TYPE_8_H
+#ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_TRANSFER_H
+#define ARK_OPERATIONS_TRANSACTIONS_TYPES_TRANSFER_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
 
-#include "operations/status.h"
+////////////////////////////////////////////////////////////////////////////////
+
+static const size_t TRANSACTION_TYPE_TRANSFER_SIZE = 33;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct htlc_lock_asset_t {
+typedef struct transfer_asset_t {
     uint64_t    amount;
-    uint8_t     expirationType;
     uint32_t    expiration;
-    uint8_t     secretHash[HASH_32_LENGTH];
-    uint8_t     recipient[ADDRESS_HASH_LENGTH];
-} HtlcLock;
+    uint8_t     recipientId[ADDRESS_HASH_LEN];
+} Transfer;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-StreamStatus deserializeHtlcLock(HtlcLock *lock,
-                                 const uint8_t *buffer,
-                                 size_t size);
+bool deserializeTransfer(Transfer *transfer, const uint8_t *buffer, size_t size);
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -16,54 +16,43 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/type_5.h"
+#include "transactions/types/htlc_refund.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <os.h>
-
 #include "constants.h"
 
-#include "operations/status.h"
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// IPFS (Type 5) - 0 <=> 255 Bytes
+// Htlc Refund (Type 10) - 32 Bytes
 //
-// @param Ipfs *ipfs: The Ipfs (Type 5) Asset.
-// @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
+// @param HtlcRefund *refund
+// @param uint8_t *buffer: The serialized buffer at the Assets offset.
 // @param size_t size: The Asset Buffer Size.
+//
+// @return bool: true if deserialization was successful.
 //
 // ---
 // Internals:
 //
-// Length - 1 Byte
-// - ipfs->length = buffer[1] + 2U;
-//
-// Dag - 0 <=> 255 Bytes
-// - os_memmove(ipfs->dag, buffer, ipfs->length);
+// Lock Transaction Id - 32 Bytes:
+// - bytecpy(refund->id, &buffer[0], 32);
 //
 // ---
-StreamStatus deserializeIpfs(Ipfs *ipfs,
-                             const uint8_t *buffer,
-                             size_t size) {
-    // 2nd byte of IPFS hash contains its len.
-    //
-    // byte[0] == hash-type (sha256).
-    // byte[1] == hash-type length (32-bytes).
-    // byte[[2...]] == 32-byte hash.
-    ipfs->length = buffer[1] + 2U;
-
-    // Let's make sure the length isn't > 255,
-    // and that the lengths match.
-    if (size > 255 || size != ipfs->length) {
-        return USTREAM_FAULT;
+bool deserializeHtlcRefund(HtlcRefund *refund,
+                           const uint8_t *buffer,
+                           size_t size) {
+    if (size != HASH_32_LEN) {
+        return false;
     }
 
-    os_memmove(ipfs->dag, buffer, size);
+    bytecpy(refund->id, &buffer[0], HASH_32_LEN);               // 32 Bytes
 
-    return USTREAM_FINISHED;
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

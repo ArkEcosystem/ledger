@@ -16,40 +16,56 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/type_1.h"
+#include "transactions/types/transfer.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <os.h>
-
 #include "constants.h"
+
+#include "utils/unpack.h"
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Second Signature Registration (Type 1) - 33 Bytes
+// Deserialize Transfer (Type 0) - 33 bytes
 //
-// @param SecondSignatureRegistration *registration: The Second Signature Registration (Type 1) Asset.
+// @param Transfer *transfer
 // @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
-// @param size_t size: The Asset Buffer Size.
+// @param size_t size: The Asset Size.
+//
+// @return bool: true if deserialization was successful.
 //
 // ---
 // Internals:
 //
-// Second PublicKey - 33 Bytes:
-// - os_memmove(registration->publicKey, buffer, PUBLICKEY_COMPRESSED_LENGTH);
+// Amount - 8 Bytes:
+// - transfer->amount = U8LE(buffer, 0U);
+//
+// Expiration - 4 Bytes:
+// - transfer->expiration = U4LE(buffer, 8);
+//
+// RecipientId - 21 Bytes:
+// - bytecpy(transfer->recipientId, &buffer[12], 21);
 //
 // ---
-StreamStatus deserializeSecondSignature(SecondSignatureRegistration *registration,
-                                        const uint8_t *buffer,
-                                        size_t size) {
-    if (size != 33) {
-        return USTREAM_FAULT;
+bool deserializeTransfer(Transfer *transfer,
+                         const uint8_t *buffer,
+                         size_t size) {
+    if (transfer == NULL ||
+        buffer == NULL ||
+        size != TRANSACTION_TYPE_TRANSFER_SIZE) {
+        return false;
     }
 
-    os_memmove(registration->publicKey, buffer, PUBLICKEY_COMPRESSED_LENGTH);
+    transfer->amount        = U8LE(buffer, 0);                      // 8 Bytes
+    transfer->expiration    = U4LE(buffer, sizeof(uint64_t));       // 4 Bytes
+    bytecpy(transfer->recipientId,                                  // 21 Bytes
+            &buffer[sizeof(uint64_t) + sizeof(uint32_t)],
+            ADDRESS_HASH_LEN);
 
-    return USTREAM_FINISHED;
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

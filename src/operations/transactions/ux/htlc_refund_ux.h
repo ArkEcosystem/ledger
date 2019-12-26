@@ -16,25 +16,20 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_TYPE_3_H
-#define ARK_OPERATIONS_TRANSACTION_TYPE_3_H
+#ifndef ARK_OPERATIONS_TRANSACTION_UX_HTLC_REFUND_UX_H
+#define ARK_OPERATIONS_TRANSACTION_UX_HTLC_REFUND_UX_H
 
-#include <stddef.h>
 #include <stdint.h>
 
-#include "constants.h"
-
-#include "operations/status.h"
+#include "operations/transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct vote_asset_t {
-    uint8_t data[1U + PUBLICKEY_COMPRESSED_LENGTH]; // ( '+/-' + publicKey[33])
-} Vote;
+static const uint8_t STEPS_HTLC_REFUND = 1U;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-StreamStatus deserializeVote(Vote *vote, const uint8_t *buffer, size_t size);
+void displayHtlcRefund(const Transaction *transaction);
 
 ////////////////////////////////////////////////////////////////////////////////
 

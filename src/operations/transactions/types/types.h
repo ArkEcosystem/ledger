@@ -16,42 +16,26 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/type_10.h"
-
-#include <stddef.h>
-#include <stdint.h>
-
-#include <os.h>
-
-#include "constants.h"
-
-#include "operations/status.h"
+#ifndef ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
+#define ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Htlc Refund (Type 10) - 32 Bytes
-//
-// @param HtlcRefund *refund: The Htlc Refund (Type 10) Asset.
-// @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
-// @param size_t size: The Asset Buffer Size.
-//
-// ---
-// Internals:
-//
-// Lock Transaction Id - 32 Bytes:
-// - os_memmove(refund->id, &buffer[0], 32U);
-//
-// ---
-StreamStatus deserializeHtlcRefund(HtlcRefund *refund,
-                                   const uint8_t *buffer,
-                                   size_t size) {
-    if (size != HASH_32_LENGTH) {
-        return USTREAM_FAULT;
-    }
-
-    os_memmove(refund->id, &buffer[0], HASH_32_LENGTH);
-
-    return USTREAM_FINISHED;
-}
+// ARK Transaction Types
+enum TransactionTypes {
+    TRANSFER_TYPE                   = 0,
+    SECOND_SIGNATURE_TYPE           = 1,
+    // DELEGATE_REGISTRATION_TYPE   = 2,
+    VOTE_TYPE                       = 3,
+    // MULTI_SIGNATURE_TYPE         = 4,
+    IPFS_TYPE                       = 5,
+    // MULTI_PAYMENT_TYPE           = 6,
+    // DELEGATE_RESIGNATION_TYPE    = 7,
+    HTLC_LOCK_TYPE                  = 8,
+    HTLC_CLAIM_TYPE                 = 9,
+    HTLC_REFUND_TYPE                = 10
+};
 
 ////////////////////////////////////////////////////////////////////////////////
+
+#endif

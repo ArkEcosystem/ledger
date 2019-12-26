@@ -29,10 +29,13 @@
 
 #include "crypto/keys.h"
 #include "crypto/signing.h"
+
 #include "utils/base58.h"
 
 #include "operations/message_op.h"
 #include "operations/transaction_op.h"
+
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -85,7 +88,7 @@ static void handlePublicKeyContext(volatile unsigned int *tx) {
     uint8_t p2 = G_io_apdu_buffer[OFFSET_P2];
     uint8_t *dataBuffer = &G_io_apdu_buffer[OFFSET_CDATA];
 
-    uint8_t privateKeyData[HASH_32_LENGTH + 1U];
+    uint8_t privateKeyData[HASH_32_LEN + 1];
     uint32_t bip32Path[ADDRESS_MAX_BIP32_PATH];
     uint32_t i;
     uint8_t bip32PathLength = *(dataBuffer++);
@@ -127,23 +130,23 @@ static void handlePublicKeyContext(volatile unsigned int *tx) {
                                         ? tmpCtx.publicKey.chainCode
                                         : NULL));
 
-    cx_ecfp_init_private_key(curve, privateKeyData, HASH_32_LENGTH, &privateKey);
+    cx_ecfp_init_private_key(curve, privateKeyData, HASH_32_LEN, &privateKey);
 
     cx_ecfp_generate_pair(curve, &tmpCtx.publicKey.data, &privateKey, 1U);
 
-    os_memset(&privateKey, 0, sizeof(privateKey));
-    os_memset(privateKeyData, 0, sizeof(privateKeyData));
+    explicit_bzero(&privateKey, sizeof(privateKey));
+    explicit_bzero(&privateKeyData, sizeof(privateKeyData));
 
     compressPublicKey(&tmpCtx.publicKey.data,
                       privateKeyData,
-                      PUBLICKEY_COMPRESSED_LENGTH);
+                      PUBLICKEY_COMPRESSED_LEN);
 
     addressLength = encodeBase58PublicKey(privateKeyData,
-                                          HASH_32_LENGTH + 1U,
+                                          HASH_32_LEN + 1,
                                           tmpCtx.publicKey.address,
                                           sizeof(tmpCtx.publicKey.address),
                                           TOKEN_NETWORK_BYTE,
-                                          0U);
+                                          0);
     tmpCtx.publicKey.address[addressLength] = '\0';
 
     if (p1 == P1_NON_CONFIRM) {
@@ -193,16 +196,16 @@ static void handleSigningContext() {
 
     if (p1 == P1_FIRST) {
         tmpCtx.signing.dataLength = dataLength;
-        os_memmove(tmpCtx.signing.data, workBuffer, dataLength);
+        bytecpy(tmpCtx.signing.data, workBuffer, dataLength);
     }
     else if (p1 == P1_MORE) {
         if ((tmpCtx.signing.dataLength + dataLength) > MAX_RAW_OPERATION) {
             THROW(0x6A80);
         }
 
-        os_memmove(&tmpCtx.signing.data[tmpCtx.signing.dataLength],
-                   workBuffer,
-                   dataLength);
+        bytecpy(&tmpCtx.signing.data[tmpCtx.signing.dataLength],
+                workBuffer,
+                dataLength);
 
         tmpCtx.signing.dataLength += dataLength;
     }
@@ -232,19 +235,33 @@ void handleOperation(volatile unsigned int *flags, volatile unsigned int *tx) {
     }
 
     switch (G_io_apdu_buffer[1]) {
-        case INS_GET_PUBLIC_KEY: handlePublicKeyContext(tx); break;
+        case INS_GET_PUBLIC_KEY:
+            handlePublicKeyContext(tx);
+            break;
 
         case INS_SIGN:
             handleSigningContext();
-            handleTransaction(tmpCtx.signing.data, tmpCtx.signing.dataLength);
+            if (handleTransaction(tmpCtx.signing.data,
+                                  tmpCtx.signing.dataLength) == false) {
+                // Deserialization failed
+                explicit_bzero(&tmpCtx, sizeof(tmpCtx));
+                THROW(0x6A80);
+            }
             break;
 
         case INS_SIGN_MESSAGE:
             handleSigningContext();
-            handleMessage(tmpCtx.signing.data, tmpCtx.signing.dataLength);
+            if (handleMessage(tmpCtx.signing.data,
+                              tmpCtx.signing.dataLength) == false) {
+                // Parsing failed
+                explicit_bzero(&tmpCtx, sizeof(tmpCtx));
+                THROW(0x6A80);
+            }
             break;
 
-        case INS_GET_APP_CONFIGURATION: handleAppConfiguration(tx); break;
+        case INS_GET_APP_CONFIGURATION:
+            handleAppConfiguration(tx);
+            break;
 
         default: THROW(0x6D00);
     }

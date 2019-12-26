@@ -16,36 +16,22 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
-#define ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
+#ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
+#define ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "transactions/assets/type_0.h"
-#include "transactions/assets/type_1.h"
-// #include "transactions/assets/type_2.h"
-#include "transactions/assets/type_3.h"
-// #include "transactions/assets/type_4.h"
-#include "transactions/assets/type_5.h"
-// #include "transactions/assets/type_6.h"
-// #include "transactions/assets/type_7.h"
-#include "transactions/assets/type_8.h"
-#include "transactions/assets/type_9.h"
-#include "transactions/assets/type_10.h"
-
-////////////////////////////////////////////////////////////////////////////////
-
-#define TRANSACTION_TYPE_TRANSFER               0U
-#define TRANSACTION_TYPE_SECOND_SIGNATURE       1U
-// Delegate Registration                        2U
-#define TRANSACTION_TYPE_VOTE                   3U
-// MultiSignature                               4U
-#define TRANSACTION_TYPE_IPFS                   5U
-// MultiPayment                                 6U
-// Delegate Resignation                         7U
-#define TRANSACTION_TYPE_HTLC_LOCK              8U
-#define TRANSACTION_TYPE_HTLC_CLAIM             9U
-#define TRANSACTION_TYPE_HTLC_REFUND            10U
+#include "transactions/types/transfer.h"
+#include "transactions/types/second_signature.h"
+// #include "transactions/types/delegate_registration.h"
+#include "transactions/types/vote.h"
+// #include "transactions/types/multi_signature.h"
+#include "transactions/types/ipfs.h"
+// #include "transactions/types/multi_payment.h"
+// #include "transactions/types/delegate_resignation.h"
+#include "transactions/types/htlc_lock.h"
+#include "transactions/types/htlc_claim.h"
+#include "transactions/types/htlc_refund.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 

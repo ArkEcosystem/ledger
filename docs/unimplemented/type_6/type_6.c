@@ -26,7 +26,7 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include "transactions/assets/type_6.h"
+#include "transactions/types/type_6.h"
 
 #include <stdint.h>
 
@@ -35,8 +35,6 @@
 #include "constants.h"
 
 #include "utils/unpack.h"
-
-#include "operations/status.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,10 +57,10 @@
 // - payments->amounts[i] = U8LE(&buffer[sizeof(uint16_t) + (i * sizeof(uint64_t))], sizeof(uint64_t))
 //
 // Addresses[] - 21 Bytes * n_payments
-// - os_memmove(&payments->addresses[i * ADDRESS_HASH_LENGTH], &buffer[(sizeof(uint16_t) + (i * (sizeof(uint64_t) + ADDRESS_HASH_LENGTH))], ADDRESS_HASH_LENGTH);
+// - bytecpy(&payments->addresses[i * 21], &buffer[(sizeof(uint16_t) + (i * (sizeof(uint64_t) + 21))], 21);
 //
 // ---
-ParserStatus deserializeMultiPayment(MultiPaymentAsset *payments,
+bool deserializeMultiPayment(MultiPaymentAsset *payments,
                                      const uint8_t *buffer,
                                      const uint32_t length) {
     payments->n_payments = U2BE(buffer, 0);
@@ -71,12 +69,12 @@ ParserStatus deserializeMultiPayment(MultiPaymentAsset *payments,
         payments->amounts[i] = U8LE(&buffer[sizeof(uint16_t) + i * sizeof(uint64_t)],
                                     sizeof(uint64_t));
 
-        os_memmove(&payments->addresses[i * ADDRESS_HASH_LENGTH],
-                   &buffer[sizeof(uint16_t) + payments->n_payments * sizeof(uint64_t) + i * ADDRESS_HASH_LENGTH],
-                   ADDRESS_HASH_LENGTH);
+        bytecpy(&payments->addresses[i * ADDRESS_HASH_LEN],
+                &buffer[sizeof(uint16_t) + payments->n_payments * sizeof(uint64_t) + i * ADDRESS_HASH_LEN],
+                ADDRESS_HASH_LEN);
     }
 
-    return USTREAM_FINISHED;
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -84,7 +82,7 @@ ParserStatus deserializeMultiPayment(MultiPaymentAsset *payments,
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static StreamStatus internalDeserializeAsset(Transaction *transaction,
+static bool internalDeserializeAsset(Transaction *transaction,
                                              const uint8_t *buffer,
                                              const uint32_t length) {
 /////////
@@ -105,7 +103,7 @@ void displayMultiPayment(const Transaction *transaction, uint8_t step) {
     switch(step) {
         // Operation type
         case 0:
-            os_memmove((void *)amountBuffer, "MultiPayment", 13U);
+            bytecpy((void *)amountBuffer, "MultiPayment", 13);
             break;
 
         // Count
@@ -120,7 +118,7 @@ void displayMultiPayment(const Transaction *transaction, uint8_t step) {
         case 2:
             printAmount(transaction->asset.transfer.amount,
                         (uint8_t *)amountBuffer, sizeof(amountBuffer),
-                        TOKEN_NAME, TOKEN_NAME_LENGTH,
+                        TOKEN_NAME, TOKEN_NAME_SIZE,
                         TOKEN_DECIMALS);
             break;
 
@@ -128,7 +126,7 @@ void displayMultiPayment(const Transaction *transaction, uint8_t step) {
         case 3:
             printAmount(transaction->fee,
                         (uint8_t *)amountBuffer, sizeof(amountBuffer),
-                        TOKEN_NAME, TOKEN_NAME_LENGTH,
+                        TOKEN_NAME, TOKEN_NAME_SIZE,
                         TOKEN_DECIMALS);
             break;
 

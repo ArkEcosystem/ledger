@@ -19,14 +19,13 @@
 #ifndef ARK_OPERATIONS_TRANSACTIONS_DESERIALIZER_H
 #define ARK_OPERATIONS_TRANSACTIONS_DESERIALIZER_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include "operations/status.h"
-
 ////////////////////////////////////////////////////////////////////////////////
 
-StreamStatus deserialize(const uint8_t *buffer, size_t size);
+bool deserialize(const uint8_t *buffer, size_t size);
 
 ////////////////////////////////////////////////////////////////////////////////
 

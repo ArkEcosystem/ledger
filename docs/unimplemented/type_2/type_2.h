@@ -31,8 +31,6 @@
 
 #include <stdint.h>
 
-#include "operations/status.h"
-
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef struct delegate_registration_asset_t {
@@ -42,7 +40,7 @@ typedef struct delegate_registration_asset_t {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-StreamStatus deserializeDelegateRegistration(DelegateRegistration *registration,
+bool deserializeDelegateRegistration(DelegateRegistration *registration,
                                              const uint8_t *buffer,
                                              const uint32_t length);
 

@@ -16,29 +16,36 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_TYPE_9_H
-#define ARK_OPERATIONS_TRANSACTION_TYPE_9_H
+#include "transactions/ux/htlc_refund_ux.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
 
-#include "operations/status.h"
+#include "operations/transactions/transaction.h"
+
+#include "utils/hex.h"
+#include "utils/utils.h"
+
+#include "ux/display_context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct htlc_claim_asset_t {
-    uint8_t     id[HASH_32_LENGTH];
-    uint8_t     secret[HASH_32_LENGTH];
-} HtlcClaim;
+void displayHtlcRefund(const Transaction *transaction) {
+    const char *const LABEL     = "HTLC Refund";
+    const size_t LABEL_SIZE     = 12;
+
+    const char *const LABEL_LOCK_ID     = "Lock Id";
+    const size_t LABEL_LOCK_ID_SIZE     = 5;
+
+    bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
+    bytecpy((char *)displayCtx.title[0], LABEL_LOCK_ID, LABEL_LOCK_ID_SIZE);
+
+    // Lock Id
+    bytesToHex((char *)displayCtx.var[0],
+               transaction->asset.htlcRefund.id,
+               HASH_32_LEN);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
-
-StreamStatus deserializeHtlcClaim(HtlcClaim *claim,
-                                  const uint8_t *buffer,
-                                  size_t size);
-
-////////////////////////////////////////////////////////////////////////////////
-
-#endif

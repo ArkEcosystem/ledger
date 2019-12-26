@@ -16,34 +16,53 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_CRYPTO_KEYS
-#define ARK_CRYPTO_KEYS
+#include "transactions/types/ipfs.h"
 
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include <os.h>
-
 #include "constants.h"
 
-////////////////////////////////////////////////////////////////////////////////
-
-typedef struct public_key_context_t {
-    cx_ecfp_public_key_t    data;
-    uint8_t                 address[41];
-    uint8_t                 chainCode[HASH_32_LEN];
-    bool                    needsChainCode;
-} PublicKeyContext;
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void compressPublicKey(const cx_ecfp_public_key_t *publicKey,
-                       uint8_t *out,
-                       size_t outSize);
+// IPFS (Type 5) - 0 <=> 64 Bytes
+//
+// @param Ipfs *ipfs
+// @param uint8_t *buffer: The serialized buffer at the Assets offset.
+// @param size_t size: The Asset Buffer Size.
+//
+// @return bool: true if deserialization was successful.
+//
+// ---
+// Internals:
+//
+// Length - 1 Byte
+// - ipfs->length = buffer[1] + 2U;
+//
+// Dag - 0 <=> 64 Bytes
+// - bytecpy(ipfs->dag, buffer, ipfs->length);
+//
+// ---
+bool deserializeIpfs(Ipfs *ipfs, const uint8_t *buffer, size_t size) {
+    // 2nd byte of IPFS hash contains its len.
+    //
+    // byte[0] == hash-type (sha256).
+    // byte[1] == hash-type length (32-bytes).
+    // byte[[2...]] == 32-byte hash.
+    ipfs->length = buffer[sizeof(uint8_t)] + 2;
 
-uint32_t setPublicKeyContext(PublicKeyContext *ctx, uint8_t *apduBuffer);
+    // Let's make sure the length isn't > 64,
+    // and that the lengths match.
+    if (size > HASH_64_LEN || size != ipfs->length) {
+        return false;
+    }
+
+    bytecpy(ipfs->dag, buffer, size);                       // 0 <=> 64 Bytes
+
+    return true;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
-
-#endif

@@ -16,27 +16,20 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_TYPE_1_H
-#define ARK_OPERATIONS_TRANSACTION_TYPE_1_H
+#ifndef ARK_OPERATIONS_TRANSACTION_UX_SECOND_SIGNATURE_UX_H
+#define ARK_OPERATIONS_TRANSACTION_UX_SECOND_SIGNATURE_UX_H
 
-#include <stddef.h>
 #include <stdint.h>
 
-#include "constants.h"
-
-#include "operations/status.h"
+#include "operations/transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct ss_registration_asset_t {
-    uint8_t publicKey[PUBLICKEY_COMPRESSED_LENGTH];
-} SecondSignatureRegistration;
+static const uint8_t STEPS_SECOND_SIGNATURE = 2U;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-StreamStatus deserializeSecondSignature(SecondSignatureRegistration *registration,
-                                        const uint8_t *buffer,
-                                        size_t size);
+void displaySecondSignature(const Transaction *transaction);
 
 ////////////////////////////////////////////////////////////////////////////////
 

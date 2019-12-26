@@ -22,16 +22,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <os.h>
-
 ////////////////////////////////////////////////////////////////////////////////
 
-uint8_t encodeBase58(uint8_t WIDE *in,
+uint8_t encodeBase58(uint8_t *in,
                      size_t inSize,
                      uint8_t *out,
                      size_t maxOutSize);
 
-uint16_t encodeBase58PublicKey(uint8_t WIDE *in,
+uint16_t encodeBase58PublicKey(uint8_t *in,
                                size_t inSize,
                                uint8_t *out,
                                size_t outSize,

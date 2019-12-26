@@ -16,16 +16,14 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_STATUS_H
-#define ARK_OPERATIONS_STATUS_H
+#ifndef ARK_OPERATIONS_TRANSACTIONS_UX_DISPLAY_UX_H
+#define ARK_OPERATIONS_TRANSACTIONS_UX_DISPLAY_UX_H
+
+#include "transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef enum stream_status_t {
-    USTREAM_PROCESSING,
-    USTREAM_FINISHED,
-    USTREAM_FAULT
-} StreamStatus;
+void setDisplay(const Transaction *transaction);
 
 ////////////////////////////////////////////////////////////////////////////////
 

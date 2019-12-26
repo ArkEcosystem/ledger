@@ -31,8 +31,6 @@
 
 #include <stdint.h>
 
-#include "operations/status.h"
-
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef struct multi_signature_asset_t {
@@ -43,7 +41,7 @@ typedef struct multi_signature_asset_t {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-StreamStatus deserializeMultiSignature(MultiSignature *muSig,
+bool deserializeMultiSignature(MultiSignature *muSig,
                                        const uint8_t *buffer,
                                        const uint32_t length);
 
