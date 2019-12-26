@@ -18,6 +18,7 @@
 
 #include "transactions/legacy/display_legacy.h"
 
+#include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -33,8 +34,8 @@
 #include "utils/print.h"
 #include "utils/utils.h"
 
-#include "ux.h"
-#include "ux/display_context.h"
+#include "display/context.h"
+#include "display/display.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Externally Declared Methods.
@@ -122,12 +123,12 @@ void setDisplayLegacy(const Transaction *transaction) {
     switch (transaction->type) {
         case TRANSFER_TYPE:
             setTransferLegacy(transaction);
-            setDisplaySteps(3 + (transaction->vendorFieldLength != 0U));
+            setDisplaySteps(3U + (transaction->vendorFieldLength != 0U));
             break;
 
         case VOTE_TYPE:
             setVoteLegacy(transaction);
-            setDisplaySteps(2);
+            setDisplaySteps(2U);
             break;
 
         default: break;

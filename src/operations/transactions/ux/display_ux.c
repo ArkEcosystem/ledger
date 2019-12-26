@@ -32,8 +32,8 @@
 #include "transactions/ux/htlc_claim_ux.h"
 #include "transactions/ux/htlc_refund_ux.h"
 
-#include "ux.h"
-#include "ux/display_context.h"
+#include "display/context.h"
+#include "display/display.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -48,7 +48,7 @@ void setDisplay(const Transaction *transaction) {
         case TRANSFER_TYPE:
             displayTransfer(transaction);
             setDisplaySteps(STEPS_TRANSFER_MIN +
-                            (uint8_t)(transaction->vendorFieldLength != 0U));
+                            transaction->vendorFieldLength != 0U);
             break;
 
         case SECOND_SIGNATURE_TYPE:

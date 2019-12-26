@@ -16,8 +16,8 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_UX_NANOX_H
-#define ARK_UX_NANOX_H
+#ifndef ARK_DISPLAY_NANO_H
+#define ARK_DISPLAY_NANO_H
 
 #include <stdint.h>
 

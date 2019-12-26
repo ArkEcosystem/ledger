@@ -29,8 +29,8 @@
 #include "utils/print.h"
 #include "utils/utils.h"
 
-#include "ux.h"
-#include "ux/display_context.h"
+#include "display/context.h"
+#include "display/display.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Externally Declared Methods.

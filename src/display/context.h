@@ -16,8 +16,8 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_UX_DISPLAY_CONTEXT_H
-#define ARK_UX_DISPLAY_CONTEXT_H
+#ifndef ARK_DISPLAY_CONTEXT_H
+#define ARK_DISPLAY_CONTEXT_H
 
 #include <stdint.h>
 

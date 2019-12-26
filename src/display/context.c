@@ -16,17 +16,10 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_UX_NANOS_H
-#define ARK_UX_NANOS_H
-
-#include <stdint.h>
+#include "display/context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void setDisplaySteps(uint8_t steps);
-
-void ui_idle(void);
+DisplayContext displayCtx;
 
 ////////////////////////////////////////////////////////////////////////////////
-
-#endif
