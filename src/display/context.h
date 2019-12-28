@@ -24,9 +24,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef struct display_context_t {
-    uint8_t operation[32];
-    uint8_t title[5][15];
-    uint8_t var[5][72];
+    uint8_t     operation[16];
+    uint8_t     title[6][16];
+    uint8_t     text[6][60];
 } DisplayContext;
 
 extern DisplayContext displayCtx;

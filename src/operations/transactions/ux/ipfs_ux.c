@@ -47,17 +47,17 @@ void displayIpfs(const Transaction *transaction) {
     // DAG
     encodeBase58((uint8_t *)transaction->asset.ipfs.dag,
                  transaction->asset.ipfs.length,
-                 (uint8_t *)displayCtx.var[0], MIN(46, HASH_64_LEN));
+                 (uint8_t *)displayCtx.text[0], MIN(46, HASH_64_LEN));
 
     // Let's truncate the DAG if it's longer than 64 bytes.
     if (transaction->asset.ipfs.length > HASH_64_LEN) {
-        bytecpy((void *)&displayCtx.var[0][HASH_64_LEN],
+        bytecpy((void *)&displayCtx.text[0][HASH_64_LEN],
                 LABEL_ELLIPSES, LABEL_ELLIPSES_SIZE);
     }
 
     // Fee
     printAmount(transaction->fee,
-                (uint8_t *)displayCtx.var[1], sizeof(displayCtx.var[1]),
+                (uint8_t *)displayCtx.text[1], sizeof(displayCtx.text[1]),
                 TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
 }
 

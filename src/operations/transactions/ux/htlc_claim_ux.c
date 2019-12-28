@@ -47,12 +47,12 @@ void displayHtlcClaim(const Transaction *transaction) {
     bytecpy((char *)displayCtx.title[1], LABEL_SECRET, LABEL_SECRET_SIZE);
 
     // Id
-    bytesToHex((char *)displayCtx.var[0],
+    bytesToHex((char *)displayCtx.text[0],
                transaction->asset.htlcClaim.id,
                HASH_32_LEN);
 
     // Secret
-    bytecpy((char *)displayCtx.var[1],
+    bytecpy((char *)displayCtx.text[1],
             transaction->asset.htlcClaim.secret,
             HASH_32_LEN);
 }

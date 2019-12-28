@@ -69,27 +69,27 @@ UX_STEP_NOCB(ux_confirm_full_flow_1_step,
 UX_STEP_NOCB(ux_confirm_full_flow_2_step,
              bnnn_paging,
              { .title = (const char *const)displayCtx.title[0],
-               .text = (const char *const)displayCtx.var[0] });
+               .text = (const char *const)displayCtx.text[0] });
 
 UX_STEP_NOCB(ux_confirm_full_flow_3_step,
              bnnn_paging,
              { .title = (const char *const)displayCtx.title[1],
-               .text = (const char *const)displayCtx.var[1], });
+               .text = (const char *const)displayCtx.text[1], });
 
 UX_STEP_NOCB(ux_confirm_full_flow_4_step,
              bnnn_paging,
              { .title = (const char *const)displayCtx.title[2],
-               .text = (const char *const)displayCtx.var[2], });
+               .text = (const char *const)displayCtx.text[2], });
 
 UX_STEP_NOCB(ux_confirm_full_flow_5_step,
              bnnn_paging,
              { .title = (const char *const)displayCtx.title[3],
-               .text = (const char *const)displayCtx.var[3], });
+               .text = (const char *const)displayCtx.text[3], });
 
 UX_STEP_NOCB(ux_confirm_full_flow_6_step,
              bnnn_paging,
              { .title = (const char *const)displayCtx.title[4],
-               .text = (const char *const)displayCtx.var[4], });
+               .text = (const char *const)displayCtx.text[4], });
 
 UX_STEP_VALID(ux_confirm_full_flow_7_step,
               pb,

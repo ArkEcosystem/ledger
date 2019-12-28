@@ -29,6 +29,8 @@
 #include "crypto/keys.h"
 #include "crypto/signing.h"
 
+#include "display/context.h"
+
 ////////////////////////////////////////////////////////////////////////////////
 
 union {
@@ -43,6 +45,8 @@ extern void ui_idle(void);
 ////////////////////////////////////////////////////////////////////////////////
 
 unsigned int ioApprove(const bagl_element_t *e) {
+    explicit_bzero(&displayCtx, sizeof(displayCtx));
+
     uint32_t tx = 0;
     cx_ecfp_private_key_t privateKey;
     uint8_t privateKeyData[HASH_64_LEN];
@@ -91,6 +95,8 @@ unsigned int ioApprove(const bagl_element_t *e) {
 ////////////////////////////////////////////////////////////////////////////////
 
 unsigned int ioCancel(const bagl_element_t *e) {
+    explicit_bzero(&displayCtx, sizeof(displayCtx));
+
     G_io_apdu_buffer[0] = 0x69;
     G_io_apdu_buffer[1] = 0x85;
 

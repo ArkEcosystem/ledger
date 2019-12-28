@@ -46,12 +46,12 @@ extern void setDisplaySteps(uint8_t steps);
 static void setVendorField(const Transaction *transaction) {
     bytecpy((char *)displayCtx.title[1], "VendorField", 12);
 
-    bytecpy((char *)displayCtx.var[1],
+    bytecpy((char *)displayCtx.text[1],
             (uint8_t *)transaction->vendorField,
             MIN(transaction->vendorFieldLength, HASH_64_LEN));
 
     if (transaction->vendorFieldLength > HASH_64_LEN) {
-        bytecpy((char *)&displayCtx.var[1][HASH_64_LEN], (char *)"...", 4);
+        bytecpy((char *)&displayCtx.text[1][HASH_64_LEN], (char *)"...", 4);
     }
 }
 
@@ -71,13 +71,13 @@ void setTransferLegacy(const Transaction *transaction) {
     // RecipientId
     encodeBase58PublicKey((uint8_t*)transaction->recipientId,
                           ADDRESS_HASH_LEN,
-                          (uint8_t*)displayCtx.var[0],
-                          sizeof(displayCtx.var[0]),
+                          (uint8_t*)displayCtx.text[0],
+                          sizeof(displayCtx.text[0]),
                           transaction->recipientId[0],
                           1U);
     // somehow prevents displaying bad chars?
     // legacy, so let's not spend too much time on it.
-    displayCtx.var[0][ADDRESS_LEN]  = ' ';
+    displayCtx.text[0][ADDRESS_LEN]  = ' ';
 
     // VendorField
     if (offset) {
@@ -86,14 +86,14 @@ void setTransferLegacy(const Transaction *transaction) {
 
     // Amount
     printAmount(transaction->amount,
-                displayCtx.var[1 + offset],
-                sizeof(displayCtx.var[1 + offset]),
+                displayCtx.text[1 + offset],
+                sizeof(displayCtx.text[1 + offset]),
                 TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
 
     // Fee
     printAmount(transaction->fee,
-                displayCtx.var[2 + offset],
-                sizeof(displayCtx.var[2 + offset]),
+                displayCtx.text[2 + offset],
+                sizeof(displayCtx.text[2 + offset]),
                 TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
 }
 
@@ -105,11 +105,11 @@ static void setVoteLegacy(const Transaction *transaction) {
     bytecpy((char*)displayCtx.title[1], "Fees", 5);
 
     const size_t voteOffset = 67;
-    bytecpy((char*)displayCtx.var[0], transaction->assetPtr, voteOffset);
+    bytecpy((char*)displayCtx.text[0], transaction->assetPtr, voteOffset);
 
     printAmount(transaction->fee,
-                displayCtx.var[1],
-                sizeof(displayCtx.var[1]),
+                displayCtx.text[1],
+                sizeof(displayCtx.text[1]),
                 TOKEN_NAME,
                 TOKEN_NAME_SIZE,
                 TOKEN_DECIMALS);

@@ -48,7 +48,7 @@ void setDisplay(const Transaction *transaction) {
         case TRANSFER_TYPE:
             displayTransfer(transaction);
             setDisplaySteps(STEPS_TRANSFER_MIN +
-                            transaction->vendorFieldLength != 0U);
+                            (uint8_t)(transaction->vendorFieldLength != 0U));
             break;
 
         case SECOND_SIGNATURE_TYPE:

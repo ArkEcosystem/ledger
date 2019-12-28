@@ -134,11 +134,11 @@ static bool internalHandleMessage(const uint8_t *buffer, size_t length) {
     // Set the Message Length for display.
     bytecpy(displayCtx.title[0], LABEL_LENGTH, LABEL_LENGTH_SIZE);
     printAmount(length,
-                displayCtx.var[0], sizeof(displayCtx.var[0]),
+                displayCtx.text[0], sizeof(displayCtx.text[0]),
                 "", 0U, 0U);
 
     // Calculate the usable space inside a screen var.
-    const size_t usableSize = sizeof(displayCtx.var[1]) -
+    const size_t usableSize = sizeof(displayCtx.text[1]) -
                               (2 * LABEL_ELLIPSES_SIZE - 1);
 
     // Set the first Message Title.
@@ -146,10 +146,10 @@ static bool internalHandleMessage(const uint8_t *buffer, size_t length) {
 
     // Set the first part of the Message.
     // First screen will always have at least usableSize + 3.
-    bytecpy(displayCtx.var[1],
+    bytecpy(displayCtx.text[1],
             buffer,
             MIN(length, usableSize + MSG_ELLIPSES_SIZE));
-    displayCtx.var[1][MIN(length, usableSize + MSG_ELLIPSES_SIZE)] = '\0';
+    displayCtx.text[1][MIN(length, usableSize + MSG_ELLIPSES_SIZE)] = '\0';
 
     // - 1 step for Length Display.
     // - 2..5 Steps for Message.
@@ -160,7 +160,7 @@ static bool internalHandleMessage(const uint8_t *buffer, size_t length) {
     //
     // - append ellipses to the last screen.
     // - begin current screen with ellipses.
-    // - set current screen('&message[pos]') to: '&var[step][3]'
+    // - set current screen('&message[pos]') to: '&text[step][3]'
     // - null-terminate the current screen: '...' + msg + '\0'
     uint8_t step    = 0U;
     size_t pos      = 0;
@@ -172,7 +172,7 @@ static bool internalHandleMessage(const uint8_t *buffer, size_t length) {
         //   - if last var is screen 1:     (msg) + '...'
         //   - if last var is screen 2..3:  ('...' + msg) + '...'
         bytecpy(&displayCtx
-                    .var[i + 1][usableSize + (i ? MSG_ELLIPSES_SIZE : 0)],
+                    .text[i + 1][usableSize + (i ? MSG_ELLIPSES_SIZE : 0)],
                 LABEL_ELLIPSES,
                 LABEL_ELLIPSES_SIZE);
 
@@ -180,17 +180,17 @@ static bool internalHandleMessage(const uint8_t *buffer, size_t length) {
         setMessageTitle(displayCtx.title[step], step);
 
         // Prepend the current var with ellipses.
-        bytecpy((char *)displayCtx.var[step], LABEL_ELLIPSES,
+        bytecpy((char *)displayCtx.text[step], LABEL_ELLIPSES,
                                               MSG_ELLIPSES_SIZE);
 
         // Set the current var.
-        bytecpy((char *)&displayCtx.var[step][MSG_ELLIPSES_SIZE],
+        bytecpy((char *)&displayCtx.text[step][MSG_ELLIPSES_SIZE],
                 buffer + pos,
                 length - pos);
 
         // Null-terminate the prepended step var.
         // - (... + var + \0)
-        displayCtx.var[step][MSG_ELLIPSES_SIZE + length - pos] = '\0';
+        displayCtx.text[step][MSG_ELLIPSES_SIZE + length - pos] = '\0';
     }
 
     setDisplaySteps(steps);

@@ -98,14 +98,14 @@ void setDisplayDelegateRegistration(const Transaction *transaction,) {
     bytecpy((char *)displayCtx.title[1], "Fees", 5);
 
     // Username
-    bytecpy((char *)displayCtx.var[0],
+    bytecpy((char *)displayCtx.text[0],
             transaction->asset.delegateRegistration.username,
             transaction->asset.delegateRegistration.length);
-    displayCtx.var[0][transaction->asset.delegateRegistration.length] = '\0';
+    displayCtx.text[0][transaction->asset.delegateRegistration.length] = '\0';
 
     // Fee
     printAmount(transaction->fee,
-                (uint8_t *)displayCtx.var[1], sizeof(displayCtx.var[1]),
+                (uint8_t *)displayCtx.text[1], sizeof(displayCtx.text[1]),
                 TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
 }
 
