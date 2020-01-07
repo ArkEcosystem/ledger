@@ -101,12 +101,12 @@ void setDisplayMultiSignature(const Transaction *transaction) {
 
     // Key Count
     printAmount(transaction->asset.multiSignature.count,
-                (uint8_t *)displayCtx.var[0], sizeof(displayCtx.var[0]),
+                (uint8_t *)displayCtx.text[0], sizeof(displayCtx.text[0]),
                 "", 0, 0);
 
     // Fee
     printAmount(transaction->fee,
-                (uint8_t *)displayCtx.var[1], sizeof(displayCtx.var[1]),
+                (uint8_t *)displayCtx.text[1], sizeof(displayCtx.text[1]),
                 TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
 }
 

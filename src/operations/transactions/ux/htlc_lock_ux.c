@@ -30,7 +30,7 @@
 #include "utils/print.h"
 #include "utils/utils.h"
 
-#include "ux/display_context.h"
+#include "display/context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -63,34 +63,34 @@ void displayHtlcLock(const Transaction *transaction) {
     // RecipientId
     encodeBase58PublicKey((uint8_t *)transaction->asset.htlcLock.recipientId,
                           ADDRESS_HASH_LEN,
-                          (uint8_t *)displayCtx.var[0],
+                          (uint8_t *)displayCtx.text[0],
                           ADDRESS_LEN,
                           transaction->asset.htlcLock.recipientId[0],
                           1);
 
     // Secret Hash
-    bytesToHex((char *)displayCtx.var[1],
+    bytesToHex((char *)displayCtx.text[1],
                (uint8_t *)transaction->asset.htlcLock.secretHash,
                HASH_32_LEN);
 
     // Expiration
     if (transaction->asset.htlcLock.expirationType == 1U) {
         printAmount(transaction->asset.htlcLock.expiration,
-                    displayCtx.var[2], sizeof(displayCtx.var[2]),
+                    displayCtx.text[2], sizeof(displayCtx.text[2]),
                     LABEL_TIME, LABEL_TIME_SIZE, 0);
     } else {
         printAmount(transaction->asset.htlcLock.expiration,
-                    displayCtx.var[2], sizeof(displayCtx.var[2]),
+                    displayCtx.text[2], sizeof(displayCtx.text[2]),
                     LABEL_HEIGHT, LABEL_HEIGHT_SIZE, 0);
     }
 
     // Amount
     printAmount(transaction->asset.htlcLock.amount,
-                (uint8_t *)displayCtx.var[3], sizeof(displayCtx.var[3]),
+                (uint8_t *)displayCtx.text[3], sizeof(displayCtx.text[3]),
                 TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
     // Fees
     printAmount(transaction->fee,
-                (uint8_t *)displayCtx.var[4], sizeof(displayCtx.var[4]),
+                (uint8_t *)displayCtx.text[4], sizeof(displayCtx.text[4]),
                 TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
 }
 

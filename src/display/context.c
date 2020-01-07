@@ -16,21 +16,10 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_UX_DISPLAY_CONTEXT_H
-#define ARK_UX_DISPLAY_CONTEXT_H
-
-#include <stdint.h>
+#include "display/context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct display_context_t {
-    uint8_t operation[32];
-    uint8_t title[5][15];
-    uint8_t var[5][72];
-} DisplayContext;
-
-extern DisplayContext displayCtx;
+DisplayContext displayCtx;
 
 ////////////////////////////////////////////////////////////////////////////////
-
-#endif

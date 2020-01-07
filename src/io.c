@@ -28,12 +28,6 @@ uint8_t G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// display stepped screens
-unsigned int ux_step;
-unsigned int ux_step_count;
-
-////////////////////////////////////////////////////////////////////////////////
-
 uint8_t io_event(uint8_t channel) {
     // nothing done with the event
     // throw an error on the transport layer if needed.
@@ -62,12 +56,7 @@ uint8_t io_event(uint8_t channel) {
         case SEPROXYHAL_TAG_TICKER_EVENT:
             UX_TICKER_EVENT(G_io_seproxyhal_spi_buffer, {
                 if (UX_ALLOWED) {
-                    if (ux_step_count) {
-                        // prepare next screen
-                        ux_step = (ux_step + 1U) % ux_step_count;
-                        // redisplay screen
-                        UX_REDISPLAY();
-                    }
+                    UX_REDISPLAY();
                 }
             });
             break;

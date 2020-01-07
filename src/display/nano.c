@@ -16,11 +16,9 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#include <os.h>
+#include "display/display.h"
 
-#if defined(TARGET_NANOX)
-
-#include "ux/nanox/ux_nanox.h"
+#if defined(TARGET_NANOS) || defined(TARGET_NANOX)
 
 #include <stdint.h>
 
@@ -30,15 +28,13 @@
 
 #include "glyphs.h"
 
-#include "ux/display_context.h"
-
 #include "approval.h"
+
+#include "display/context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <ux.h>
 ux_state_t G_ux;
-bolos_ux_params_t G_ux_params;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -67,27 +63,33 @@ UX_FLOW(ux_idle_flow,
 // Operation UX Flow Template
 UX_STEP_NOCB(ux_confirm_full_flow_1_step,
              pnn,
-             { &C_icon_eye, "Review operation:", operation, });
+             { &C_icon_eye, "Operation:",
+               (const char *const)displayCtx.operation, });
 
 UX_STEP_NOCB(ux_confirm_full_flow_2_step,
              bnnn_paging,
-             { .title = title1, .text = var1 });
+             { .title = (const char *const)displayCtx.title[0],
+               .text = (const char *const)displayCtx.text[0] });
 
 UX_STEP_NOCB(ux_confirm_full_flow_3_step,
              bnnn_paging,
-             { .title = title2, .text = var2, });
+             { .title = (const char *const)displayCtx.title[1],
+               .text = (const char *const)displayCtx.text[1], });
 
 UX_STEP_NOCB(ux_confirm_full_flow_4_step,
              bnnn_paging,
-             { .title = title3, .text = var3, });
+             { .title = (const char *const)displayCtx.title[2],
+               .text = (const char *const)displayCtx.text[2], });
 
 UX_STEP_NOCB(ux_confirm_full_flow_5_step,
              bnnn_paging,
-             { .title = title4, .text = var4, });
+             { .title = (const char *const)displayCtx.title[3],
+               .text = (const char *const)displayCtx.text[3], });
 
 UX_STEP_NOCB(ux_confirm_full_flow_6_step,
              bnnn_paging,
-             { .title = title5, .text = var5, });
+             { .title = (const char *const)displayCtx.title[4],
+               .text = (const char *const)displayCtx.text[4], });
 
 UX_STEP_VALID(ux_confirm_full_flow_7_step,
               pb,
@@ -98,6 +100,8 @@ UX_STEP_VALID(ux_confirm_full_flow_8_step,
               pb,
               ioCancel(NULL),
               { &C_icon_crossmark, "Reject", });
+
+////////////////////////////////////////////////////////////////////////////////
 
 // 1-variable UX Flow
 UX_FLOW(ux_confirm_full_flow_1var,
@@ -130,8 +134,8 @@ UX_FLOW(ux_confirm_full_flow_4var,
         &ux_confirm_full_flow_3_step,
         &ux_confirm_full_flow_4_step,
         &ux_confirm_full_flow_5_step,
-        &ux_confirm_full_flow_6_step,
-        &ux_confirm_full_flow_7_step);
+        &ux_confirm_full_flow_7_step,
+        &ux_confirm_full_flow_8_step);
 
 // 5-variable UX Flow
 UX_FLOW(ux_confirm_full_flow_5var,
@@ -170,4 +174,4 @@ void ui_idle(void) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif  // TARGET_NANOX
+#endif  // defined(TARGET_NANOS) || defined(TARGET_NANOX)

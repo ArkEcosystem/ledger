@@ -29,7 +29,7 @@
 #include "utils/print.h"
 #include "utils/utils.h"
 
-#include "ux/display_context.h"
+#include "display/context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -37,15 +37,15 @@ static void setVendorField(const Transaction *transaction) {
     const char *const LABEL_VENDORFIELD = "VendorField";
     const size_t LABEL_VENDORFIELD_SIZE = 12;
 
-    bytecpy((char *)displayCtx.title[1], LABEL_VENDORFIELD,
+    bytecpy((char *)displayCtx.title[4], LABEL_VENDORFIELD,
                                          LABEL_VENDORFIELD_SIZE);
 
-    bytecpy((char *)displayCtx.var[1],
+    bytecpy((char *)displayCtx.text[4],
             (uint8_t *)transaction->vendorField,
             MIN(transaction->vendorFieldLength, HASH_64_LEN));
 
     if (transaction->vendorFieldLength > HASH_64_LEN) {
-        bytecpy((char *)&displayCtx.var[1][HASH_64_LEN],
+        bytecpy((char *)&displayCtx.text[4][HASH_64_LEN],
                 LABEL_ELLIPSES, LABEL_ELLIPSES_SIZE);
     }
 }
@@ -59,47 +59,40 @@ void displayTransfer(const Transaction *transaction) {
     bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
     bytecpy((char *)displayCtx.title[0], LABEL_TO, LABEL_TO_SIZE);
 
-    // Let's offset the screen variables if there's a VendorField.
-    // offset == 1 if VendorField; otherwise, 0.
-    size_t offset = (transaction->vendorFieldLength != 0U);
-
-    bytecpy((char *)displayCtx.title[1 + offset], LABEL_EXPIRATION,
-                                                  LABEL_EXPIRATION_SIZE);
-    bytecpy((char *)displayCtx.title[2 + offset], LABEL_AMOUNT,
-                                                  LABEL_AMOUNT_SIZE);
-    bytecpy((char *)displayCtx.title[3 + offset], LABEL_FEE,
-                                                  LABEL_FEE_SIZE);
+    bytecpy((char *)displayCtx.title[1], LABEL_EXPIRATION, LABEL_EXPIRATION_SIZE);
+    bytecpy((char *)displayCtx.title[2], LABEL_AMOUNT, LABEL_AMOUNT_SIZE);
+    bytecpy((char *)displayCtx.title[3], LABEL_FEE, LABEL_FEE_SIZE);
 
     // RecipientId
     encodeBase58PublicKey((uint8_t *)transaction->asset.transfer.recipientId,
                           ADDRESS_HASH_LEN,
-                          (uint8_t *)displayCtx.var[0],
-                          sizeof(displayCtx.var[0]),
+                          (uint8_t *)displayCtx.text[0],
+                          sizeof(displayCtx.text[0]),
                           transaction->asset.transfer.recipientId[0],
                           1U);
 
-    // VendorField
-    if (offset) {
-        setVendorField(transaction);
-    }
-
     // Expiration
     printAmount(transaction->asset.transfer.expiration,
-                displayCtx.var[1 + offset],
-                sizeof(displayCtx.var[1 + offset]),
+                displayCtx.text[1],
+                sizeof(displayCtx.text[1]),
                 NULL, 0U, 0U);
 
     // Amount
     printAmount(transaction->asset.transfer.amount,
-                displayCtx.var[2 + offset],
-                sizeof(displayCtx.var[2 + offset]),
+                displayCtx.text[2],
+                sizeof(displayCtx.text[2]),
                 TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
 
     // Fee
     printAmount(transaction->fee,
-                displayCtx.var[3 + offset],
-                sizeof(displayCtx.var[3 + offset]),
+                displayCtx.text[3],
+                sizeof(displayCtx.text[3]),
                 TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
+
+    // VendorField
+    if (transaction->vendorFieldLength > 0U) {
+        setVendorField(transaction);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

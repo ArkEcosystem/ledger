@@ -29,7 +29,7 @@
 #include "utils/print.h"
 #include "utils/utils.h"
 
-#include "ux/display_context.h"
+#include "display/context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -45,13 +45,13 @@ void displaySecondSignature(const Transaction *transaction) {
     bytecpy((char *)displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
 
     // PublicKey of Second Signature
-    bytesToHex((char *)displayCtx.var[0],
+    bytesToHex((char *)displayCtx.text[0],
                 transaction->asset.secondSignature.publicKey,
                 PUBLICKEY_COMPRESSED_LEN);
 
     // Fee
     printAmount(transaction->fee,
-                (uint8_t *)displayCtx.var[1], sizeof(displayCtx.var[1]),
+                (uint8_t *)displayCtx.text[1], sizeof(displayCtx.text[1]),
                 TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
 }
 

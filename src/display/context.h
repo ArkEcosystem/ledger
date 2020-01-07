@@ -16,16 +16,20 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_UX_NANOS_H
-#define ARK_UX_NANOS_H
+#ifndef ARK_DISPLAY_CONTEXT_H
+#define ARK_DISPLAY_CONTEXT_H
 
 #include <stdint.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void setDisplaySteps(uint8_t steps);
+typedef struct display_context_t {
+    uint8_t     operation[16];
+    uint8_t     title[6][16];
+    uint8_t     text[6][60];
+} DisplayContext;
 
-void ui_idle(void);
+extern DisplayContext displayCtx;
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 -   cleaned up warnings and refactored implementation ([#25])
 -   upgraded `nanos-secure-sdk` version `1553` -> `160` ([#46])
 -   refactor transactions classes to decouple Ledger SDK code ([#51])
+-   unify Ledger NanoS and NanoX ux display flow ([#53])
 
 [#23]: https://github.com/ArkEcosystem/ledger/pull/23
 [#25]: https://github.com/ArkEcosystem/ledger/pull/25
@@ -27,4 +28,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#40]: https://github.com/ArkEcosystem/ledger/pull/40
 [#46]: https://github.com/ArkEcosystem/ledger/pull/46
 [#51]: https://github.com/ArkEcosystem/ledger/pull/51
+[#53]: https://github.com/ArkEcosystem/ledger/pull/53
 [unreleased]: https://github.com/ArkEcosystem/ledger/compare/master...develop

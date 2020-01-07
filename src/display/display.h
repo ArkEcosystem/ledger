@@ -16,24 +16,19 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_UX_H
-#define ARK_UX_H
+#ifndef ARK_DISPLAY_H
+#define ARK_DISPLAY_H
 
 #if defined(HAVE_BOLOS_UX)
+
     #include <os.h>
 
-    #if defined(TARGET_NANOS)
-        #include "ux/nanos/ux_nanos.h"
-    #elif defined(TARGET_NANOX)
-        #include "ux/nanox/ux_nanox.h"
-    #endif  // defined(TARGET_NANOS) else defined(TARGET_NANOX)
+    #if defined(TARGET_NANOS) || defined(TARGET_NANOX)
 
-#else  // if not defined(HAVE_BOLOS_UX)
+        #include "display/nano.h"
 
-// must implement. e.g. unit testing
-// void setDisplaySteps(uint8_t steps);
-// void ui_idle(void);
+    #endif  // defined(TARGET_NANOS) || defined(TARGET_NANOX)
 
 #endif  // defined(HAVE_BOLOS_UX)
 
-#endif  // #ifndef ARK_UX_H
+#endif  // #define ARK_DISPLAY_H

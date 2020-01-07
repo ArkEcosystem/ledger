@@ -62,13 +62,13 @@ void setDisplayDelegateResignation(const Transaction *transaction) {
     bytecpy((char *)displayCtx.title[1], "Fees", 5);
 
     // Delegate PublicKey
-    bytesToHex((char *)displayCtx.var[0],
+    bytesToHex((char *)displayCtx.text[0],
                transaction->senderPublicKey,
                PUBLICKEY_COMPRESSED_LEN);
 
     // Fees
     printAmount(transaction->fee,
-                (uint8_t *)displayCtx.var[1], sizeof(displayCtx.var[1]),
+                (uint8_t *)displayCtx.text[1], sizeof(displayCtx.text[1]),
                 TOKEN_NAME, TOKEN_NAME_SIZE, ARK_TOKEN_DECIMALS);
 }
 

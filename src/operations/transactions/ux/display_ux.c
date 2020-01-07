@@ -32,8 +32,8 @@
 #include "transactions/ux/htlc_claim_ux.h"
 #include "transactions/ux/htlc_refund_ux.h"
 
-#include "ux.h"
-#include "ux/display_context.h"
+#include "display/context.h"
+#include "display/display.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
