@@ -19,14 +19,33 @@
 #ifndef ARK_DISPLAY_CONTEXT_H
 #define ARK_DISPLAY_CONTEXT_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
+static const size_t DISPLAY_CTX_STEP_COUNT              = 5;
+static const size_t DISPLAY_CTX_OP_SIZE                 = 18;
+static const size_t DISPLAY_CTX_TITLE_SIZE              = DISPLAY_CTX_OP_SIZE;
+static const size_t DISPLAY_CTX_TEXT_SIZE               = 68;
+
+static const size_t DISPLAY_CTX_EXTENDED_TITLE_INDEX    = DISPLAY_CTX_STEP_COUNT - 1;
+static const size_t DISPLAY_CTX_EXTENDED_TEXT_SIZE      = 256;
+
+////////////////////////////////////////////////////////////////////////////////
+
+// 704 Bytes (64-byte-aligned)
 typedef struct display_context_t {
-    uint8_t     operation[16];
-    uint8_t     title[6][16];
-    uint8_t     text[6][60];
+    uint8_t     operation   [DISPLAY_CTX_OP_SIZE];
+    uint8_t     title       [DISPLAY_CTX_STEP_COUNT] [DISPLAY_CTX_TITLE_SIZE];
+    uint8_t     text        [DISPLAY_CTX_STEP_COUNT] [DISPLAY_CTX_TEXT_SIZE];
+
+    // For potentially large display texts.
+    // Should always be set as last step in the UX display flow.
+    //
+    // 255 strLen + the null-terminator.
+    // e.g. Message, VendorField, IPFS DAG
+    uint8_t extended_text[DISPLAY_CTX_EXTENDED_TEXT_SIZE];
 } DisplayContext;
 
 extern DisplayContext displayCtx;

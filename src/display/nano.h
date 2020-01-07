@@ -19,11 +19,12 @@
 #ifndef ARK_DISPLAY_NANO_H
 #define ARK_DISPLAY_NANO_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void setDisplaySteps(uint8_t steps);
+void setDisplaySteps(uint8_t steps, bool isExtended);
 
 void ui_idle(void);
 

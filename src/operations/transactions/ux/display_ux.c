@@ -18,6 +18,7 @@
 
 #include "transactions/ux/display_ux.h"
 
+#include <stdbool.h>
 #include <string.h>
 
 #include "transactions/transaction.h"
@@ -37,7 +38,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-extern void setDisplaySteps(uint8_t steps);
+extern void setDisplaySteps(uint8_t steps, bool isExtended);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -47,38 +48,39 @@ void setDisplay(const Transaction *transaction) {
     switch (transaction->type) {
         case TRANSFER_TYPE:
             displayTransfer(transaction);
-            setDisplaySteps(STEPS_TRANSFER_MIN +
-                            (uint8_t)(transaction->vendorFieldLength != 0U));
+            bool hasVendorField = transaction->vendorFieldLength > 0;
+            setDisplaySteps(STEPS_TRANSFER_MIN + (uint8_t)hasVendorField,
+                            hasVendorField);
             break;
 
         case SECOND_SIGNATURE_TYPE:
             displaySecondSignature(transaction);
-            setDisplaySteps(STEPS_SECOND_SIGNATURE);
+            setDisplaySteps(STEPS_SECOND_SIGNATURE, false);
             break;
 
         case VOTE_TYPE:
             displayVote(transaction);
-            setDisplaySteps(STEPS_VOTE);
+            setDisplaySteps(STEPS_VOTE, false);
             break;
 
         case IPFS_TYPE:
             displayIpfs(transaction);
-            setDisplaySteps(STEPS_IPFS);
+            setDisplaySteps(STEPS_IPFS, true);
             break;
 
         case HTLC_LOCK_TYPE:
             displayHtlcLock(transaction);
-            setDisplaySteps(STEPS_HTLC_LOCK);
+            setDisplaySteps(STEPS_HTLC_LOCK,false);
             break;
 
         case HTLC_CLAIM_TYPE:
             displayHtlcClaim(transaction);
-            setDisplaySteps(STEPS_HTLC_CLAIM);
+            setDisplaySteps(STEPS_HTLC_CLAIM, false);
             break;
 
         case HTLC_REFUND_TYPE:
             displayHtlcRefund(transaction);
-            setDisplaySteps(STEPS_HTLC_REFUND);
+            setDisplaySteps(STEPS_HTLC_REFUND, false);
             break;
 
         default: break;

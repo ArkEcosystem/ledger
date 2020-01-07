@@ -24,8 +24,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 // General
-static const size_t MAX_RAW_OPERATION       = 300;
-static const size_t MAX_DISPLAY_BUFFER      = 255;
+static const size_t MAX_RAW_OPERATION       = 704;      // 64-byte-aligned
+static const size_t MAX_TEXT_LEN            = 255;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -48,9 +48,6 @@ static const size_t PUBLICKEY_COMPRESSED_LEN        = 33;
 static const char *const LABEL_AMOUNT       = "Amount";
 static const size_t LABEL_AMOUNT_SIZE       = 7;
 
-static const char *const LABEL_ELLIPSES     = "...";
-static const size_t LABEL_ELLIPSES_SIZE     = 4;
-
 static const char *const LABEL_EXPIRATION       = "Expiration";
 static const size_t LABEL_EXPIRATION_SIZE       = 11;
 
@@ -60,14 +57,13 @@ static const size_t LABEL_FEE_SIZE      = 4;
 static const char *const LABEL_TO       = "To";
 static const size_t LABEL_TO_SIZE       = 3;
 
-
 ////////////////////////////////////////////////////////////////////////////////
 
 // Token
 static const size_t TOKEN_DECIMALS          = 8;
 static const char *const TOKEN_NAME         = "ARK ";
-static const size_t TOKEN_NAME_SIZE         = 4;  // sizeof - 1
-static const uint8_t TOKEN_NETWORK_BYTE     = 0x1e;  // ARK Mainnet
+static const size_t TOKEN_NAME_SIZE         = 4;        // sizeof("ARK ") - 1
+static const uint8_t TOKEN_NETWORK_BYTE     = 0x1e;     // ARK Mainnet
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -37,17 +37,14 @@ static void setVendorField(const Transaction *transaction) {
     const char *const LABEL_VENDORFIELD = "VendorField";
     const size_t LABEL_VENDORFIELD_SIZE = 12;
 
-    bytecpy((char *)displayCtx.title[4], LABEL_VENDORFIELD,
-                                         LABEL_VENDORFIELD_SIZE);
+    bytecpy((char *)displayCtx.title[DISPLAY_CTX_EXTENDED_TITLE_INDEX],
+            LABEL_VENDORFIELD,
+            LABEL_VENDORFIELD_SIZE);
 
-    bytecpy((char *)displayCtx.text[4],
+    bytecpy((char *)displayCtx.extended_text,
             (uint8_t *)transaction->vendorField,
-            MIN(transaction->vendorFieldLength, HASH_64_LEN));
-
-    if (transaction->vendorFieldLength > HASH_64_LEN) {
-        bytecpy((char *)&displayCtx.text[4][HASH_64_LEN],
-                LABEL_ELLIPSES, LABEL_ELLIPSES_SIZE);
-    }
+            transaction->vendorFieldLength);
+    displayCtx.extended_text[transaction->vendorFieldLength] = '\0';
 }
 
 ////////////////////////////////////////////////////////////////////////////////

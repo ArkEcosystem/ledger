@@ -33,8 +33,8 @@
 #include "display/display.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-// Externally Declared Methods.
-extern void setDisplaySteps(uint8_t steps);
+
+extern void setDisplaySteps(uint8_t steps, bool isExtended);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -45,7 +45,7 @@ extern void setDisplaySteps(uint8_t steps);
 //
 // ---
 bool handleMessage(const uint8_t *buffer, size_t length) {
-    if (length == 0 || length > MAX_DISPLAY_BUFFER) {
+    if (length == 0 || length > MAX_TEXT_LEN) {
         return false;
     }
 
@@ -57,18 +57,24 @@ bool handleMessage(const uint8_t *buffer, size_t length) {
     const char *const LABEL_LENGTH      = "length:";
     const size_t LABEL_LENGTH_SIZE      = 8;
 
+    const size_t MESSAGE_DISPLAY_STEPS = 2;
+
     bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
     bytecpy((char *)displayCtx.title[0], LABEL_LENGTH, LABEL_LENGTH_SIZE);
-    bytecpy((char *)displayCtx.title[1], LABEL, LABEL_SIZE);
+    bytecpy((char *)displayCtx.title[DISPLAY_CTX_EXTENDED_TITLE_INDEX],
+            LABEL,
+            LABEL_SIZE);
 
+    // Message Length
     printAmount(length,
                 displayCtx.text[0],
                 sizeof(displayCtx.text[0]),
                 "", 0U, 0U);
 
-    bytecpy((char *)displayCtx.text[1], buffer, length);
+    // Message Text
+    bytecpy((char *)displayCtx.extended_text, buffer, length);
 
-    setDisplaySteps(2);
+    setDisplaySteps(MESSAGE_DISPLAY_STEPS, true);
 
     return true;
 }
