@@ -18,6 +18,7 @@
 
 #include "transactions/legacy/display_legacy.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -38,21 +39,19 @@
 #include "display/display.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-// Externally Declared Methods.
-extern void setDisplaySteps(uint8_t steps);
+
+extern void setDisplaySteps(uint8_t steps, bool isExtended);
 
 ////////////////////////////////////////////////////////////////////////////////
 
 static void setVendorField(const Transaction *transaction) {
-    bytecpy((char *)displayCtx.title[1], "VendorField", 12);
+    bytecpy((char *)displayCtx.title[DISPLAY_CTX_EXTENDED_TITLE_INDEX],
+            "VendorField",
+            12);
 
-    bytecpy((char *)displayCtx.text[1],
+    bytecpy((char *)displayCtx.extended_text,
             (uint8_t *)transaction->vendorField,
-            MIN(transaction->vendorFieldLength, HASH_64_LEN));
-
-    if (transaction->vendorFieldLength > HASH_64_LEN) {
-        bytecpy((char *)&displayCtx.text[1][HASH_64_LEN], (char *)"...", 4);
-    }
+            transaction->vendorFieldLength);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -61,12 +60,8 @@ void setTransferLegacy(const Transaction *transaction) {
     bytecpy((char*)displayCtx.operation, "Transfer", 9);
     bytecpy((char*)displayCtx.title[0], "To", 3);
 
-    // Let's offset the screen variables if there's a VendorField.
-    // offset == 1 if VendorField; otherwise, 0.
-    size_t offset = (transaction->vendorFieldLength > 0);
-
-    bytecpy((char*)displayCtx.title[1 + offset], "Amount", 7);
-    bytecpy((char*)displayCtx.title[2 + offset], "Fees", 5);
+    bytecpy((char*)displayCtx.title[1], "Amount", 7);
+    bytecpy((char*)displayCtx.title[2], "Fees", 5);
 
     // RecipientId
     encodeBase58PublicKey((uint8_t*)transaction->recipientId,
@@ -79,22 +74,22 @@ void setTransferLegacy(const Transaction *transaction) {
     // legacy, so let's not spend too much time on it.
     displayCtx.text[0][ADDRESS_LEN]  = ' ';
 
-    // VendorField
-    if (offset) {
-        setVendorField(transaction);
-    }
-
     // Amount
     printAmount(transaction->amount,
-                displayCtx.text[1 + offset],
-                sizeof(displayCtx.text[1 + offset]),
+                displayCtx.text[1],
+                sizeof(displayCtx.text[1]),
                 TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
 
     // Fee
     printAmount(transaction->fee,
-                displayCtx.text[2 + offset],
-                sizeof(displayCtx.text[2 + offset]),
+                displayCtx.text[2],
+                sizeof(displayCtx.text[2]),
                 TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
+
+    // VendorField
+    if (transaction->vendorFieldLength > 0) {
+        setVendorField(transaction);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -123,12 +118,13 @@ void setDisplayLegacy(const Transaction *transaction) {
     switch (transaction->type) {
         case TRANSFER_TYPE:
             setTransferLegacy(transaction);
-            setDisplaySteps(3U + (transaction->vendorFieldLength != 0U));
+            bool hasVendorField = transaction->vendorFieldLength > 0;
+            setDisplaySteps(3U + (uint8_t)hasVendorField, hasVendorField);
             break;
 
         case VOTE_TYPE:
             setVoteLegacy(transaction);
-            setDisplaySteps(2U);
+            setDisplaySteps(2U, false);
             break;
 
         default: break;

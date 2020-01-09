@@ -41,24 +41,21 @@ void displayIpfs(const Transaction *transaction) {
     const size_t LABEL_DAG_SIZE     = 4;
 
     bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
-    bytecpy((char *)displayCtx.title[0], LABEL_DAG, LABEL_DAG_SIZE);
-    bytecpy((char *)displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
+    bytecpy((char *)displayCtx.title[0], LABEL_FEE, LABEL_FEE_SIZE);
+    bytecpy((char *)displayCtx.title[DISPLAY_CTX_EXTENDED_TITLE_INDEX],
+            LABEL_DAG,
+            LABEL_DAG_SIZE);
+
+    // Fee
+    printAmount(transaction->fee,
+                (uint8_t *)displayCtx.text[0], sizeof(displayCtx.text[0]),
+                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
 
     // DAG
     encodeBase58((uint8_t *)transaction->asset.ipfs.dag,
                  transaction->asset.ipfs.length,
-                 (uint8_t *)displayCtx.text[0], MIN(46, HASH_64_LEN));
-
-    // Let's truncate the DAG if it's longer than 64 bytes.
-    if (transaction->asset.ipfs.length > HASH_64_LEN) {
-        bytecpy((void *)&displayCtx.text[0][HASH_64_LEN],
-                LABEL_ELLIPSES, LABEL_ELLIPSES_SIZE);
-    }
-
-    // Fee
-    printAmount(transaction->fee,
-                (uint8_t *)displayCtx.text[1], sizeof(displayCtx.text[1]),
-                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
+                 (uint8_t *)displayCtx.extended_text,
+                 MAX_TEXT_LEN);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

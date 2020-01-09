@@ -35,7 +35,7 @@ typedef struct transaction_t {
     uint16_t    type;
     uint8_t     senderPublicKey[PUBLICKEY_COMPRESSED_LEN];
     uint64_t    fee;
-    uint8_t     vendorFieldLength;
+    size_t      vendorFieldLength;
     uint8_t     *vendorField;
     union {
         struct {  // v2
