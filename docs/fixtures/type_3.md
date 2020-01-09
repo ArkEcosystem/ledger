@@ -3,22 +3,22 @@
 
 ## Signed Json Payload
 
-```javascript
+```json
 {
-	"version": 2,
-	"network": 23,
-	"type": 3,
-	"nonce": "2",
-	"senderPublicKey": "02555806bca6737eaeaff6434d5171bac8aeb72533ed9bafb280dd11b328a3822d",
-	"fee": "100000000",
-	"amount": "0",
-	"asset": {
-		"votes": [
-			"+02555806bca6737eaeaff6434d5171bac8aeb72533ed9bafb280dd11b328a3822d"
-		]
-	},
-	"signature": "77a40e4b4170ce613c8f9ccc0650887349330a9a8b459189ee379c88cf2c8506d65aa3ca8293705373f1bde8d6b27e5071de1785ac9c0182f41e364f8f9e3b64",
-	"id": "fd59eaa4a2bbb3570c7b01ad464c968aa9bf73a40e0417c802ab30553ded8476"
+ "version": 2,
+ "network": 23,
+ "type": 3,
+ "nonce": "2",
+ "senderPublicKey": "02555806bca6737eaeaff6434d5171bac8aeb72533ed9bafb280dd11b328a3822d",
+ "fee": "100000000",
+ "amount": "0",
+ "asset": {
+    "votes": [
+        "+02555806bca6737eaeaff6434d5171bac8aeb72533ed9bafb280dd11b328a3822d"
+    ]
+ },
+ "signature": "77a40e4b4170ce613c8f9ccc0650887349330a9a8b459189ee379c88cf2c8506d65aa3ca8293705373f1bde8d6b27e5071de1785ac9c0182f41e364f8f9e3b64",
+ "id": "fd59eaa4a2bbb3570c7b01ad464c968aa9bf73a40e0417c802ab30553ded8476"
 }
 ```
 
@@ -48,6 +48,5 @@ ff0217010000000300020000000000000002555806bca6737eaeaff6434d5171bac8aeb72533ed9b
 ## Example Ledger Payload
 
 ```shell
-python examples/example_helper.py --tx ff0217010000000300020000000000000002555806bca6737eaeaff6434d5171bac8aeb72533ed9bafb280dd11b328a3822d00e1f5050000000000010102555806bca6737eaeaff6434d5171bac8aeb72533ed9bafb280dd11b328a3822d
+python3 examples/example_helper.py --tx ff0217010000000300020000000000000002555806bca6737eaeaff6434d5171bac8aeb72533ed9bafb280dd11b328a3822d00e1f5050000000000010102555806bca6737eaeaff6434d5171bac8aeb72533ed9bafb280dd11b328a3822d
 ```
-> _note that signature bytes are removed (i.e. there's no need to sign a signed-transaction)._
