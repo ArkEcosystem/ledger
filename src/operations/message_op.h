@@ -61,9 +61,7 @@ bool handleMessage(const uint8_t *buffer, size_t length) {
 
     bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
     bytecpy((char *)displayCtx.title[0], LABEL_LENGTH, LABEL_LENGTH_SIZE);
-    bytecpy((char *)displayCtx.title[DISPLAY_CTX_EXTENDED_TITLE_INDEX],
-            LABEL,
-            LABEL_SIZE);
+    bytecpy((char *)displayCtx.extended_title, LABEL, LABEL_SIZE);
 
     // Message Length
     printAmount(length,

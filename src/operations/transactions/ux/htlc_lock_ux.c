@@ -25,6 +25,8 @@
 
 #include "operations/transactions/transaction.h"
 
+#include "transactions/ux/vendorfield_ux.h"
+
 #include "utils/base58.h"
 #include "utils/hex.h"
 #include "utils/print.h"
@@ -92,6 +94,11 @@ void displayHtlcLock(const Transaction *transaction) {
     printAmount(transaction->fee,
                 (uint8_t *)displayCtx.text[4], sizeof(displayCtx.text[4]),
                 TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
+
+    // VendorField
+    if (transaction->vendorFieldLength > 0U) {
+        setVendorField(transaction);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

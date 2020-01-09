@@ -31,6 +31,8 @@
 
 #include "transactions/types/types.h"
 
+#include "transactions/ux/vendorfield_ux.h"
+
 #include "utils/base58.h"
 #include "utils/print.h"
 #include "utils/utils.h"
@@ -41,18 +43,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 extern void setDisplaySteps(uint8_t steps, bool isExtended);
-
-////////////////////////////////////////////////////////////////////////////////
-
-static void setVendorField(const Transaction *transaction) {
-    bytecpy((char *)displayCtx.title[DISPLAY_CTX_EXTENDED_TITLE_INDEX],
-            "VendorField",
-            12);
-
-    bytecpy((char *)displayCtx.extended_text,
-            (uint8_t *)transaction->vendorField,
-            transaction->vendorFieldLength);
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 

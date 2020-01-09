@@ -45,10 +45,12 @@ extern void setDisplaySteps(uint8_t steps, bool isExtended);
 void setDisplay(const Transaction *transaction) {
     explicit_bzero(&displayCtx, sizeof(displayCtx));
 
+    const bool hasVendorField = transaction->vendorFieldLength > 0;
+
     switch (transaction->type) {
         case TRANSFER_TYPE:
             displayTransfer(transaction);
-            bool hasVendorField = transaction->vendorFieldLength > 0;
+            
             setDisplaySteps(STEPS_TRANSFER_MIN + (uint8_t)hasVendorField,
                             hasVendorField);
             break;
@@ -70,7 +72,8 @@ void setDisplay(const Transaction *transaction) {
 
         case HTLC_LOCK_TYPE:
             displayHtlcLock(transaction);
-            setDisplaySteps(STEPS_HTLC_LOCK,false);
+            setDisplaySteps(STEPS_HTLC_LOCK_MIN + (uint8_t)hasVendorField,
+                            hasVendorField);
             break;
 
         case HTLC_CLAIM_TYPE:

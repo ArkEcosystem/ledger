@@ -94,7 +94,7 @@ UX_STEP_NOCB(ux_screen_item_5,
 
 UX_STEP_NOCB(ux_screen_item_extended,
              bnnn_paging,
-             { .title = (const char *const)displayCtx.title[DISPLAY_CTX_EXTENDED_TITLE_INDEX],
+             { .title = (const char *const)displayCtx.extended_title,
                .text = (const char *const)displayCtx.extended_text, });
 
 UX_STEP_VALID(ux_screen_accept,
@@ -189,6 +189,17 @@ UX_FLOW(ux_flow_5_screen_extended,
         &ux_screen_item_extended,
         &ux_screen_accept, &ux_screen_reject);
 
+// 6-variable UX Flow, Extended last step
+UX_FLOW(ux_flow_6_screen_extended,
+        &ux_screen_operation,
+        &ux_screen_item_1,
+        &ux_screen_item_2,
+        &ux_screen_item_3,
+        &ux_screen_item_4,
+        &ux_screen_item_5,
+        &ux_screen_item_extended,
+        &ux_screen_accept, &ux_screen_reject);
+
 ////////////////////////////////////////////////////////////////////////////////
 
 void setDisplaySteps(uint8_t steps, bool isExtended) {
@@ -207,6 +218,9 @@ void setDisplaySteps(uint8_t steps, bool isExtended) {
 
         case 5: isExtended ? ux_flow_init(0U, ux_flow_5_screen_extended, NULL)
                            : ux_flow_init(0U, ux_flow_5_screen, NULL); break;
+
+        case 6: isExtended ? ux_flow_init(0U, ux_flow_6_screen_extended, NULL)
+                           : ux_flow_init(0U, NULL, NULL); break;
 
         default: break;
     }

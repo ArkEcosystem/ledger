@@ -16,21 +16,15 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_UX_HTLC_LOCK_UX_H
-#define ARK_OPERATIONS_TRANSACTION_UX_HTLC_LOCK_UX_H
+#ifndef ARK_OPERATIONS_TRANSACTIONS_UX_VENDORFIELD_UX_H
+#define ARK_OPERATIONS_TRANSACTIONS_UX_VENDORFIELD_UX_H
 
-#include <stdint.h>
-
-#include "operations/transactions/transaction.h"
+#include "transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static const uint8_t STEPS_HTLC_LOCK_MIN = 5U;
+void setVendorField(const Transaction *transaction);
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void displayHtlcLock(const Transaction *transaction);
-
-////////////////////////////////////////////////////////////////////////////////
-
-#endif
+#endif  // #define ARK_OPERATIONS_TRANSACTIONS_UX_VENDORFIELD_UX_H
