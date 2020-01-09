@@ -42,9 +42,7 @@ void displayIpfs(const Transaction *transaction) {
 
     bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
     bytecpy((char *)displayCtx.title[0], LABEL_FEE, LABEL_FEE_SIZE);
-    bytecpy((char *)displayCtx.title[DISPLAY_CTX_EXTENDED_TITLE_INDEX],
-            LABEL_DAG,
-            LABEL_DAG_SIZE);
+    bytecpy((char *)displayCtx.extended_title, LABEL_DAG, LABEL_DAG_SIZE);
 
     // Fee
     printAmount(transaction->fee,

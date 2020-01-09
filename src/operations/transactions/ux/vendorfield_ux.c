@@ -16,21 +16,33 @@
 *  limitations under the License.
 ********************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_UX_HTLC_LOCK_UX_H
-#define ARK_OPERATIONS_TRANSACTION_UX_HTLC_LOCK_UX_H
+#include "transactions/ux/vendorfield_ux.h"
 
+#include <stddef.h>
 #include <stdint.h>
+
+#include "constants.h"
 
 #include "operations/transactions/transaction.h"
 
-////////////////////////////////////////////////////////////////////////////////
+#include "utils/utils.h"
 
-static const uint8_t STEPS_HTLC_LOCK_MIN = 5U;
-
-////////////////////////////////////////////////////////////////////////////////
-
-void displayHtlcLock(const Transaction *transaction);
+#include "display/context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#endif
+void setVendorField(const Transaction *transaction) {
+    const char *const LABEL_VENDORFIELD = "VendorField";
+    const size_t LABEL_VENDORFIELD_SIZE = 12;
+
+    bytecpy((char *)displayCtx.extended_title,
+            LABEL_VENDORFIELD,
+            LABEL_VENDORFIELD_SIZE);
+
+    bytecpy((char *)displayCtx.extended_text,
+            (uint8_t *)transaction->vendorField,
+            transaction->vendorFieldLength);
+    displayCtx.extended_text[transaction->vendorFieldLength] = '\0';
+}
+
+////////////////////////////////////////////////////////////////////////////////

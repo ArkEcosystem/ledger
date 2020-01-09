@@ -24,13 +24,11 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static const size_t DISPLAY_CTX_STEP_COUNT              = 5;
-static const size_t DISPLAY_CTX_OP_SIZE                 = 18;
-static const size_t DISPLAY_CTX_TITLE_SIZE              = DISPLAY_CTX_OP_SIZE;
-static const size_t DISPLAY_CTX_TEXT_SIZE               = 68;
-
-static const size_t DISPLAY_CTX_EXTENDED_TITLE_INDEX    = DISPLAY_CTX_STEP_COUNT - 1;
-static const size_t DISPLAY_CTX_EXTENDED_TEXT_SIZE      = 256;
+static const size_t DISPLAY_CTX_STEP_COUNT          = 5;
+static const size_t DISPLAY_CTX_OP_SIZE             = 18;
+static const size_t DISPLAY_CTX_TITLE_SIZE          = DISPLAY_CTX_OP_SIZE - 3;
+static const size_t DISPLAY_CTX_TEXT_SIZE           = 68;
+static const size_t DISPLAY_CTX_EXTENDED_TEXT_SIZE  = 256;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -45,6 +43,7 @@ typedef struct display_context_t {
     //
     // 255 strLen + the null-terminator.
     // e.g. Message, VendorField, IPFS DAG
+    uint8_t extended_title[DISPLAY_CTX_TITLE_SIZE];
     uint8_t extended_text[DISPLAY_CTX_EXTENDED_TEXT_SIZE];
 } DisplayContext;
 

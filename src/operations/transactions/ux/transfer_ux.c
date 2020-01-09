@@ -25,27 +25,13 @@
 
 #include "operations/transactions/transaction.h"
 
+#include "transactions/ux/vendorfield_ux.h"
+
 #include "utils/base58.h"
 #include "utils/print.h"
 #include "utils/utils.h"
 
 #include "display/context.h"
-
-////////////////////////////////////////////////////////////////////////////////
-
-static void setVendorField(const Transaction *transaction) {
-    const char *const LABEL_VENDORFIELD = "VendorField";
-    const size_t LABEL_VENDORFIELD_SIZE = 12;
-
-    bytecpy((char *)displayCtx.title[DISPLAY_CTX_EXTENDED_TITLE_INDEX],
-            LABEL_VENDORFIELD,
-            LABEL_VENDORFIELD_SIZE);
-
-    bytecpy((char *)displayCtx.extended_text,
-            (uint8_t *)transaction->vendorField,
-            transaction->vendorFieldLength);
-    displayCtx.extended_text[transaction->vendorFieldLength] = '\0';
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 
