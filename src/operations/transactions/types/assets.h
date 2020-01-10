@@ -1,54 +1,54 @@
 /*******************************************************************************
-*   Ark Wallet
-*   (c) 2017 Ledger
-*   (c) ARK Ecosystem
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-********************************************************************************/
+ * This file is part of the ARK Ledger App.
+ *
+ * Copyright (c) ARK Ecosystem <info@ark.io>
+ *
+ * The MIT License (MIT)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to
+ * deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ ******************************************************************************/
 
 #ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
 #define ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
 
-////////////////////////////////////////////////////////////////////////////////
-
 #include "transactions/types/transfer.h"
 #include "transactions/types/second_signature.h"
-// #include "transactions/types/delegate_registration.h"
 #include "transactions/types/vote.h"
-// #include "transactions/types/multi_signature.h"
+/* #include "transactions/types/multi_signature.h" */  // <- Under Development
 #include "transactions/types/ipfs.h"
-// #include "transactions/types/multi_payment.h"
-// #include "transactions/types/delegate_resignation.h"
 #include "transactions/types/htlc_lock.h"
 #include "transactions/types/htlc_claim.h"
 #include "transactions/types/htlc_refund.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-
 typedef union tx_asset_t {
     Transfer                    transfer;               // Type 0
     SecondSignatureRegistration secondSignature;        // Type 1
-    // Delegate Registration                            // Type 2
+/*  Delegate Registration                               // Type 2 */
     Vote                        vote;                   // Type 3
-    // MultiSignature                                   // Type 4
+/*  MultiSignature                                      // Type 4 */
     Ipfs                        ipfs;                   // Type 5
-    // MultiPayment                                     // Type 6
-    // Delegate Resignation                             // Type 7
+/*  MultiPayment                                        // Type 6 */
+/*  Delegate Resignation                                // Type 7 */
     HtlcLock                    htlcLock;               // Type 8
     HtlcClaim                   htlcClaim;              // Type 9
     HtlcRefund                  htlcRefund;             // Type 10
 } tx_asset_t;
 
-////////////////////////////////////////////////////////////////////////////////
-
-#endif
+#endif  // #define ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H

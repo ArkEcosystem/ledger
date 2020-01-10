@@ -1,20 +1,46 @@
 /*******************************************************************************
-*   Ark Wallet
-*   (c) 2017 Ledger
-*   (c) ARK Ecosystem
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-********************************************************************************/
+ * This file is part of the ARK Ledger App.
+ *
+ * Copyright (c) ARK Ecosystem <info@ark.io>
+ *
+ * The MIT License (MIT)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to
+ * deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ * 
+ * -----
+ * 
+ * Parts of this software are based on Ledger Nano SDK
+ * 
+ * (c) 2017 Ledger
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 
 #include "display/display.h"
 
@@ -34,11 +60,9 @@
 #include "display/context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-
 ux_state_t G_ux;
 
 ////////////////////////////////////////////////////////////////////////////////
-
 // Main App Menu
 UX_STEP_NOCB(ux_idle_application_ready,
              pnn,
@@ -60,7 +84,6 @@ UX_FLOW(ux_idle_flow,
         &ux_idle_application_quit);
 
 ////////////////////////////////////////////////////////////////////////////////
-
 // Operation UX Flow Template
 UX_STEP_NOCB(ux_screen_operation,
              pnn,
@@ -108,6 +131,7 @@ UX_STEP_VALID(ux_screen_reject,
               { &C_icon_crossmark, "Reject", });
 
 ////////////////////////////////////////////////////////////////////////////////
+// UX Flow Variables
 
 // 1-variable UX Flow
 UX_FLOW(ux_flow_1_screen,
@@ -148,6 +172,12 @@ UX_FLOW(ux_flow_5_screen,
         &ux_screen_item_4,
         &ux_screen_item_5,
         &ux_screen_accept, &ux_screen_reject);
+
+////////////////////////////////////////////////////////////////////////////////
+// Extended UX Flow Variables
+//
+// Extended text fields should always be set as the last step;
+// they must also not exceed 255 characters/bytes.
 
 // 1-variable UX Flow, Extended last step
 UX_FLOW(ux_flow_1_screen_extended,
@@ -201,7 +231,6 @@ UX_FLOW(ux_flow_6_screen_extended,
         &ux_screen_accept, &ux_screen_reject);
 
 ////////////////////////////////////////////////////////////////////////////////
-
 void setDisplaySteps(uint8_t steps, bool isExtended) {
     switch(steps) {
         case 1: isExtended ? ux_flow_init(0U, ux_flow_1_screen_extended, NULL)
@@ -226,7 +255,6 @@ void setDisplaySteps(uint8_t steps, bool isExtended) {
     }
 }
 ////////////////////////////////////////////////////////////////////////////////
-
 void ui_idle(void) {
     // reserve a display stack slot if none yet
     if (G_ux.stack_count == 0) {
@@ -234,7 +262,5 @@ void ui_idle(void) {
     }
     ux_flow_init(0, ux_idle_flow, NULL);
 }
-
-////////////////////////////////////////////////////////////////////////////////
 
 #endif  // defined(TARGET_NANOS) || defined(TARGET_NANOX)

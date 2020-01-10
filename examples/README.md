@@ -3,19 +3,20 @@
 
 ## Requirements
 
--   Ledger Nano S Hardware Wallet
--   Python
--   [Ledger-Vagrant](https://github.com/sleepdefic1t/ledger-vagrant).
+* Ledger Nano S Hardware Wallet
+* Python
+* [Ledger-Vagrant](https://github.com/sleepdefic1t/ledger-vagrant).
 
 ## Running all examples
 
 ```shell
-sh ./all.sh
+sh ./examples/all.sh
 ```
 
 ## Running individual examples
 
 ```shell
-sh ./legacy.sh
-sh ./v2.sh
+sh ./examples/legacy.sh
+sh ./examples/v2.sh
+sh ./examples/message.sh
 ```

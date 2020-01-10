@@ -24,19 +24,19 @@ Vagrant.configure("2") do |config|
 
     # copy the rebuild script and app Makefile to vagrant machine
     config.vm.provision("file",
-                        source: "./rebuild.sh",
-                        destination: "/home/vagrant/apps/ledger-app-ark/")
+                        source: "./scripts/rebuild.sh",
+                        destination: "/home/vagrant/apps/ledger-app-ark/scripts/")
     config.vm.provision("file",
                         source: "./Makefile",
                         destination: "/home/vagrant/apps/ledger-app-ark/")
 
     # Copy Icons
     config.vm.provision("file",
-                        source: "./nanos_app_ark.gif",
-                        destination: "/home/vagrant/apps/ledger-app-ark/")
+                        source: "./icons/nanos_app_ark.gif",
+                        destination: "/home/vagrant/apps/ledger-app-ark/icons/")
     config.vm.provision("file",
-                        source: "./nanox_app_ark.gif",
-                        destination: "/home/vagrant/apps/ledger-app-ark/")
+                        source: "./icons/nanox_app_ark.gif",
+                        destination: "/home/vagrant/apps/ledger-app-ark/icons/")
 
     # VM specific configs
     config.vm.provider "virtualbox" do |v|
@@ -55,6 +55,6 @@ Vagrant.configure("2") do |config|
 
     # Shell provisioning
     config.vm.provision "shell" do |s|
-        s.path = "provision/setup.sh"
+        s.path = "scripts/provision.sh"
     end
 end

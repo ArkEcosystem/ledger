@@ -1,20 +1,46 @@
 /*******************************************************************************
-*   Ark Wallet
-*   (c) 2017 Ledger
-*   (c) ARK Ecosystem
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-********************************************************************************/
+ * This file is part of the ARK Ledger App.
+ *
+ * Copyright (c) ARK Ecosystem <info@ark.io>
+ *
+ * The MIT License (MIT)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to
+ * deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ * 
+ * -----
+ * 
+ * Parts of this software are based on Ledger Nano SDK
+ * 
+ * (c) 2017 Ledger
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 
 #ifndef ARK_UTILS_UNPACK_H
 #define ARK_UTILS_UNPACK_H
@@ -56,13 +82,11 @@ static const uint64_t U4_SHIFT      = 32ULL;
      (((uint16_t)(((src)[((offset) + U1_SIZE)])         & U1_MAX)   << U1_SHIFT)))      \
                                                         & U2_MAX)
 
-////////////////////////////////////////////////////////////////////////////////
 #define U4LE(src, offset)                                                               \
     ((((uint32_t)((U2LE((src), (offset)))               & U2_MAX))                  |   \
      (((uint32_t)((U2LE((src), ((offset) + U2_SIZE)))   & U2_MAX)   << U2_SHIFT)))      \
                                                         & U4_MAX)
 
-////////////////////////////////////////////////////////////////////////////////
 #define U8LE(src, offset)                                                               \
     ((((uint64_t)((U4LE((src), (offset)))               & U4_MAX))                  |   \
      (((uint64_t)((U4LE((src), ((offset) + U4_SIZE)))   & U4_MAX)   << U4_SHIFT)))      \

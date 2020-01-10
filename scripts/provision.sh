@@ -44,7 +44,7 @@ if [ ! -d "/opt/bolos/nanos-secure-sdk" ]; then
 fi
 
 echo "Finetuning rights for USB access"
-sudo bash /vagrant/provision/udev.sh
+sudo bash /vagrant/scripts/udev.sh
 usermod -a -G plugdev vagrant
 
 echo "Setting up bash profile"

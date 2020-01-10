@@ -3,27 +3,27 @@
 
 ## Signed Json Payload
 
-```javascript
+```json
 {
-	"version": 2,
-	"network": 23,
-	"type": 8,
-	"nonce": "2",
-	"senderPublicKey": "020d272fab67c179a9e4df4d006344d3ca47fb531b4246b483373940f0603a9216",
-	"fee": "10000000",
-	"amount": "1",
-	"recipientId": "ATNGUiu6sYRb7MXtdcVc7KjoyM6TdfuoC1",
-	"asset": {
-		"lock": {
-			"secretHash": "09b9a28393efd02fcd76a21b0f0f55ba2aad8f3640ff8cae86de033a9cfbd78c",
-			"expiration": {
-				"type": 1,
-				"value": 78740307
-			}
-		}
-	},
-	"signature": "11b1c06b4e5ba7c196f6f36fca2540275173a472e61581e949cd24a7cf5ee98af6a74f3c919f9b82a2e65b51b737bdf22f7a08ffcf52b88dc4a16d6ac5c10bfe",
-	"id": "f84efeab77224af8959301a7185597a7cfbfbc9a4d99cb021af62f3714feb9d3"
+ "version": 2,
+ "network": 23,
+ "type": 8,
+ "nonce": "2",
+ "senderPublicKey": "020d272fab67c179a9e4df4d006344d3ca47fb531b4246b483373940f0603a9216",
+ "fee": "10000000",
+ "amount": "1",
+ "recipientId": "ATNGUiu6sYRb7MXtdcVc7KjoyM6TdfuoC1",
+ "asset": {
+    "lock": {
+        "secretHash": "09b9a28393efd02fcd76a21b0f0f55ba2aad8f3640ff8cae86de033a9cfbd78c",
+        "expiration": {
+            "type": 1,
+            "value": 78740307
+        }
+    }
+ },
+ "signature": "11b1c06b4e5ba7c196f6f36fca2540275173a472e61581e949cd24a7cf5ee98af6a74f3c919f9b82a2e65b51b737bdf22f7a08ffcf52b88dc4a16d6ac5c10bfe",
+ "id": "f84efeab77224af8959301a7185597a7cfbfbc9a4d99cb021af62f3714feb9d3"
 }
 ```
 
@@ -56,6 +56,5 @@ ff02170100000008000200000000000000020d272fab67c179a9e4df4d006344d3ca47fb531b4246
 ## Example Ledger Payload
 
 ```shell
-python examples/example_helper.py --tx ff02170100000008000200000000000000020d272fab67c179a9e4df4d006344d3ca47fb531b4246b483373940f0603a9216809698000000000000010000000000000009b9a28393efd02fcd76a21b0f0f55ba2aad8f3640ff8cae86de033a9cfbd78c01537bb104177f2a95c7076ea278776d8fcecc5b18e588976da6
+python3 examples/example_helper.py --tx ff02170100000008000200000000000000020d272fab67c179a9e4df4d006344d3ca47fb531b4246b483373940f0603a9216809698000000000000010000000000000009b9a28393efd02fcd76a21b0f0f55ba2aad8f3640ff8cae86de033a9cfbd78c01537bb104177f2a95c7076ea278776d8fcecc5b18e588976da6
 ```
-> _note that signature bytes are removed (i.e. there's no need to sign a signed-transaction)._
