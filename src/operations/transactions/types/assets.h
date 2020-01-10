@@ -29,12 +29,9 @@
 
 #include "transactions/types/transfer.h"
 #include "transactions/types/second_signature.h"
-/* #include "transactions/types/delegate_registration.h" */
 #include "transactions/types/vote.h"
-/* #include "transactions/types/multi_signature.h" */
+/* #include "transactions/types/multi_signature.h" */  // <- Under Development
 #include "transactions/types/ipfs.h"
-/* #include "transactions/types/multi_payment.h" */
-/* #include "transactions/types/delegate_resignation.h" */
 #include "transactions/types/htlc_lock.h"
 #include "transactions/types/htlc_claim.h"
 #include "transactions/types/htlc_refund.h"

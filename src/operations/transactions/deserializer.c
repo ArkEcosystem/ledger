@@ -196,15 +196,27 @@ static bool deserializeAsset(Transaction *transaction,
             return deserializeSecondSignature(
                     &transaction->asset.secondSignature, buffer, size);
 
+        // Delegate Registration
+        /* case DELEGATE_REGISTRATION_TYPE: */      // <- Not Supported
+
         // Vote
         case VOTE_TYPE:
             return deserializeVote(
                     &transaction->asset.vote, buffer, size);
 
+        // MultiSignature Registration
+        /* case MULTI_SIGNATURE_TYPE: */            // <- Under Development
+
         // Ipfs
         case IPFS_TYPE:
             return deserializeIpfs(
                     &transaction->asset.ipfs, buffer, size);
+
+        // MultiPayment
+        /* case MULTI_PAYMENT_TYPE: */              // <- Not Supported
+
+        // Delegate Resignation
+        /* case DELEGATE_RESIGNATION_TYPE: */       // <- Not Supported
 
         // Htlc Lock
         case HTLC_LOCK_TYPE:

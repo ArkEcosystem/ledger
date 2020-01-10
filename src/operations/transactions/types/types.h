@@ -50,18 +50,19 @@
 //
 // - MultiSignature Registration        (type 4)
 //   *Under Development*
-//   Ledger can't support max MultiSig.
+//   Handling and display logic need careful consideration.
 //   Schnorr also needs implemented.
 //
 // - MultiPayment                       (type 6)
-//   *Under Development*
-//   Ledger can't support max MultiPayment.
+//   *Not Supported*
+//   Max MultiPayment won't fit on Ledger hardware.
 //
 // - Delegate Resignation               (type 7)
 //   *Not Supported*
 //   Delegates Forge;
 //   forging can't be done using a Ledger.
 //
+// for more info, see the "unsupported" section of the ARK Ledger App docs.
 // ---
 enum TransactionTypes {
     TRANSFER_TYPE                   = 0,
