@@ -106,92 +106,102 @@ extern union {
 
 ////////////////////////////////////////////////////////////////////////////////
 static void handlePublicKeyContext(volatile unsigned int *tx) {
-    uint8_t p1 = G_io_apdu_buffer[OFFSET_P1];
-    uint8_t p2 = G_io_apdu_buffer[OFFSET_P2];
-    uint8_t *dataBuffer = &G_io_apdu_buffer[OFFSET_CDATA];
+    uint8_t     p1 = G_io_apdu_buffer[OFFSET_P1];
+    uint8_t     p2 = G_io_apdu_buffer[OFFSET_P2];
+    uint8_t     *dataBuffer = &G_io_apdu_buffer[OFFSET_CDATA];
 
-    uint8_t privateKeyData[HASH_32_LEN + 1];
-    uint32_t bip32Path[ADDRESS_MAX_BIP32_PATH];
-    uint32_t i;
-    uint8_t bip32PathLength = *(dataBuffer++);
-    cx_ecfp_private_key_t privateKey;
-    uint8_t p2Chain = p2 & 0x3F;
-    cx_curve_t curve;
-    uint8_t addressLength;
- 
-    if ((bip32PathLength < 0x01) || (bip32PathLength > ADDRESS_MAX_BIP32_PATH)) {
+    uint8_t     bip32PathLength = *(dataBuffer++);
+    uint32_t    bip32Path[ADDRESS_MAX_BIP32_PATH];
+
+    uint8_t                 privateKeyData[HASH_32_LEN];
+    cx_ecfp_private_key_t   privateKey;
+    cx_ecfp_public_key_t    publicKey;
+
+    uint8_t     p2Chain = p2 & 0x3F;
+    cx_curve_t  curve;
+
+    if (bip32PathLength < 1 || bip32PathLength > ADDRESS_MAX_BIP32_PATH) {
         // Invalid path
         THROW(0x6A80);
     }
 
-    if ((p1 != P1_CONFIRM) && (p1 != P1_NON_CONFIRM)) {
+    if (p1 != P1_CONFIRM && p1 != P1_NON_CONFIRM) {
+        // p1 must be set.
         THROW(0x6B00);
     }
 
-    if ((p2Chain != P2_CHAINCODE) && (p2Chain != P2_NO_CHAINCODE)) {
+    if (p2Chain != P2_CHAINCODE && p2Chain != P2_NO_CHAINCODE) {
         THROW(0x6B01);
     }
 
     if (p2 != P2_SECP256K1) {
+        // Only SECP256K1 is currently supported.
         THROW(0x6B00);
     }
 
     curve = CX_CURVE_256K1;
 
-    for (i = 0; i < bip32PathLength; ++i) {
+    // Set the HD path.
+    for (uint32_t i = 0; i < bip32PathLength; ++i) {
         bip32Path[i] = U4BE(dataBuffer, 0U);
         dataBuffer += 4U;
     }
 
     tmpCtx.publicKey.needsChainCode = (p2Chain == P2_CHAINCODE);
 
-    os_perso_derive_node_bip32(CX_CURVE_256K1,
-                               bip32Path, bip32PathLength,
+    // Derive the privateKey using the HD path.
+    os_perso_derive_node_bip32(curve,
+                               bip32Path,
+                               bip32PathLength,
                                privateKeyData,
                                (tmpCtx.publicKey.needsChainCode
                                         ? tmpCtx.publicKey.chainCode
                                         : NULL));
 
+    // Initialize the privateKey to generate the publicKey,
+    // clearing the private data sources after each respective use.
     cx_ecfp_init_private_key(curve, privateKeyData, HASH_32_LEN, &privateKey);
-
-    cx_ecfp_generate_pair(curve, &tmpCtx.publicKey.data, &privateKey, 1U);
-
-    explicit_bzero(&privateKey, sizeof(privateKey));
     explicit_bzero(&privateKeyData, sizeof(privateKeyData));
 
-    compressPublicKey(&tmpCtx.publicKey.data,
-                      privateKeyData,
-                      PUBLICKEY_COMPRESSED_LEN);
+    cx_ecfp_generate_pair(curve, &publicKey, &privateKey, 1U);
+    explicit_bzero(&privateKey, sizeof(privateKey));
 
-    addressLength = encodeBase58PublicKey(privateKeyData,
-                                          HASH_32_LEN + 1,
-                                          tmpCtx.publicKey.address,
-                                          sizeof(tmpCtx.publicKey.address),
-                                          TOKEN_NETWORK_BYTE,
-                                          0);
-    tmpCtx.publicKey.address[addressLength] = '\0';
+    // Compress and write the publicKey to the APDU buffer.
+    // (compressedPublicKeyLength(33) + publicKey)
+    G_io_apdu_buffer[0] = (uint8_t)PUBLICKEY_COMPRESSED_LEN;
+    *tx += sizeof(uint8_t);
+    *tx += compressPublicKey(publicKey.W, &G_io_apdu_buffer[sizeof(uint8_t)]);
 
-    if (p1 == P1_NON_CONFIRM) {
-        *tx = setPublicKeyContext(&tmpCtx.publicKey, G_io_apdu_buffer);
-        THROW(0x9000);
+    // Clear the publicKey object.
+    explicit_bzero(&publicKey, sizeof(publicKey));
+
+    // Copy the chaincode if needed.
+    if (tmpCtx.publicKey.needsChainCode) {
+        bytecpy(&G_io_apdu_buffer[*tx], tmpCtx.publicKey.chainCode, HASH_32_LEN);
+        *tx += HASH_32_LEN;
     }
+
+    // Displaying PublicKey on-device not supported.
+    // Non-confirm, throw finished flag.
+    // Else, throw an error.
+    p1 == P1_NON_CONFIRM ? THROW(0x9000) : THROW(0x6B00);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 static void handleSigningContext() {
-    uint8_t p1 = G_io_apdu_buffer[OFFSET_P1];
-    uint8_t p2 = G_io_apdu_buffer[OFFSET_P2];
-    uint8_t *workBuffer = &G_io_apdu_buffer[OFFSET_CDATA];
-    uint16_t dataLength = G_io_apdu_buffer[OFFSET_LC];
+    uint8_t     p1 = G_io_apdu_buffer[OFFSET_P1];
+    uint8_t     p2 = G_io_apdu_buffer[OFFSET_P2];
 
-    uint32_t i;
+    uint16_t    dataLength = G_io_apdu_buffer[OFFSET_LC];
+    uint8_t     *workBuffer = &G_io_apdu_buffer[OFFSET_CDATA];
+
     bool last = (p1 & P1_LAST);
     p1 &= 0x7F;
 
     if (p1 == P1_FIRST) {
         tmpCtx.signing.pathLength = workBuffer[0];
-        if ((tmpCtx.signing.pathLength < 0x01) ||
-            (tmpCtx.signing.pathLength > ADDRESS_MAX_BIP32_PATH)) {
+        if (tmpCtx.signing.pathLength < 1 ||
+            tmpCtx.signing.pathLength > ADDRESS_MAX_BIP32_PATH) {
             //Invalid path
             THROW(0x6A80);
         }
@@ -199,7 +209,7 @@ static void handleSigningContext() {
         workBuffer++;
         dataLength--;
 
-        for (i = 0U; i < tmpCtx.signing.pathLength; ++i) {
+        for (uint32_t i = 0U; i < tmpCtx.signing.pathLength; ++i) {
             tmpCtx.signing.bip32Path[i] = U4BE(workBuffer, 0U);
             workBuffer += 4U;
             dataLength -= 4U;
@@ -220,7 +230,7 @@ static void handleSigningContext() {
         bytecpy(tmpCtx.signing.data, workBuffer, dataLength);
     }
     else if (p1 == P1_MORE) {
-        if ((tmpCtx.signing.dataLength + dataLength) > MAX_RAW_OPERATION) {
+        if (tmpCtx.signing.dataLength + dataLength > MAX_RAW_OPERATION) {
             THROW(0x6A80);
         }
 

@@ -71,8 +71,9 @@ unsigned int ioApprove(const bagl_element_t *e) {
     explicit_bzero(&displayCtx, sizeof(displayCtx));
 
     uint32_t tx = 0;
-    cx_ecfp_private_key_t privateKey;
-    uint8_t privateKeyData[HASH_64_LEN];
+
+    uint8_t                 privateKeyData[HASH_32_LEN];
+    cx_ecfp_private_key_t   privateKey;
 
     os_perso_derive_node_bip32(CX_CURVE_256K1,
                                tmpCtx.signing.bip32Path,
@@ -87,8 +88,6 @@ unsigned int ioApprove(const bagl_element_t *e) {
 
     explicit_bzero(privateKeyData, sizeof(privateKeyData));
 
-    setPublicKeyContext(&tmpCtx.publicKey, G_io_apdu_buffer);
-
     if (tmpCtx.signing.curve == CX_CURVE_256K1) {
         uint8_t hash[CX_SHA256_SIZE];
         hash256(tmpCtx.signing.data,
@@ -101,6 +100,7 @@ unsigned int ioApprove(const bagl_element_t *e) {
     }
 
     explicit_bzero(&privateKey, sizeof(privateKey));
+    explicit_bzero(&tmpCtx, sizeof(tmpCtx));
 
     G_io_apdu_buffer[tx++] = 0x90;
     G_io_apdu_buffer[tx++] = 0x00;
@@ -118,6 +118,7 @@ unsigned int ioApprove(const bagl_element_t *e) {
 ////////////////////////////////////////////////////////////////////////////////
 unsigned int ioCancel(const bagl_element_t *e) {
     explicit_bzero(&displayCtx, sizeof(displayCtx));
+    explicit_bzero(&tmpCtx, sizeof(tmpCtx));
 
     G_io_apdu_buffer[0] = 0x69;
     G_io_apdu_buffer[1] = 0x85;
@@ -134,6 +135,9 @@ unsigned int ioCancel(const bagl_element_t *e) {
 
 ////////////////////////////////////////////////////////////////////////////////
 unsigned int ioExit(const bagl_element_t *e) {
+    explicit_bzero(&displayCtx, sizeof(displayCtx));
+    explicit_bzero(&tmpCtx, sizeof(tmpCtx));
+
     // Go back to the dashboard
     os_sched_exit(0);
 
