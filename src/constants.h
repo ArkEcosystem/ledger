@@ -47,6 +47,7 @@ static const size_t ADDRESS_LEN                     = 34;
 static const size_t ADDRESS_HASH_LEN                = 21;
 static const size_t ADDRESS_MAX_BIP32_PATH          = 10;
 static const size_t PUBLICKEY_COMPRESSED_LEN        = 33;
+static const size_t PUBLICKEY_UNCOMPRESSED_LEN      = 65;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Labels

@@ -79,7 +79,7 @@ args = parser.parse_args()
 
 # Use default path if not provided.
 if args.path is None:
-    args.path="44'/111'/0'/0/0"
+    args.path = "44'/1'/0'/0/0"
 
 
 # Check that one and only one payload operation is called.

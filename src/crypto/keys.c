@@ -29,49 +29,36 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <os.h>
-
 #include "constants.h"
 
 #include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void compressPublicKey(const cx_ecfp_public_key_t *publicKey,
-                       uint8_t *out,
-                       size_t outSize) {
-    if (outSize != PUBLICKEY_COMPRESSED_LEN) {
-        THROW(EXCEPTION_OVERFLOW);
+// Uncompressed Key must be 65-bytes.           (0x04 + (x,y))
+// Compressed output buffer must be 33-bytes.   (0x02/0x03 + (x))
+//
+// returns the compressed publicKey length if successful.
+//
+// ---
+size_t compressPublicKey(const uint8_t *uncompressed, uint8_t *compressed) {
+    if (uncompressed == NULL || compressed == NULL) {
+        return 0;
     }
 
-    if (publicKey->curve == CX_CURVE_256K1) {
-        out[0] = ((publicKey->W[HASH_64_LEN] & 1U) ? 0x03 : 0x02);
-        bytecpy(out + 1U, publicKey->W + 1U, HASH_32_LEN);
-    }
-    else {
-        THROW(EXCEPTION);
-    }
-}
+    const uint8_t EC_PUBLICKEY_EVEN_PREFIX          = 0x02;
+    const uint8_t EC_PUBLICKEY_ODD_PREFIX           = 0x03;
+    const uint8_t EC_PUBLICKEY_UNCOMPRESSED_PREFIX  = 0x04;
 
-////////////////////////////////////////////////////////////////////////////////
-uint32_t setPublicKeyContext(PublicKeyContext *ctx, uint8_t *apduBuffer) {
-    uint32_t tx = 0;
-    apduBuffer[tx++] = PUBLICKEY_COMPRESSED_LEN;
-
-    compressPublicKey(&ctx->data,
-                      &apduBuffer[tx],
-                      PUBLICKEY_COMPRESSED_LEN);
-
-    tx += PUBLICKEY_COMPRESSED_LEN;
-
-    apduBuffer[tx++] = ADDRESS_LEN;
-
-    bytecpy(&apduBuffer[tx], ctx->address, ADDRESS_LEN);
-    tx += ADDRESS_LEN;
-
-    if (ctx->needsChainCode) {
-        bytecpy(&apduBuffer[tx], ctx->chainCode, HASH_32_LEN);
-        tx += HASH_32_LEN;
+    if (uncompressed[0] != EC_PUBLICKEY_UNCOMPRESSED_PREFIX) {
+        return 0;
     }
 
-    return tx;
+    // prepend the 'x'-value to represent whether 'y' is odd or even.
+    compressed[0] = ((uncompressed[HASH_64_LEN] & 1)
+            ? EC_PUBLICKEY_ODD_PREFIX
+            : EC_PUBLICKEY_EVEN_PREFIX);
+
+    bytecpy(&compressed[1], &uncompressed[1], HASH_32_LEN);
+
+    return PUBLICKEY_COMPRESSED_LEN;
 }
