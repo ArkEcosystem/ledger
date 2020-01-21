@@ -22,36 +22,65 @@ i.e. we _can_ use Python & the [ledgerblue CLI](https://github.com/LedgerHQ/blue
 The projects `src/`, `example/`, and `glyphs/` folders are configured to sync with the Vagrant shell, so any changes to files in those directories will be updated to the development environment accordingly.  
 At this time, the rebuild script and the Makefile do not sync. Modifying those files requires calling `vagrant halt && vagrant up --provision` from outside the shell.
 
+---
+
 ### Requirements
 
 * Ledger Nano S
 * Vagrant
 * VirtualBox
 
+---
+
 ### Installing Vagrant and VirtualBox
 
-**Linux**:
+#### Linux
 
+1) **Download and run the installer for VirtualBox `6.0.14`**:  
+  `https://download.virtualbox.org/virtualbox/6.0.14/VirtualBox-6.0.14-133895-Linux_amd64.run`
+2) **Download and install the Oracle VM VirtualBox Extension Pack `6.0.14`**:  
+  `https://download.virtualbox.org/virtualbox/6.0.14/Oracle_VM_VirtualBox_Extension_Pack-6.0.14.vbox-extpack`
+3) **Download and run the Vagrant `2.2.6` installer**:  
+  `https://releases.hashicorp.com/vagrant/2.2.6/vagrant_2.2.6_linux_amd64.zip`
+
+>System-specific packages can be found at the following links:
+>
+> * `https://www.virtualbox.org/wiki/Download_Old_Builds_6_0`
+> * `https://www.vagrantup.com/downloads.html`
+
+<!-- At this time, the most recent version of virtualbox (6.1.2) is incompatible with vagrant.
+The manual package installation steps outlined above are tested as working.
 ```shell
 sudo apt install virtualbox
 sudo apt install vagrant
-```
+``` -->
 
-**macOS**:
+#### macOS
 
+1) **Download and run the installer for VirtualBox `6.0.14`**:  
+  `https://download.virtualbox.org/virtualbox/6.0.14/VirtualBox-6.0.14-133895-OSX.dmg`
+2) **Download and install the Oracle VM VirtualBox Extension Pack `6.0.14`**:  
+  `https://download.virtualbox.org/virtualbox/6.0.14/Oracle_VM_VirtualBox_Extension_Pack-6.0.14.vbox-extpack`
+3) **Download and run the Vagrant `2.2.6` installer**:  
+  `https://releases.hashicorp.com/vagrant/2.2.6/vagrant_2.2.6_x86_64.dmg`
+
+<!-- At this time, the most recent version of virtualbox (6.1.2) is incompatible with vagrant.
+The manual package installation steps outlined above are tested as working.
 ```shell
 brew cask install virtualbox
 brew cask install vagrant
-```
+``` -->
 
-**Windows**:
+#### Windows
 
-1) Download and run the installer:
+1) **Download and run the installer**:  
   `https://download.virtualbox.org/virtualbox/6.0.10/VirtualBox-6.0.10-132072-Win.exe`
-2) Download and install the Oracle VM VirtualBox Extension Pack:
+2) **Download and install the Oracle VM VirtualBox Extension Pack**:  
   `https://download.virtualbox.org/virtualbox/6.0.10/Oracle_VM_VirtualBox_Extension_Pack-6.0.10.vbox-extpack`
-3) Download and run the Vagrant installer:
+3) **Download and run the Vagrant installer**:  
   `https://releases.hashicorp.com/vagrant/2.2.5/vagrant_2.2.5_x86_64.msi`
+
+---
 
 ### Initializing the Ledger-Vagrant Machine
 
@@ -61,11 +90,15 @@ vagrant up
 
 _note: setup will take a few minutes to provision._
 
+---
+
 ### Connecting to the Vagrant machine
 
 ```shell
 vagrant ssh
 ```
+
+---
 
 ### Vagrant Troubleshooting
 
@@ -82,6 +115,8 @@ vagrant ssh
 * Try another USB Cable. Prefer the Ledger-supplied cable.
     Not all USB cables are created equal; and though rare, compromised cables have been found in the wild.
 
+---
+
 ## Building and Flashing
 
 Connect the Ledger device in before flashing.
@@ -94,7 +129,7 @@ The Build and Flash commands are executed from project root:
 
 **ledgerblue CLI**:
 
-*`ledger-app-ark`
+* `ledger-app-ark`
 
 ### Building the Ledger ARK app
 
@@ -116,6 +151,8 @@ It cleans, builds, deletes and re-flashes the app.
 ```shell
 sh ./scripts/rebuild.sh
 ```
+
+---
 
 ## Debugging
 
