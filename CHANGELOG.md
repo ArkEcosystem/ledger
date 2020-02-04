@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 -   implement v2 Transactions ([#27])
 -   added VendorField display support ([#29])
 -   added build options and documentation ([#32])
+-   added schnorr signatures ([#63])
 
 ### Changed
 -   merged updates from LedgerHQ/ledger-app-ark ([#23])
@@ -31,4 +32,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#51]: https://github.com/ArkEcosystem/ledger/pull/51
 [#53]: https://github.com/ArkEcosystem/ledger/pull/53
 [#55]: https://github.com/ArkEcosystem/ledger/pull/53
+[#63]: https://github.com/ArkEcosystem/ledger/pull/63
 [unreleased]: https://github.com/ArkEcosystem/ledger/compare/master...develop

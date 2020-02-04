@@ -22,47 +22,17 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ * 
  ******************************************************************************/
 
-#include "crypto/signing.h"
+#ifndef ARK_CRYPTO_SCHNORR_BCRYPTO_410_H
+#define ARK_CRYPTO_SCHNORR_BCRYPTO_410_H
 
 #include <stdint.h>
 
-#include <os.h>
-#include <cx.h>
-
-#include "constants.h"
-
-#include "schnorr_bcrypto_410.h"
-
 ////////////////////////////////////////////////////////////////////////////////
-uint32_t signEcdsa(const cx_ecfp_private_key_t *privateKey,
-                   const uint8_t *hash,
-                   uint8_t *signature,
-                   size_t signatureSize) {
-    if (privateKey == NULL ||
-        hash == NULL ||
-        signature == NULL ||
-        signatureSize < SIG_ECDSA_MIN_LEN ||
-        signatureSize > SIG_ECDSA_MAX_LEN) {
-        return 0;
-    }
+uint32_t schnorr_sign_bcrypto_410(const uint8_t *privateKey,
+                                  const uint8_t *hash,
+                                  uint8_t *signature);
 
-    return cx_ecdsa_sign(privateKey,
-                         CX_RND_RFC6979 | CX_LAST, CX_SHA256,
-                         hash, HASH_32_LEN,
-                         signature, signatureSize,
-                         NULL);
-} 
-
-////////////////////////////////////////////////////////////////////////////////
-uint32_t signSchnorr(const cx_ecfp_private_key_t *privateKey,
-                     const uint8_t *hash,
-                     uint8_t *signature) {
-
-    if (privateKey == NULL || hash == NULL || signature == NULL) {
-        return 0;
-    }
-
-    return schnorr_sign_bcrypto_410(privateKey->d, hash, signature);
-}
+#endif  // ARK_CRYPTO_SCHNORR_BCRYPTO_410_H

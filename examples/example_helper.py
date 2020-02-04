@@ -53,6 +53,22 @@ import struct
 chunkSize   = 255
 payloadMax  = 2 * chunkSize
 
+# bip32 Path: default ARK Mainnet
+default_path = "44'/111'/0'/0/0"
+
+# instructions
+op_get_publickey    = "02"
+op_sign_tx          = "04"
+op_sign_message     = "08"
+
+# APDU 'p1'
+p1_more = "00"
+p1_last = "80"
+
+# signing flags
+flag_ecdsa          = "40"
+flag_schnorr_leg    = "50"
+
 
 # Packs the BIP32 Path.
 def parse_bip32_path(path):
@@ -71,15 +87,16 @@ def parse_bip32_path(path):
 
 # Parse Helper Arguments.
 parser = argparse.ArgumentParser()
-parser.add_argument('--path', help="BIP 32 path to sign with")
-parser.add_argument('--message', help="Message to sign, hex encoded")
-parser.add_argument('--tx', help="TX to sign, hex encoded")
+parser.add_argument('--path',       help="BIP 32 path to sign with")
+parser.add_argument('--message',    help="Message to sign, hex encoded")
+parser.add_argument('--tx',         help="TX to sign, hex encoded")
+parser.add_argument('--ecdsa',      help="Use Ecdsa Signatures, (default is Schnorr)", action='store_true')
 args = parser.parse_args()
 
 
 # Use default path if not provided.
 if args.path is None:
-    args.path = "44'/1'/0'/0/0"
+    args.path = default_path
 
 
 # Check that one and only one payload operation is called.
@@ -89,18 +106,22 @@ if args.tx is None and args.message is None or          \
 
 
 # Set the payload
-if args.message is not None:
-    payload = binascii.unhexlify(args.message)
-    operation = "08"
-elif args.tx is not None:
+if args.tx is not None:
     payload = bytearray.fromhex(args.tx)
-    operation = "04"
+    operation = op_sign_tx
+elif args.message is not None:
+    payload = binascii.unhexlify(args.message)
+    operation = op_sign_message
 
 
 # Check that the payload is not larger than the current max.
 if len(payload) > payloadMax:
     raise Exception('Payload size:', len(payload),
                     'exceeds max length:', payloadMax)
+
+
+# Signing Algorithm, (default is Schnorr)
+sig_algo = flag_schnorr_leg if args.ecdsa is False else flag_ecdsa
 
 
 # Set the BIP32 Path.
@@ -115,15 +136,15 @@ pathLength = len(donglePath) + 1
 if len(payload) > chunkSize - pathLength:
     chunk1 = payload[0 : chunkSize - pathLength]
     chunk2 = payload[chunkSize - pathLength:]
-    p1 = "00"
+    p1 = p1_more
 else:
     chunk1 = payload
     chunk2 = None
-    p1 = "80"
+    p1 = p1_last
 
 
 # Build the APDU Payload
-apdu = bytearray.fromhex("e0" + operation + p1 + "40")
+apdu = bytearray.fromhex("e0" + operation + p1 + sig_algo)
 apdu.append(pathLength + len(chunk1))
 apdu.append(pathLength // 4)
 apdu += donglePath + chunk1
@@ -134,7 +155,7 @@ result = dongle.exchange(bytes(apdu))
 
 # Send second data chunk if present
 if chunk2 is not None:
-    apdu = bytearray.fromhex("e0" + operation + "8140")
+    apdu = bytearray.fromhex("e0" + operation + "80" + sig_algo)
     apdu.append(len(chunk2))
     apdu += chunk2
     result = dongle.exchange(bytes(apdu))

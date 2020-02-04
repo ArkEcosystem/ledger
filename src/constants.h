@@ -64,6 +64,12 @@ static const char *const LABEL_TO       = "To";
 static const size_t LABEL_TO_SIZE       = 3;
 
 ////////////////////////////////////////////////////////////////////////////////
+// Signatures
+static const size_t SIG_ECDSA_MIN_LEN   = 64;
+static const size_t SIG_ECDSA_MAX_LEN   = 72;
+static const size_t SIG_SCHNORR_LEN     = HASH_64_LEN;
+
+////////////////////////////////////////////////////////////////////////////////
 // Token
 static const size_t TOKEN_DECIMALS          = 8;
 static const char *const TOKEN_NAME         = "ARK ";

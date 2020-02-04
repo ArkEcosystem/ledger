@@ -52,7 +52,7 @@
 uint8_t G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
 ////////////////////////////////////////////////////////////////////////////////
-uint8_t io_event(uint8_t channel) {
+uint8_t io_event(unsigned char channel) {
     // nothing done with the event
     // throw an error on the transport layer if needed.
 
@@ -100,7 +100,7 @@ uint8_t io_event(uint8_t channel) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-uint16_t io_exchange_al(uint8_t channel, uint16_t tx_len) {
+uint16_t io_exchange_al(unsigned char channel, unsigned short tx_len) {
     switch (channel & ~(IO_FLAGS)) {
         case CHANNEL_KEYBOARD: break;
 
