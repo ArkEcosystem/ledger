@@ -214,7 +214,7 @@ uint32_t schnorr_sign_bcrypto_410(const uint8_t *privateKey,
     cx_ecfp_scalar_mult(CX_CURVE_SECP256K1, A, sizeof(A), a, d_len);
 
     // Compress 'A'
-    A[0] = (A[PUBLICKEY_COMPRESSED_LEN] & 1) == 1 ? 0x03 : 0x02;
+    A[0] = (A[HASH_64_LEN] & 1) == 1 ? 0x03 : 0x02;
 
     ////////////////////////////////////////////////////////////
     // e = H( R.x || A.x || m ) mod n
