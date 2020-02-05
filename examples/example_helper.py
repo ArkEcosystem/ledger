@@ -77,7 +77,7 @@ parser.add_argument('--tx', help="TX to sign, hex encoded")
 args = parser.parse_args()
 
 
-# Use default path if not provided.
+# Use default (testnet) path if not provided.
 if args.path is None:
     args.path = "44'/1'/0'/0/0"
 
