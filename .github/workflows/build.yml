@@ -19,11 +19,12 @@ jobs:
         run: |
           sudo dpkg --add-architecture i386
           sudo apt-get update  > /dev/null
-          sudo apt-get install git curl python-dev python-pip python-pil python-setuptools zlib1g-dev libjpeg-dev libudev-dev build-essential libusb-1.0-0-dev -y > /dev/null
+          sudo apt-get install git curl python-dev python3-pip python-setuptools zlib1g-dev libjpeg-dev libudev-dev build-essential libusb-1.0-0-dev -y > /dev/null
           sudo apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386 libc6-dev-i386 -y > /dev/null
-          pip install wheel
-          pip install --upgrade setuptools
-          pip install ledgerblue
+          pip3 install wheel
+          pip3 install --upgrade setuptools
+          pip3 install ledgerblue
+          pip3 install Pillow
 
       - name: Installing Compilers
         run: |
@@ -49,7 +50,7 @@ jobs:
           cd /opt/bolos/
           git clone https://github.com/LedgerHQ/nanos-secure-sdk.git
           cd nanos-secure-sdk/
-          git -c advice.detachedHead=false checkout tags/nanos-1553
+          git -c advice.detachedHead=false checkout tags/nanos-160
 
       - name: Building the Ledger ARK app
         run: make
