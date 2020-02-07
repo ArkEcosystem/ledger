@@ -94,7 +94,7 @@ parser.add_argument('--ecdsa',      help="Use Ecdsa Signatures, (default is Schn
 args = parser.parse_args()
 
 
-# Use default path if not provided.
+# Use default (testnet) path if not provided.
 if args.path is None:
     args.path = default_path
 

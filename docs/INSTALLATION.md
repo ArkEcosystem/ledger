@@ -80,6 +80,14 @@ brew cask install vagrant
 3) **Download and run the Vagrant installer**:  
   `https://releases.hashicorp.com/vagrant/2.2.5/vagrant_2.2.5_x86_64.msi`
 
+>note:
+>
+>Vagrant on Windows requires using **PowerShell**.
+>
+>**VSCode** also uses Windows Powershell as its default terminal;  
+>it is the recommended development environment.
+> - [VSCode Download Page](https://code.visualstudio.com/download)
+
 ---
 
 ### Initializing the Ledger-Vagrant Machine
