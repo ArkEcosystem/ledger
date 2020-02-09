@@ -57,8 +57,9 @@ void displayIpfs(const Transaction *transaction) {
                 TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
 
     // DAG
-    encodeBase58((uint8_t *)transaction->asset.ipfs.dag,
-                 transaction->asset.ipfs.length,
-                 (uint8_t *)displayCtx.extended_text,
-                 MAX_TEXT_LEN);
+    size_t dagLen = MAX_TEXT_LEN;
+    btchip_encode_base58(transaction->asset.ipfs.dag,
+                         transaction->asset.ipfs.length,
+                         displayCtx.extended_text,
+                         &dagLen);
 }
