@@ -50,6 +50,5 @@ uint32_t signEcdsa(const cx_ecfp_private_key_t *privateKey,
                              CX_RND_RFC6979 | CX_LAST, CX_SHA256,
                              hash, HASH_32_LEN,
                              signature);
-        signature[0] = 0x30;
     #endif
 } 
