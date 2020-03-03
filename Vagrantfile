@@ -1,10 +1,10 @@
 Vagrant.configure("2") do |config|
 
-    # Specify the base box
+    # Specify the OS VM Box
     config.vm.box = "ubuntu/bionic64"
     config.vm.box_version = "20190814.0.0"
 
-    # set the `app`, `examples`, `glyphs`, and `src` folders for syncing
+    # Sync the 'app', 'examples', 'glyphs', and 'src' directories
     config.vm.synced_folder("apps/", "/home/vagrant/apps/",
                             id: "appsdir",
                             :create => true,
@@ -22,11 +22,19 @@ Vagrant.configure("2") do |config|
                             :create => true,
                             type: "virtualbox")
 
-    # copy the scripts directory and app Makefile to vagrant machine
-    config.vm.synced_folder("scripts/", "/home/vagrant/apps/ledger-app-ark/scripts/",
-                            id: "scriptsdir",
-                            :create => true,
-                            type: "virtualbox")
+    # Copy scripts and the Makefile to the VM
+    config.vm.provision("file",
+                        source: "./scripts/rebuild.sh",
+                        destination: "/home/vagrant/apps/ledger-app-ark/scripts/")
+    config.vm.provision("file",
+                        source: "./scripts/rebuild_nanos.sh",
+                        destination: "/home/vagrant/apps/ledger-app-ark/scripts/")
+    config.vm.provision("file",
+                        source: "./scripts/rebuild_nanox.sh",
+                        destination: "/home/vagrant/apps/ledger-app-ark/scripts/")
+    config.vm.provision("file",
+                        source: "./scripts/udev.sh",
+                        destination: "/home/vagrant/apps/ledger-app-ark/scripts/")
     config.vm.provision("file",
                         source: "./Makefile",
                         destination: "/home/vagrant/apps/ledger-app-ark/")
@@ -39,22 +47,22 @@ Vagrant.configure("2") do |config|
                         source: "./icons/nanox_app_ark.gif",
                         destination: "/home/vagrant/apps/ledger-app-ark/icons/")
 
-    # VM specific configs
+    # VM configuration
     config.vm.provider "virtualbox" do |v|
         v.name = "ARK Ledger App Development Box"
         v.customize ["modifyvm", :id, "--memory", "1024"]
 
-        # Connect Ledger Nano S throug usb
+        # Configure the Ledger Nano S/X USB connection
         v.customize ["modifyvm", :id, "--usb", "on"]
         v.customize ["modifyvm", :id, "--usbehci", "on"]
         v.customize ["usbfilter", "add", "0",
                      "--target", :id,
-                     "--name", "Ledger Nano S",
+                     "--name", "Ledger Nano S/X",
                      "--manufacturer", "Ledger",
-                     "--product", "Nano S"]
+                     "--product", "Nano S/X"]
     end
 
-    # Shell provisioning
+    # Run the Provisioning script
     config.vm.provision "shell" do |s|
         s.path = "scripts/provision.sh"
     end
