@@ -57,7 +57,6 @@ printf "\n\n%s\n" "Setting up bash profile"
 echo "" >> /home/vagrant/.bashrc
 echo "# Custom variables for Ledger Development" >> /home/vagrant/.bashrc
 echo "export BOLOS_ENV=/opt/bolos/CC" >> /home/vagrant/.bashrc
-echo "export BOLOS_SDK=/opt/bolos/SDK/nanos-secure-sdk" >> /home/vagrant/.bashrc
 echo "export ARM_HOME=/opt/bolos/CC/gcc-arm-none-eabi-5_3-2016q1" >> /home/vagrant/.bashrc
 echo "" >> /home/vagrant/.bashrc
 echo "export PATH=\$PATH:\$ARM_HOME/bin" >> /home/vagrant/.bashrc
