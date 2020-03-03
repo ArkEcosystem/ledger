@@ -22,10 +22,11 @@ Vagrant.configure("2") do |config|
                             :create => true,
                             type: "virtualbox")
 
-    # copy the rebuild script and app Makefile to vagrant machine
-    config.vm.provision("file",
-                        source: "./scripts/rebuild.sh",
-                        destination: "/home/vagrant/apps/ledger-app-ark/scripts/")
+    # copy the scripts directory and app Makefile to vagrant machine
+    config.vm.synced_folder("scripts/", "/home/vagrant/apps/ledger-app-ark/scripts/",
+                            id: "scriptsdir",
+                            :create => true,
+                            type: "virtualbox")
     config.vm.provision("file",
                         source: "./Makefile",
                         destination: "/home/vagrant/apps/ledger-app-ark/")
