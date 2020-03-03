@@ -21,7 +21,7 @@ if [ ! -d "/opt/bolos" ]; then
     cd /opt/bolos/CC
     wget -q https://launchpad.net/gcc-arm-embedded/5.0/5-2016-q1-update/+download/gcc-arm-none-eabi-5_3-2016q1-20160330-linux.tar.bz2
     tar xjf gcc-arm-none-eabi-5_3-2016q1-20160330-linux.tar.bz2
-    ln -s /opt/bolos/gcc-arm-none-eabi-5_3-2016q1/bin/arm-none-eabi-gcc /usr/bin/arm-none-eabi-gcc
+    ln -s /opt/bolos/CC/gcc-arm-none-eabi-5_3-2016q1/bin/arm-none-eabi-gcc /usr/bin/arm-none-eabi-gcc
 
     printf "\n%s\n" "Installing Clang compilers, this will take a few minutes..."
     wget -q http://releases.llvm.org/7.0.0/clang+llvm-7.0.0-x86_64-linux-gnu-ubuntu-16.04.tar.xz
