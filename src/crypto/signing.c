@@ -40,9 +40,7 @@ uint32_t signEcdsa(const cx_ecfp_private_key_t *privateKey,
                    const uint8_t *hash,
                    uint8_t *signature,
                    size_t signatureSize) {
-    if (privateKey == NULL ||
-        hash == NULL ||
-        signature == NULL ||
+    if (privateKey == NULL || hash == NULL || signature == NULL ||
         signatureSize < SIG_ECDSA_MIN_LEN ||
         signatureSize > SIG_ECDSA_MAX_LEN) {
         return 0;
@@ -59,7 +57,6 @@ uint32_t signEcdsa(const cx_ecfp_private_key_t *privateKey,
 uint32_t signSchnorr(const cx_ecfp_private_key_t *privateKey,
                      const uint8_t *hash,
                      uint8_t *signature) {
-
     if (privateKey == NULL || hash == NULL || signature == NULL) {
         return 0;
     }
