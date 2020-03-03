@@ -135,10 +135,6 @@ static void handlePublicKeyContext(volatile unsigned int *tx) {
         THROW(0x6B01);
     }
 
-    if (p2 != P2_ECDSA && p2 != P2_SCHNORR_LEG) {
-        THROW(0x6B00);
-    }
-
     curve = CX_CURVE_256K1;
 
     // Set the HD path.
@@ -252,7 +248,7 @@ static void handleSigningContext() {
         tmpCtx.signing.dataLength += dataLength;
     }
 
-    // Throw "Finished" if more data is expected.
+    // Throw "Finished", more data is expected.
     if (!isLastPayload) {
         THROW(0x9000);
     }
