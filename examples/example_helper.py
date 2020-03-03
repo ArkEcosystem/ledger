@@ -62,13 +62,13 @@ op_sign_tx          = "04"
 op_sign_message     = "08"
 
 # APDU 'p1'
-p1_more = "00"
-p1_last = "80"
+p1_single   = "80"
+p1_first    = "00"
+p1_last     = "81"
 
 # signing flags
-flag_ecdsa          = "40"
-flag_schnorr_leg    = "50"
-
+p2_ecdsa        = "40"
+p2_schnorr_leg  = "50"
 
 # Packs the BIP32 Path.
 def parse_bip32_path(path):
@@ -84,7 +84,6 @@ def parse_bip32_path(path):
             result = result + struct.pack(">I", 0x80000000 | int(element[0]))
     return result
 
-
 # Parse Helper Arguments.
 parser = argparse.ArgumentParser()
 parser.add_argument('--path',       help="BIP 32 path to sign with")
@@ -93,17 +92,14 @@ parser.add_argument('--tx',         help="TX to sign, hex encoded")
 parser.add_argument('--ecdsa',      help="Use Ecdsa Signatures, (default is Schnorr)", action='store_true')
 args = parser.parse_args()
 
-
 # Use default (testnet) path if not provided.
 if args.path is None:
     args.path = default_path
-
 
 # Check that one and only one payload operation is called.
 if args.tx is None and args.message is None or          \
    args.tx is not None and args.message is not None:
     raise Exception("Missing or Invalid Payload")
-
 
 # Set the payload
 if args.tx is not None:
@@ -113,35 +109,29 @@ elif args.message is not None:
     payload = binascii.unhexlify(args.message)
     operation = op_sign_message
 
-
 # Check that the payload is not larger than the current max.
 if len(payload) > payloadMax:
     raise Exception('Payload size:', len(payload),
                     'exceeds max length:', payloadMax)
 
-
-# Signing Algorithm, (default is Schnorr)
-sig_algo = flag_schnorr_leg if args.ecdsa is False else flag_ecdsa
-
-
 # Set the BIP32 Path.
 donglePath = parse_bip32_path(args.path)
 
-
 # Set the full paths length.
 pathLength = len(donglePath) + 1
-
 
 # Pack the payload.
 if len(payload) > chunkSize - pathLength:
     chunk1 = payload[0 : chunkSize - pathLength]
     chunk2 = payload[chunkSize - pathLength:]
-    p1 = p1_more
+    p1 = p1_first
 else:
     chunk1 = payload
     chunk2 = None
-    p1 = p1_last
+    p1 = p1_single
 
+# Signing Algorithm, (default is Schnorr)
+sig_algo = p2_schnorr_leg if args.ecdsa is False else p2_ecdsa
 
 # Build the APDU Payload
 apdu = bytearray.fromhex("e0" + operation + p1 + sig_algo)
@@ -152,10 +142,9 @@ apdu += donglePath + chunk1
 dongle = getDongle(True)
 result = dongle.exchange(bytes(apdu))
 
-
 # Send second data chunk if present
 if chunk2 is not None:
-    apdu = bytearray.fromhex("e0" + operation + "80" + sig_algo)
+    apdu = bytearray.fromhex("e0" + operation + p1_last + sig_algo)
     apdu.append(len(chunk2))
     apdu += chunk2
     result = dongle.exchange(bytes(apdu))
