@@ -31,11 +31,12 @@
 #include <stdint.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-size_t printAmount(uint64_t amount,
-                   uint8_t *out,
-                   size_t outSize,
-                   const char *tokenName,
-                   size_t tokenNameSize,
-                   uint8_t decimals);
+size_t UintToString(uint64_t value, char *dst, size_t maxLen);
 
-#endif  // #ifndef ARK_UTILS_PRINT_H
+////////////////////////////////////////////////////////////////////////////////
+size_t TokenAmountToString(uint64_t amount,
+                           char *dst, size_t maxLen,
+                           const char *tokenName, size_t tokenNameSize,
+                           size_t decimals);
+
+#endif  // ARK_UTILS_PRINT_H

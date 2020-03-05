@@ -79,28 +79,33 @@ void displayHtlcLock(const Transaction *transaction) {
 
     // Secret Hash
     bytesToHex((char *)displayCtx.text[1],
-               (uint8_t *)transaction->asset.htlcLock.secretHash,
+               transaction->asset.htlcLock.secretHash,
                HASH_32_LEN);
 
     // Expiration
     if (transaction->asset.htlcLock.expirationType == 1U) {
-        printAmount(transaction->asset.htlcLock.expiration,
-                    displayCtx.text[2], sizeof(displayCtx.text[2]),
-                    LABEL_TIME, LABEL_TIME_SIZE, 0);
+        bytecpy(displayCtx.text[2], LABEL_TIME, LABEL_TIME_SIZE);
+        UintToString(transaction->asset.htlcLock.expiration,
+                     (char *)&displayCtx.text[2][LABEL_TIME_SIZE],
+                     sizeof(displayCtx.text[2]));
     } else {
-        printAmount(transaction->asset.htlcLock.expiration,
-                    displayCtx.text[2], sizeof(displayCtx.text[2]),
-                    LABEL_HEIGHT, LABEL_HEIGHT_SIZE, 0);
+        bytecpy(displayCtx.text[2], LABEL_HEIGHT, LABEL_HEIGHT_SIZE);
+        UintToString(transaction->asset.htlcLock.expiration,
+                     (char *)&displayCtx.text[2][LABEL_HEIGHT_SIZE],
+                     sizeof(displayCtx.text[2]));
     }
 
     // Amount
-    printAmount(transaction->asset.htlcLock.amount,
-                (uint8_t *)displayCtx.text[3], sizeof(displayCtx.text[3]),
-                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
+    TokenAmountToString(transaction->asset.htlcLock.amount,
+                        (char *)displayCtx.text[3], sizeof(displayCtx.text[3]),
+                        TOKEN_NAME, TOKEN_NAME_SIZE,
+                        TOKEN_DECIMALS);
+
     // Fees
-    printAmount(transaction->fee,
-                (uint8_t *)displayCtx.text[4], sizeof(displayCtx.text[4]),
-                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
+    TokenAmountToString(transaction->fee,
+                        (char *)displayCtx.text[4], sizeof(displayCtx.text[4]),
+                        TOKEN_NAME, TOKEN_NAME_SIZE,
+                        TOKEN_DECIMALS);
 
     // VendorField
     if (transaction->vendorFieldLength > 0U) {

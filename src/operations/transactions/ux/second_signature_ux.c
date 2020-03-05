@@ -53,11 +53,12 @@ void displaySecondSignature(const Transaction *transaction) {
 
     // PublicKey of Second Signature
     bytesToHex((char *)displayCtx.text[0],
-                transaction->asset.secondSignature.publicKey,
-                PUBLICKEY_COMPRESSED_LEN);
+               transaction->asset.secondSignature.publicKey,
+               PUBLICKEY_COMPRESSED_LEN);
 
     // Fee
-    printAmount(transaction->fee,
-                (uint8_t *)displayCtx.text[1], sizeof(displayCtx.text[1]),
-                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
+    TokenAmountToString(transaction->fee,
+                        (char *)displayCtx.text[1], sizeof(displayCtx.text[1]),
+                        TOKEN_NAME, TOKEN_NAME_SIZE,
+                        TOKEN_DECIMALS);
 }
