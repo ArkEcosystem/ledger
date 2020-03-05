@@ -64,7 +64,16 @@ static const char *const LABEL_TO       = "To";
 static const size_t LABEL_TO_SIZE       = 3;
 
 ////////////////////////////////////////////////////////////////////////////////
+// Numbers
+static const uint64_t UINT64_BASE_10 = 10U;
+
+////////////////////////////////////////////////////////////////////////////////
+// Strings
+static const size_t UINT64_MAX_STRING_SIZE = 20U;
+
+////////////////////////////////////////////////////////////////////////////////
 // Token
+static const size_t TOKEN_AMOUNT_MAX_CHARS  = 25U;
 static const size_t TOKEN_DECIMALS          = 8;
 static const char *const TOKEN_NAME         = "ARK ";
 static const size_t TOKEN_NAME_SIZE         = 4;        // sizeof("ARK ") - 1

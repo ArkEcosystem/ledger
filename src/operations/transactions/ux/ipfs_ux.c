@@ -52,9 +52,10 @@ void displayIpfs(const Transaction *transaction) {
     bytecpy((char *)displayCtx.extended_title, LABEL_DAG, LABEL_DAG_SIZE);
 
     // Fee
-    printAmount(transaction->fee,
-                (uint8_t *)displayCtx.text[0], sizeof(displayCtx.text[0]),
-                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
+    TokenAmountToString(transaction->fee,
+                        (char *)displayCtx.text[0], sizeof(displayCtx.text[0]),
+                        TOKEN_NAME, TOKEN_NAME_SIZE,
+                        TOKEN_DECIMALS);
 
     // DAG
     size_t dagLen = MAX_TEXT_LEN;

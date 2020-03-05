@@ -71,16 +71,16 @@ void setTransferLegacy(const Transaction *transaction) {
     displayCtx.text[0][ADDRESS_LEN]  = ' ';
 
     // Amount
-    printAmount(transaction->amount,
-                displayCtx.text[1],
-                sizeof(displayCtx.text[1]),
-                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
+    TokenAmountToString(transaction->amount,
+                        (char *)displayCtx.text[1], sizeof(displayCtx.text[1]),
+                        TOKEN_NAME, TOKEN_NAME_SIZE,
+                        TOKEN_DECIMALS);
 
     // Fee
-    printAmount(transaction->fee,
-                displayCtx.text[2],
-                sizeof(displayCtx.text[2]),
-                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
+    TokenAmountToString(transaction->fee,
+                        (char *)displayCtx.text[2], sizeof(displayCtx.text[2]),
+                        TOKEN_NAME, TOKEN_NAME_SIZE,
+                        TOKEN_DECIMALS);
 
     // VendorField
     if (transaction->vendorFieldLength > 0) {
@@ -97,12 +97,10 @@ static void setVoteLegacy(const Transaction *transaction) {
     const size_t voteOffset = 67;
     bytecpy((char*)displayCtx.text[0], transaction->assetPtr, voteOffset);
 
-    printAmount(transaction->fee,
-                displayCtx.text[1],
-                sizeof(displayCtx.text[1]),
-                TOKEN_NAME,
-                TOKEN_NAME_SIZE,
-                TOKEN_DECIMALS);
+    TokenAmountToString(transaction->fee,
+                        (char *)displayCtx.text[1], sizeof(displayCtx.text[1]),
+                        TOKEN_NAME, TOKEN_NAME_SIZE,
+                        TOKEN_DECIMALS);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
