@@ -72,13 +72,13 @@ void setTransferLegacy(const Transaction *transaction) {
 
     // Amount
     TokenAmountToString(transaction->amount,
-                        (char *)displayCtx.text[1], sizeof(displayCtx.text[1]),
+                        displayCtx.text[1], sizeof(displayCtx.text[1]),
                         TOKEN_NAME, TOKEN_NAME_SIZE,
                         TOKEN_DECIMALS);
 
     // Fee
     TokenAmountToString(transaction->fee,
-                        (char *)displayCtx.text[2], sizeof(displayCtx.text[2]),
+                        displayCtx.text[2], sizeof(displayCtx.text[2]),
                         TOKEN_NAME, TOKEN_NAME_SIZE,
                         TOKEN_DECIMALS);
 
@@ -98,7 +98,7 @@ static void setVoteLegacy(const Transaction *transaction) {
     bytecpy((char*)displayCtx.text[0], transaction->assetPtr, voteOffset);
 
     TokenAmountToString(transaction->fee,
-                        (char *)displayCtx.text[1], sizeof(displayCtx.text[1]),
+                        displayCtx.text[1], sizeof(displayCtx.text[1]),
                         TOKEN_NAME, TOKEN_NAME_SIZE,
                         TOKEN_DECIMALS);
 }

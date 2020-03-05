@@ -32,8 +32,13 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 // General
-static const size_t MAX_RAW_OPERATION       = 704;      // 64-byte-aligned
-static const size_t MAX_TEXT_LEN            = 255;
+#if defined(SUPPORTS_LARGE_OPERATIONS)
+    static const size_t MAX_RAW_OPERATION   = 2496;     // 64-byte-aligned
+#else
+    static const size_t MAX_RAW_OPERATION   = 704;      // 64-byte-aligned
+#endif
+
+static const size_t MAX_TEXT_LEN = 255;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Hash

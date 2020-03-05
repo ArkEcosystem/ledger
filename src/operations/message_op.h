@@ -68,15 +68,13 @@ bool handleMessage(const uint8_t *buffer, size_t length) {
 
     bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
     bytecpy((char *)displayCtx.title[0], LABEL_LENGTH, LABEL_LENGTH_SIZE);
-    bytecpy((char *)displayCtx.extended_title, LABEL, LABEL_SIZE);
+    bytecpy((char *)displayCtx.title_ext, LABEL, LABEL_SIZE);
 
     // Message Length
-    UintToString(length,
-                 (char *)displayCtx.text[0],
-                 sizeof(displayCtx.text[0]));
+    UintToString(length, displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // Message Text
-    bytecpy((char *)displayCtx.extended_text, buffer, length);
+    bytecpy((char *)displayCtx.text_ext, buffer, length);
 
     setDisplaySteps(MESSAGE_DISPLAY_STEPS, true);
 

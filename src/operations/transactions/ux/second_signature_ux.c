@@ -58,7 +58,7 @@ void displaySecondSignature(const Transaction *transaction) {
 
     // Fee
     TokenAmountToString(transaction->fee,
-                        (char *)displayCtx.text[1], sizeof(displayCtx.text[1]),
+                        displayCtx.text[1], sizeof(displayCtx.text[1]),
                         TOKEN_NAME, TOKEN_NAME_SIZE,
                         TOKEN_DECIMALS);
 }
