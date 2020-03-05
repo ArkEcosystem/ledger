@@ -71,9 +71,7 @@ bool handleMessage(const uint8_t *buffer, size_t length) {
     bytecpy((char *)displayCtx.title_ext, LABEL, LABEL_SIZE);
 
     // Message Length
-    UintToString(length,
-                 (char *)displayCtx.text[0],
-                 sizeof(displayCtx.text[0]));
+    UintToString(length, displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // Message Text
     bytecpy((char *)displayCtx.text_ext, buffer, length);

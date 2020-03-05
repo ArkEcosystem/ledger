@@ -53,7 +53,7 @@ void displayIpfs(const Transaction *transaction) {
 
     // Fee
     TokenAmountToString(transaction->fee,
-                        (char *)displayCtx.text[0], sizeof(displayCtx.text[0]),
+                        displayCtx.text[0], sizeof(displayCtx.text[0]),
                         TOKEN_NAME, TOKEN_NAME_SIZE,
                         TOKEN_DECIMALS);
 
@@ -61,6 +61,6 @@ void displayIpfs(const Transaction *transaction) {
     size_t dagLen = MAX_TEXT_LEN;
     btchip_encode_base58(transaction->asset.ipfs.dag,
                          transaction->asset.ipfs.length,
-                         displayCtx.text_ext,
+                         (uint8_t *)displayCtx.text_ext,
                          &dagLen);
 }

@@ -86,24 +86,24 @@ void displayHtlcLock(const Transaction *transaction) {
     if (transaction->asset.htlcLock.expirationType == 1U) {
         bytecpy(displayCtx.text[2], LABEL_TIME, LABEL_TIME_SIZE);
         UintToString(transaction->asset.htlcLock.expiration,
-                     (char *)&displayCtx.text[2][LABEL_TIME_SIZE],
+                     &displayCtx.text[2][LABEL_TIME_SIZE],
                      sizeof(displayCtx.text[2]));
     } else {
         bytecpy(displayCtx.text[2], LABEL_HEIGHT, LABEL_HEIGHT_SIZE);
         UintToString(transaction->asset.htlcLock.expiration,
-                     (char *)&displayCtx.text[2][LABEL_HEIGHT_SIZE],
+                     &displayCtx.text[2][LABEL_HEIGHT_SIZE],
                      sizeof(displayCtx.text[2]));
     }
 
     // Amount
     TokenAmountToString(transaction->asset.htlcLock.amount,
-                        (char *)displayCtx.text[3], sizeof(displayCtx.text[3]),
+                        displayCtx.text[3], sizeof(displayCtx.text[3]),
                         TOKEN_NAME, TOKEN_NAME_SIZE,
                         TOKEN_DECIMALS);
 
     // Fees
     TokenAmountToString(transaction->fee,
-                        (char *)displayCtx.text[4], sizeof(displayCtx.text[4]),
+                        displayCtx.text[4], sizeof(displayCtx.text[4]),
                         TOKEN_NAME, TOKEN_NAME_SIZE,
                         TOKEN_DECIMALS);
 

@@ -64,11 +64,11 @@ void displayMultiSignature(const Transaction *transaction) {
 
     // Key Count
     UintToString(transaction->asset.multiSignature.count,
-                 (char *)displayCtx.text[0], sizeof(displayCtx.text[0]));
+                 displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // Fee
     TokenAmountToString(transaction->fee,
-                        (char *)displayCtx.text[1], sizeof(displayCtx.text[1]),
+                        displayCtx.text[1], sizeof(displayCtx.text[1]),
                         TOKEN_NAME, TOKEN_NAME_SIZE,
                         TOKEN_DECIMALS);
 }

@@ -63,17 +63,17 @@ void displayTransfer(const Transaction *transaction) {
 
     // Expiration
     UintToString(transaction->asset.transfer.expiration,
-                 (char *)displayCtx.text[1], sizeof(displayCtx.text[1]));
+                 displayCtx.text[1], sizeof(displayCtx.text[1]));
 
     // Amount
     TokenAmountToString(transaction->asset.transfer.amount,
-                        (char *)displayCtx.text[2], sizeof(displayCtx.text[2]),
+                        displayCtx.text[2], sizeof(displayCtx.text[2]),
                         TOKEN_NAME, TOKEN_NAME_SIZE,
                         TOKEN_DECIMALS);
 
     // Fee
     TokenAmountToString(transaction->fee,
-                        (char *)displayCtx.text[3], sizeof(displayCtx.text[3]),
+                        displayCtx.text[3], sizeof(displayCtx.text[3]),
                         TOKEN_NAME, TOKEN_NAME_SIZE,
                         TOKEN_DECIMALS);
 
