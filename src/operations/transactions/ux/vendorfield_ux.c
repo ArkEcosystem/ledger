@@ -42,12 +42,12 @@ void setVendorField(const Transaction *transaction) {
     const char *const LABEL_VENDORFIELD = "VendorField";
     const size_t LABEL_VENDORFIELD_SIZE = 12;
 
-    bytecpy((char *)displayCtx.extended_title,
+    bytecpy((char *)displayCtx.title_ext,
             LABEL_VENDORFIELD,
             LABEL_VENDORFIELD_SIZE);
 
-    bytecpy((char *)displayCtx.extended_text,
+    bytecpy((char *)displayCtx.text_ext,
             (uint8_t *)transaction->vendorField,
             transaction->vendorFieldLength);
-    displayCtx.extended_text[transaction->vendorFieldLength] = '\0';
+    displayCtx.text_ext[transaction->vendorFieldLength] = '\0';
 }
