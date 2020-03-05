@@ -51,6 +51,7 @@ import math
 import argparse
 import binascii
 import struct
+import sys
 
 ################################################################################
 #################################### Limits ####################################
@@ -71,8 +72,13 @@ default_path = "44'/111'/0'/0/0"
 cla = "e0"
 
 # instructions
+op_publickey        = "02"
 op_sign_tx          = "04"
 op_sign_message     = "08"
+
+# PublicKey APDU P1 & P2
+p1_non_confirm      = "00"
+p2_no_chaincode     = "00"
 
 # APDU 'p1'
 p1_single   = "80"
@@ -122,10 +128,21 @@ def split_apdu_payload(payload_, payloadLen_,
         else:
             chunks_[i] = payload_[pos:]
 
+# Get a device PublicKey on a given bip32 path
+def get_publickey(path_, pathLength_):
+    apdu = bytearray.fromhex(cla + op_publickey + p1_non_confirm + p2_no_chaincode)
+    apdu.append(pathLength)
+    apdu.append(pathLength // 4)
+    apdu += path_
+    dongle = getDongle(True)
+    result = dongle.exchange(bytes(apdu))
+    sys.exit()
+
 # Parse Helper Arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--message',    help="Message to sign, hex encoded")
 parser.add_argument('--path',       help="BIP 32 path to sign with")
+parser.add_argument('--publickey',  help="Get the device publicKey (may be used with '--path'", action='store_true')
 parser.add_argument('--tx',         help="TX to sign, hex encoded")
 args = parser.parse_args()
 
@@ -142,6 +159,10 @@ donglePath = parse_bip32_path(args.path)
 
 # Set the full paths length
 pathLength = len(donglePath) + 1
+
+# Get the PublicKey
+if args.publickey is True:
+    get_publickey(donglePath, pathLength)
 
 # Set the payload
 if args.tx is not None:
