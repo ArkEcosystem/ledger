@@ -46,30 +46,48 @@
 
 from ledgerblue.comm import getDongle
 from ledgerblue.commException import CommException
+
+import math
 import argparse
 import binascii
 import struct
 
+################################################################################
+#################################### Limits ####################################
+################################################################################
+
 chunkSize   = 255
-payloadMax  = 2 * chunkSize
+chunkMax    = 10
+payloadMax  = chunkMax * chunkSize
+
+################################################################################
+################################### Globals ####################################
+################################################################################
 
 # bip32 Path: default ARK Mainnet
 default_path = "44'/111'/0'/0/0"
 
+# Instruction Class
+cla = "e0"
+
 # instructions
-op_get_publickey    = "02"
 op_sign_tx          = "04"
 op_sign_message     = "08"
 
 # APDU 'p1'
 p1_single   = "80"
 p1_first    = "00"
+p1_more     = "01"
 p1_last     = "81"
 
 # signing flags
 p2_ecdsa    = "40"
 
-# Packs the BIP32 Path.
+################################################################################
+################################## Functions ###################################
+################################################################################
+
+# Packs the BIP32 Path
 def parse_bip32_path(path):
     if len(path) == 0:
         return b""
@@ -83,21 +101,47 @@ def parse_bip32_path(path):
             result = result + struct.pack(">I", 0x80000000 | int(element[0]))
     return result
 
-# Parse Helper Arguments.
+# Splits a payload into chunks
+#
+# - payload_:       the payload to be split
+# - payloadLen_:    the len of the payload (minus the pathLength)
+# - chunks_:        the destination for the split payload
+# - chunkCount_:    how many chunks the payload should be split into
+# - chunkSize_:     max chunk size
+# - pathLength_:    the length of the bip32 path
+#
+# ---
+def split_apdu_payload(payload_, payloadLen_,
+                       chunks_, chunkCount_,
+                       chunkSize_, pathLength_):
+    for i in range(chunkCount_):
+        pos = 0 if i == 0 else (i * chunkSize_) - pathLength_
+        end = ((i + 1) * chunkSize_) - pathLength_
+        if i < chunkCount_:
+            chunks_[i] = payload_[pos : end]
+        else:
+            chunks_[i] = payload_[pos:]
+
+# Parse Helper Arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('--path',       help="BIP 32 path to sign with")
 parser.add_argument('--message',    help="Message to sign, hex encoded")
+parser.add_argument('--path',       help="BIP 32 path to sign with")
 parser.add_argument('--tx',         help="TX to sign, hex encoded")
 args = parser.parse_args()
 
-# Use default (testnet) path if not provided.
+################################################################################
+############################## Application Flow ################################
+################################################################################
+
+# Use default (testnet) path if not provided
 if args.path is None:
     args.path = default_path
 
-# Check that one and only one payload operation is called.
-if args.tx is None and args.message is None or          \
-   args.tx is not None and args.message is not None:
-    raise Exception("Missing or Invalid Payload")
+# Set the BIP32 Path
+donglePath = parse_bip32_path(args.path)
+
+# Set the full paths length
+pathLength = len(donglePath) + 1
 
 # Set the payload
 if args.tx is not None:
@@ -106,40 +150,54 @@ if args.tx is not None:
 elif args.message is not None:
     payload = binascii.unhexlify(args.message)
     operation = op_sign_message
+else:
+    raise Exception("Invalid Instruction")
 
-# Check that the payload is not larger than the current max.
+# Check that the payload is not larger than the current max
 if len(payload) > payloadMax:
     raise Exception('Payload size:', len(payload),
                     'exceeds max length:', payloadMax)
 
-# Set the BIP32 Path.
-donglePath = parse_bip32_path(args.path)
+# Determine the length of the payload and the number of chunks needed
+payloadLen = len(payload) - pathLength
+chunkCount = math.floor(payloadLen / chunkSize) + 1
 
-# Set the full paths length.
-pathLength = len(donglePath) + 1
+# Check that the chunkCount doesn't exceed the max
+if chunkCount > chunkMax:
+    raise Exception("Payload exceeds maximum number of chunks.")
 
-# Pack the payload.
-if len(payload) > chunkSize - pathLength:
-    chunk1 = payload[0 : chunkSize - pathLength]
-    chunk2 = payload[chunkSize - pathLength:]
-    p1 = p1_first
-else:
-    chunk1 = payload
-    chunk2 = None
-    p1 = p1_single
+# Chunk buffer
+chunks = [None] * (chunkMax + 1)
 
-# Build the APDU Payload
-apdu = bytearray.fromhex("e0" + operation + p1 + p2_ecdsa)
-apdu.append(pathLength + len(chunk1))
-apdu.append(pathLength // 4)
-apdu += donglePath + chunk1
+# Split the payload
+split_apdu_payload(payload, payloadLen,
+                   chunks, chunkCount,
+                   chunkSize, pathLength)
 
-dongle = getDongle(True)
-result = dongle.exchange(bytes(apdu))
+# Set p1
+p1 = p1_single if chunkCount == 1 else p1_first
 
-# Send second data chunk if present
-if chunk2 is not None:
-    apdu = bytearray.fromhex("e0" + operation + p1_last + p2_ecdsa)
-    apdu.append(len(chunk2))
-    apdu += chunk2
-    result = dongle.exchange(bytes(apdu))
+# Signing Algorithm, (default is Schnorr)
+p2 = p2_ecdsa
+
+################################################################################
+##################################### APDU #####################################
+################################################################################
+
+# Send the APDU Payloads in (N)Chunks
+for i in range(chunkCount):
+    if chunks[i] is not None:
+        hasMoreChunks = chunks[i + 1] is not None
+        p1 = p1_single if chunkCount == 1               \
+            else p1_first if i == 0 and hasMoreChunks   \
+            else p1_more if hasMoreChunks else p1_last
+        apdu = bytearray.fromhex(cla + operation + p1 + p2)
+        if i == 0:
+            apdu.append(pathLength + len(chunks[0]))
+            apdu.append(pathLength // 4)
+            apdu += donglePath + chunks[0]
+            dongle = getDongle(True)
+        else:
+            apdu.append(len(chunks[i]))
+            apdu += chunks[i]
+        result = dongle.exchange(bytes(apdu))
