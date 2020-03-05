@@ -159,7 +159,7 @@ if len(payload) > payloadMax:
                     'exceeds max length:', payloadMax)
 
 # Determine the length of the payload and the number of chunks needed
-payloadLen = len(payload) - pathLength
+payloadLen = len(payload)
 chunkCount = math.floor(payloadLen / chunkSize) + 1
 
 # Check that the chunkCount doesn't exceed the max
