@@ -177,7 +177,7 @@ split_apdu_payload(payload, payloadLen,
 # Set p1
 p1 = p1_single if chunkCount == 1 else p1_first
 
-# Signing Algorithm, (default is Schnorr)
+# Signing Algorithm, (Only Ecdsa is supported)
 p2 = p2_ecdsa
 
 ################################################################################
