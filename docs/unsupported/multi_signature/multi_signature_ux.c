@@ -63,12 +63,12 @@ void displayMultiSignature(const Transaction *transaction) {
     bytecpy((char *)displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
 
     // Key Count
-    printAmount(transaction->asset.multiSignature.count,
-                (uint8_t *)displayCtx.text[0], sizeof(displayCtx.text[0]),
-                "", 0, 0);
+    UintToString(transaction->asset.multiSignature.count,
+                 displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // Fee
-    printAmount(transaction->fee,
-                (uint8_t *)displayCtx.text[1], sizeof(displayCtx.text[1]),
-                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
+    TokenAmountToString(transaction->fee,
+                        displayCtx.text[1], sizeof(displayCtx.text[1]),
+                        TOKEN_NAME, TOKEN_NAME_SIZE,
+                        TOKEN_DECIMALS);
 }

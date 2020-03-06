@@ -62,22 +62,20 @@ void displayTransfer(const Transaction *transaction) {
                           1U);
 
     // Expiration
-    printAmount(transaction->asset.transfer.expiration,
-                displayCtx.text[1],
-                sizeof(displayCtx.text[1]),
-                NULL, 0U, 0U);
+    UintToString(transaction->asset.transfer.expiration,
+                 displayCtx.text[1], sizeof(displayCtx.text[1]));
 
     // Amount
-    printAmount(transaction->asset.transfer.amount,
-                displayCtx.text[2],
-                sizeof(displayCtx.text[2]),
-                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
+    TokenAmountToString(transaction->asset.transfer.amount,
+                        displayCtx.text[2], sizeof(displayCtx.text[2]),
+                        TOKEN_NAME, TOKEN_NAME_SIZE,
+                        TOKEN_DECIMALS);
 
     // Fee
-    printAmount(transaction->fee,
-                displayCtx.text[3],
-                sizeof(displayCtx.text[3]),
-                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
+    TokenAmountToString(transaction->fee,
+                        displayCtx.text[3], sizeof(displayCtx.text[3]),
+                        TOKEN_NAME, TOKEN_NAME_SIZE,
+                        TOKEN_DECIMALS);
 
     // VendorField
     if (transaction->vendorFieldLength > 0U) {

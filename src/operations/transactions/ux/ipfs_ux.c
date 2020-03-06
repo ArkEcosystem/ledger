@@ -49,17 +49,18 @@ void displayIpfs(const Transaction *transaction) {
 
     bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
     bytecpy((char *)displayCtx.title[0], LABEL_FEE, LABEL_FEE_SIZE);
-    bytecpy((char *)displayCtx.extended_title, LABEL_DAG, LABEL_DAG_SIZE);
+    bytecpy((char *)displayCtx.title_ext, LABEL_DAG, LABEL_DAG_SIZE);
 
     // Fee
-    printAmount(transaction->fee,
-                (uint8_t *)displayCtx.text[0], sizeof(displayCtx.text[0]),
-                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
+    TokenAmountToString(transaction->fee,
+                        displayCtx.text[0], sizeof(displayCtx.text[0]),
+                        TOKEN_NAME, TOKEN_NAME_SIZE,
+                        TOKEN_DECIMALS);
 
     // DAG
     size_t dagLen = MAX_TEXT_LEN;
     btchip_encode_base58(transaction->asset.ipfs.dag,
                          transaction->asset.ipfs.length,
-                         displayCtx.extended_text,
+                         (uint8_t *)displayCtx.text_ext,
                          &dagLen);
 }
