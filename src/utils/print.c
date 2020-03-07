@@ -133,8 +133,6 @@ size_t UintToString(uint64_t value, char *dst, size_t maxLen) {
     size_t n = 0;
     size_t i = 0;
 
-    const size_t maxN = 20;
-
     // count how many characters are needed
     while (base <= value && n <= UINT64_MAX_STRING_SIZE) {
         base *= UINT64_BASE_10;
