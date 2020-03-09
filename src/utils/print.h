@@ -34,9 +34,8 @@
 size_t UintToString(uint64_t value, char *dst, size_t maxLen);
 
 ////////////////////////////////////////////////////////////////////////////////
-size_t TokenAmountToString(uint64_t amount,
-                           char *dst, size_t maxLen,
-                           const char *tokenName, size_t tokenNameSize,
-                           size_t decimals);
+size_t TokenAmountToString(const char *token, size_t tokenLen, size_t decimals,
+                           uint64_t amount,
+                           char *dst, size_t maxLen);
 
 #endif  // ARK_UTILS_PRINT_H

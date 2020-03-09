@@ -26,9 +26,6 @@
 
 #include "transactions/ux/second_signature_ux.h"
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include "constants.h"
 
 #include "operations/transactions/transaction.h"
@@ -40,16 +37,10 @@
 #include "display/context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void displaySecondSignature(const Transaction *transaction) {
-    const char *const LABEL     = "2nd Signature";
-    const size_t LABEL_SIZE     = 14;
-
-    const char *const LABEL_PUBLICKEY   = "PublicKey";
-    const size_t LABEL_PUBLICKEY_SIZE   = 10;
-
-    bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
-    bytecpy((char *)displayCtx.title[0], LABEL_PUBLICKEY, LABEL_PUBLICKEY_SIZE);
-    bytecpy((char *)displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
+void SetUxSecondSignature(const Transaction *transaction) {
+    SPRINTF(displayCtx.operation, "%s", UX_SECOND_SIGNATURE_LABELS[0]);
+    SPRINTF(displayCtx.title[0], "%s:", UX_SECOND_SIGNATURE_LABELS[1]);
+    SPRINTF(displayCtx.title[1], "%s:", UX_LABEL_FEE);
 
     // PublicKey of Second Signature
     BytesToHex(transaction->asset.secondSignature.publicKey,
@@ -57,8 +48,7 @@ void displaySecondSignature(const Transaction *transaction) {
                displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // Fee
-    TokenAmountToString(transaction->fee,
-                        displayCtx.text[1], sizeof(displayCtx.text[1]),
-                        TOKEN_NAME, TOKEN_NAME_SIZE,
-                        TOKEN_DECIMALS);
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+                        transaction->fee,
+                        displayCtx.text[1], sizeof(displayCtx.text[1]));
 }

@@ -26,9 +26,6 @@
 
 #include "transactions/ux/transfer_ux.h"
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include "constants.h"
 
 #include "operations/transactions/transaction.h"
@@ -42,16 +39,12 @@
 #include "display/context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void displayTransfer(const Transaction *transaction) {
-    const char *const LABEL     = "Transfer";
-    const size_t LABEL_SIZE     = 9;
-
-    bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
-    bytecpy((char *)displayCtx.title[0], LABEL_TO, LABEL_TO_SIZE);
-
-    bytecpy((char *)displayCtx.title[1], LABEL_EXPIRATION, LABEL_EXPIRATION_SIZE);
-    bytecpy((char *)displayCtx.title[2], LABEL_AMOUNT, LABEL_AMOUNT_SIZE);
-    bytecpy((char *)displayCtx.title[3], LABEL_FEE, LABEL_FEE_SIZE);
+void SetUxTransfer(const Transaction *transaction) {
+    SPRINTF(displayCtx.operation, "%s", UX_TRANSFER_LABEL);
+    SPRINTF(displayCtx.title[0], "%s:", UX_LABEL_RECIPIENT);
+    SPRINTF(displayCtx.title[1], "%s:", UX_LABEL_EXPIRATION);
+    SPRINTF(displayCtx.title[2], "%s:", UX_LABEL_AMOUNT);
+    SPRINTF(displayCtx.title[3], "%s:", UX_LABEL_FEE);
 
     // RecipientId
     encodeBase58PublicKey((uint8_t *)transaction->asset.transfer.recipientId,
@@ -66,16 +59,14 @@ void displayTransfer(const Transaction *transaction) {
                  displayCtx.text[1], sizeof(displayCtx.text[1]));
 
     // Amount
-    TokenAmountToString(transaction->asset.transfer.amount,
-                        displayCtx.text[2], sizeof(displayCtx.text[2]),
-                        TOKEN_NAME, TOKEN_NAME_SIZE,
-                        TOKEN_DECIMALS);
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+                        transaction->asset.transfer.amount,
+                        displayCtx.text[2], sizeof(displayCtx.text[2]));
 
     // Fee
-    TokenAmountToString(transaction->fee,
-                        displayCtx.text[3], sizeof(displayCtx.text[3]),
-                        TOKEN_NAME, TOKEN_NAME_SIZE,
-                        TOKEN_DECIMALS);
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+                        transaction->fee,
+                        displayCtx.text[3], sizeof(displayCtx.text[3]));
 
     // VendorField
     if (transaction->vendorFieldLength > 0U) {

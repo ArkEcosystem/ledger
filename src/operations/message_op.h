@@ -33,7 +33,6 @@
 
 #include "constants.h"
 
-#include "utils/hex.h"
 #include "utils/print.h"
 #include "utils/utils.h"
 
@@ -41,8 +40,11 @@
 #include "display/display.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+static const char *const UX_MESSAGE_LABELS[]    = { "Message", "Length" };
+static const size_t UX_MESSAGE_STEPS            = 2;
 
-extern void setDisplaySteps(uint8_t steps, bool isExtended);
+////////////////////////////////////////////////////////////////////////////////
+extern void SetUxDisplay(size_t steps, bool isExtended);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Prepare a Message Operation for Display.
@@ -52,31 +54,23 @@ extern void setDisplaySteps(uint8_t steps, bool isExtended);
 //
 // ---
 bool handleMessage(const uint8_t *buffer, size_t length) {
+    explicit_bzero(&displayCtx, sizeof(displayCtx));
+
     if (length == 0 || length > MAX_TEXT_LEN) {
         return false;
     }
 
-    explicit_bzero(&displayCtx, sizeof(displayCtx));
-
-    const char *const LABEL     = "Message";
-    const size_t LABEL_SIZE     = 8;
-
-    const char *const LABEL_LENGTH      = "length:";
-    const size_t LABEL_LENGTH_SIZE      = 8;
-
-    const size_t MESSAGE_DISPLAY_STEPS = 2;
-
-    bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
-    bytecpy((char *)displayCtx.title[0], LABEL_LENGTH, LABEL_LENGTH_SIZE);
-    bytecpy((char *)displayCtx.title_ext, LABEL, LABEL_SIZE);
+    SPRINTF(displayCtx.operation, "%s", UX_MESSAGE_LABELS[0]);
+    SPRINTF(displayCtx.title[0], "%s:", UX_MESSAGE_LABELS[1]);
+    SPRINTF(displayCtx.title_ext, "%s:", UX_MESSAGE_LABELS[0]);
 
     // Message Length
     UintToString(length, displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // Message Text
-    bytecpy((char *)displayCtx.text_ext, buffer, length);
+    snprintf(displayCtx.text_ext, length + 1, "%s", buffer);
 
-    setDisplaySteps(MESSAGE_DISPLAY_STEPS, true);
+    SetUxDisplay(UX_MESSAGE_STEPS, true);
 
     return true;
 }

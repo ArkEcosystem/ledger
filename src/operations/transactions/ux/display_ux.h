@@ -30,6 +30,6 @@
 #include "transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void setDisplay(const Transaction *transaction);
+void SetUx(const Transaction *transaction);
 
 #endif  // #define ARK_OPERATIONS_TRANSACTIONS_UX_DISPLAY_UX_H

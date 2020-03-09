@@ -26,9 +26,6 @@
 
 #include "transactions/ux/htlc_refund_ux.h"
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include "constants.h"
 
 #include "operations/transactions/transaction.h"
@@ -39,15 +36,9 @@
 #include "display/context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void displayHtlcRefund(const Transaction *transaction) {
-    const char *const LABEL     = "HTLC Refund";
-    const size_t LABEL_SIZE     = 12;
-
-    const char *const LABEL_LOCK_ID     = "Lock Id";
-    const size_t LABEL_LOCK_ID_SIZE     = 8;
-
-    bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
-    bytecpy((char *)displayCtx.title[0], LABEL_LOCK_ID, LABEL_LOCK_ID_SIZE);
+void SetUxHtlcRefund(const Transaction *transaction) {
+    SPRINTF(displayCtx.operation, "%s", UX_HTLC_REFUND_LABELS[0]);
+    SPRINTF(displayCtx.title[0], "%s:", UX_HTLC_REFUND_LABELS[1]);
 
     // Lock Id
     BytesToHex(transaction->asset.htlcRefund.id, HASH_32_LEN,

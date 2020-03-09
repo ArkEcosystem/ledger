@@ -27,14 +27,15 @@
 #ifndef ARK_OPERATIONS_TRANSACTION_UX_HTLC_REFUND_UX_H
 #define ARK_OPERATIONS_TRANSACTION_UX_HTLC_REFUND_UX_H
 
-#include <stdint.h>
+#include <stddef.h>
 
 #include "operations/transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-static const uint8_t STEPS_HTLC_REFUND = 1U;
+static const char *const UX_HTLC_REFUND_LABELS[]    = { "HTLC Refund", "Lock Id" };
+static const size_t UX_HTLC_REFUND_STEPS            = 1U;
 
 ////////////////////////////////////////////////////////////////////////////////
-void displayHtlcRefund(const Transaction *transaction);
+void SetUxHtlcRefund(const Transaction *transaction);
 
 #endif  // #define ARK_OPERATIONS_TRANSACTION_UX_HTLC_REFUND_UX_H

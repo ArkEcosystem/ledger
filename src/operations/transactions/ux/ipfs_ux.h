@@ -27,14 +27,15 @@
 #ifndef ARK_OPERATIONS_TRANSACTION_UX_IPFS_UX_H
 #define ARK_OPERATIONS_TRANSACTION_UX_IPFS_UX_H
 
-#include <stdint.h>
+#include <stddef.h>
 
 #include "operations/transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-static const uint8_t STEPS_IPFS = 2U;
+static const char *const UX_IPFS_LABELS[]   = { "IPFS", "DAG" };
+static const size_t UX_IPFS_STEPS           = 2U;
 
 ////////////////////////////////////////////////////////////////////////////////
-void displayIpfs(const Transaction *transaction);
+void SetUxIpfs(const Transaction *transaction);
 
 #endif  // #define ARK_OPERATIONS_TRANSACTION_UX_IPFS_UX_H
