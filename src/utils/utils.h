@@ -22,6 +22,24 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
+ * -----
+ * 
+ * Parts of this software are based on Ledger Nano SDK
+ * 
+ * (c) 2017 Ledger
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  ******************************************************************************/
 
 #ifndef ARK_UTILS_H
@@ -30,12 +48,19 @@
 #if defined(HAVE_BOLOS_UX)
 
     #include <os.h>
+    #include <os_io_seproxyhal.h>
+
     #define bytecpy os_memmove
 
 #else  // if not HAVE_BOLOS_UX
 
     #include <string.h>
+
     #define bytecpy memcpy
+
+    // Ledger Nano SDK
+    // If using 8-byte numbers (e.g. uint64_t), use methods in 'utils/print.h'
+    #define SPRINTF(strbuf, ...) snprintf(strbuf, sizeof(strbuf), __VA_ARGS__)
 
 #endif  // #if defined(HAVE_BOLOS_UX)
 

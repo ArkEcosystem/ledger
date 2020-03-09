@@ -27,7 +27,12 @@
 #ifndef ARK_OPERATIONS_TRANSACTIONS_UX_VENDORFIELD_UX_H
 #define ARK_OPERATIONS_TRANSACTIONS_UX_VENDORFIELD_UX_H
 
+#include <stddef.h>
+
 #include "transactions/transaction.h"
+
+////////////////////////////////////////////////////////////////////////////////
+static const char *const UX_VENDORFIELD_LABEL = "VendorField";
 
 ////////////////////////////////////////////////////////////////////////////////
 void setVendorField(const Transaction *transaction);

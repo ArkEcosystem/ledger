@@ -197,7 +197,7 @@ void ux_flow_container_init(size_t steps, bool isExtended) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void setDisplaySteps(uint8_t steps, bool isExtended) {
+void SetUxDisplay(size_t steps, bool isExtended) {
     ux_flow_container_init(steps, isExtended);
     ux_flow_init(0U, (const ux_flow_step_t *const *)ux_flow_container, NULL);
 }

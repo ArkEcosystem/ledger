@@ -26,9 +26,6 @@
 
 #include "transactions/ux/htlc_claim_ux.h"
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include "constants.h"
 
 #include "operations/transactions/transaction.h"
@@ -39,26 +36,17 @@
 #include "display/context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void displayHtlcClaim(const Transaction *transaction) {
-    const char *const LABEL     = "HTLC Claim";
-    const size_t LABEL_SIZE     = 12;
-
-    const char *const LABEL_LOCK_ID     = "Lock Id";
-    const size_t LABEL_LOCK_ID_SIZE     = 8;
-
-    const char *const LABEL_SECRET      = "Secret";
-    const size_t LABEL_SECRET_SIZE      = 7;
-
-    bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
-    bytecpy((char *)displayCtx.title[0], LABEL_LOCK_ID, LABEL_LOCK_ID_SIZE);
-    bytecpy((char *)displayCtx.title[1], LABEL_SECRET, LABEL_SECRET_SIZE);
+void SetUxHtlcClaim(const Transaction *transaction) {
+    SPRINTF(displayCtx.operation, "%s", UX_HTLC_CLAIM_LABELS[0]);
+    SPRINTF(displayCtx.title[0], "%s:", UX_HTLC_CLAIM_LABELS[1]);
+    SPRINTF(displayCtx.title[1], "%s:", UX_HTLC_CLAIM_LABELS[2]);
 
     // Id
     BytesToHex(transaction->asset.htlcClaim.id, HASH_32_LEN,
                displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // Secret
-    bytecpy((char *)displayCtx.text[1],
+    bytecpy(displayCtx.text[1],
             transaction->asset.htlcClaim.secret,
             HASH_32_LEN);
 }

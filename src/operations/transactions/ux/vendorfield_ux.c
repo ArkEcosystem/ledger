@@ -26,9 +26,6 @@
 
 #include "transactions/ux/vendorfield_ux.h"
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include "constants.h"
 
 #include "operations/transactions/transaction.h"
@@ -39,15 +36,9 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 void setVendorField(const Transaction *transaction) {
-    const char *const LABEL_VENDORFIELD = "VendorField";
-    const size_t LABEL_VENDORFIELD_SIZE = 12;
+    SPRINTF(displayCtx.title_ext, "%s:", UX_VENDORFIELD_LABEL);
 
-    bytecpy((char *)displayCtx.title_ext,
-            LABEL_VENDORFIELD,
-            LABEL_VENDORFIELD_SIZE);
-
-    bytecpy((char *)displayCtx.text_ext,
-            (uint8_t *)transaction->vendorField,
-            transaction->vendorFieldLength);
-    displayCtx.text_ext[transaction->vendorFieldLength] = '\0';
+    snprintf(displayCtx.text_ext,
+             transaction->vendorFieldLength + 1,
+             "%s", transaction->vendorField);
 }

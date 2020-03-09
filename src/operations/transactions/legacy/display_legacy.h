@@ -30,6 +30,6 @@
 #include "transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void setDisplayLegacy(const Transaction *transaction);
+void SetUxLegacy(const Transaction *transaction);
 
 #endif  // #define ARK_OPERATIONS_TRANSACTIONS_DISPLAY_LEGACY_H
