@@ -134,11 +134,6 @@ static void handlePublicKeyContext(volatile unsigned int *tx) {
         THROW(0x6B01);
     }
 
-    if (p2 != P2_SECP256K1) {
-        // Only SECP256K1 is currently supported.
-        THROW(0x6B00);
-    }
-
     curve = CX_CURVE_256K1;
 
     // Set the HD path.
