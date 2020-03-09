@@ -78,9 +78,8 @@ void displayHtlcLock(const Transaction *transaction) {
                           1);
 
     // Secret Hash
-    bytesToHex((char *)displayCtx.text[1],
-               transaction->asset.htlcLock.secretHash,
-               HASH_32_LEN);
+    BytesToHex(transaction->asset.htlcLock.secretHash, HASH_32_LEN,
+                displayCtx.text[1], sizeof(displayCtx.text[1]));
 
     // Expiration
     if (transaction->asset.htlcLock.expirationType == 1U) {

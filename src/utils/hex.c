@@ -30,19 +30,24 @@
 #include <stdint.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-static const uint8_t hexDigits[] = {
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    'a', 'b', 'c', 'd', 'e', 'f'
-};
-
-////////////////////////////////////////////////////////////////////////////////
 // Convert Bytes to a Hex string.
-// NULL terminator is added at (hexStringLen + 1)
-void bytesToHex(char *dest, const uint8_t *src, size_t length) {
-    while (length--) {
-        *dest++ = hexDigits[(*src >> 4) & 0xF];
-        *dest++ = hexDigits[*src & 0xF];
-        ++src;
+// NULL terminated at (n + 1)
+size_t BytesToHex(const uint8_t *src, size_t srcLen, char *dst, size_t dstMax) {
+    if (src == NULL || dst == NULL || (srcLen * 2) + 1 > dstMax) {
+        return 0;
     }
-    *dest = '\0';
+
+    const char *const HEX_DIGITS = "0123456789abcdef";
+
+    size_t len = srcLen;
+
+    do {
+        *dst++ = HEX_DIGITS[(*src >> 4) & 0xF];
+        *dst++ = HEX_DIGITS[*src & 0xF];
+        ++src;
+    } while (len-- > 1);
+
+    *dst = '\0';
+
+    return (srcLen * 2) + 1;
 }

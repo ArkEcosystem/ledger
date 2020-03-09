@@ -50,7 +50,6 @@ void displayHtlcRefund(const Transaction *transaction) {
     bytecpy((char *)displayCtx.title[0], LABEL_LOCK_ID, LABEL_LOCK_ID_SIZE);
 
     // Lock Id
-    bytesToHex((char *)displayCtx.text[0],
-               transaction->asset.htlcRefund.id,
-               HASH_32_LEN);
+    BytesToHex(transaction->asset.htlcRefund.id, HASH_32_LEN,
+               displayCtx.text[0], sizeof(displayCtx.text[0]));
 }

@@ -52,9 +52,9 @@ void displaySecondSignature(const Transaction *transaction) {
     bytecpy((char *)displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
 
     // PublicKey of Second Signature
-    bytesToHex((char *)displayCtx.text[0],
-               transaction->asset.secondSignature.publicKey,
-               PUBLICKEY_COMPRESSED_LEN);
+    BytesToHex(transaction->asset.secondSignature.publicKey,
+               PUBLICKEY_COMPRESSED_LEN,
+               displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // Fee
     TokenAmountToString(transaction->fee,
