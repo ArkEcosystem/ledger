@@ -62,9 +62,8 @@ void displayVote(const Transaction *transaction) {
 
     // Vote
     displayCtx.text[0][0] = voteSymbol;
-    bytesToHex((char *)&displayCtx.text[0][1],
-                &transaction->asset.vote.data[1],
-                PUBLICKEY_COMPRESSED_LEN);
+    BytesToHex(&transaction->asset.vote.data[1], PUBLICKEY_COMPRESSED_LEN,
+               &displayCtx.text[0][1], sizeof(displayCtx.text[0]) - 1);
 
     // Fee
     TokenAmountToString(transaction->fee,
