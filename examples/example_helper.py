@@ -119,6 +119,7 @@ def get_publickey(path_, pathLength_):
     apdu += path_
     dongle = getDongle(True)
     result = dongle.exchange(bytes(apdu))
+    print("\nPublicKey: ", binascii.hexlify(result).decode("utf-8"), "\n")
     sys.exit()
 
 # Parse Helper Arguments
@@ -156,11 +157,11 @@ elif args.message is not None:
     payload = binascii.unhexlify(args.message)
     operation = op_sign_message
 else:
-    raise Exception("Invalid Instruction")
+    raise CommException("Invalid Instruction")
 
 # Check that the payload is not larger than the current max
 if len(payload) > payloadMax:
-    raise Exception('Payload size:', len(payload),
+    raise CommException('Payload size:', len(payload),
                     'exceeds max length:', payloadMax)
 
 # Determine the length of the payload and the number of chunks needed
@@ -169,7 +170,7 @@ chunkCount = math.floor(payloadLen / chunkSize) + 1
 
 # Check that the chunkCount doesn't exceed the max
 if chunkCount > chunkMax:
-    raise Exception("Payload exceeds maximum number of chunks.")
+    raise CommException("Payload exceeds maximum number of chunks.")
 
 # Chunk buffer
 chunks = [None] * (chunkMax + 1)
@@ -189,20 +190,28 @@ p2 = p2_schnorr_leg if args.ecdsa is False else p2_ecdsa
 ##################################### APDU #####################################
 ################################################################################
 
-# Send the APDU Payloads in (N)Chunks
-for i in range(chunkCount):
-    if chunks[i] is not None:
-        hasMoreChunks = chunks[i + 1] is not None
-        p1 = p1_single if chunkCount == 1               \
-            else p1_first if i == 0 and hasMoreChunks   \
-            else p1_more if hasMoreChunks else p1_last
-        apdu = bytearray.fromhex(cla + operation + p1 + p2)
-        if i == 0:
-            apdu.append(pathLength + len(chunks[0]))
-            apdu.append(pathLength // 4)
-            apdu += donglePath + chunks[0]
-            dongle = getDongle(True)
-        else:
-            apdu.append(len(chunks[i]))
-            apdu += chunks[i]
-        result = dongle.exchange(bytes(apdu))
+try:
+    # Send the APDU Payloads in (N)Chunks
+    for i in range(chunkCount):
+        if chunks[i] is not None:
+            hasMoreChunks = chunks[i + 1] is not None
+            p1 = p1_single if chunkCount == 1               \
+                else p1_first if i == 0 and hasMoreChunks   \
+                else p1_more if hasMoreChunks else p1_last
+            apdu = bytearray.fromhex(cla + operation + p1 + p2)
+            if i == 0:
+                apdu.append(pathLength + len(chunks[0]))
+                apdu.append(pathLength // 4)
+                apdu += donglePath + chunks[0]
+                dongle = getDongle(True)
+            else:
+                apdu.append(len(chunks[i]))
+                apdu += chunks[i]
+            result = dongle.exchange(bytes(apdu))
+            print("\nApproved by user\n")
+            print("Signature: ", binascii.hexlify(result).decode("utf-8"), "\n")
+except CommException as comm:
+    if comm.sw == 0x6985:
+        print("Rejected by user")
+    else:
+        print("Invalid status: ", comm.sw)

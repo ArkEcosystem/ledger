@@ -265,7 +265,7 @@
 //     if (deserializeAsset(transaction,
 //                          &buffer[assetOffset],
 //                          size - assetOffset)) {
-//         setDisplay(transaction);
+//         SetUx(transaction);
 //         return true;
 //     }
 
@@ -285,7 +285,7 @@
 //         transaction->assetOffset = ASSET_OFFSET_LEGACY;
 //         transaction->assetPtr = (uint8_t*)&buffer[transaction->assetOffset];
 
-//         setDisplayLegacy(transaction);
+//         SetUxLegacy(transaction);
 
 //         return true;
 //     }

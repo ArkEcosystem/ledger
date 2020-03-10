@@ -56,17 +56,10 @@ static const size_t PUBLICKEY_UNCOMPRESSED_LEN      = 65;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Labels
-static const char *const LABEL_AMOUNT       = "Amount";
-static const size_t LABEL_AMOUNT_SIZE       = 7;
-
-static const char *const LABEL_EXPIRATION       = "Expiration";
-static const size_t LABEL_EXPIRATION_SIZE       = 11;
-
-static const char *const LABEL_FEE      = "Fee";
-static const size_t LABEL_FEE_SIZE      = 4;
-
-static const char *const LABEL_TO       = "To";
-static const size_t LABEL_TO_SIZE       = 3;
+static const char *const UX_LABEL_AMOUNT        = "Amount";
+static const char *const UX_LABEL_EXPIRATION    = "Expiration";
+static const char *const UX_LABEL_FEE           = "Fee";
+static const char *const UX_LABEL_RECIPIENT     = "Recipient";
 
 ////////////////////////////////////////////////////////////////////////////////
 // Numbers

@@ -40,22 +40,15 @@
 #include "display/context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void displayIpfs(const Transaction *transaction) {
-    const char *const LABEL     = "IPFS";
-    const size_t LABEL_SIZE     = 5;
-
-    const char *const LABEL_DAG     = "DAG";
-    const size_t LABEL_DAG_SIZE     = 4;
-
-    bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
-    bytecpy((char *)displayCtx.title[0], LABEL_FEE, LABEL_FEE_SIZE);
-    bytecpy((char *)displayCtx.title_ext, LABEL_DAG, LABEL_DAG_SIZE);
+void SetUxIpfs(const Transaction *transaction) {
+    SPRINTF(displayCtx.operation, "%s", UX_IPFS_LABELS[0]);
+    SPRINTF(displayCtx.title[0], "%s:", UX_LABEL_FEE);
+    SPRINTF(displayCtx.title_ext, "%s:", UX_IPFS_LABELS[1]);
 
     // Fee
-    TokenAmountToString(transaction->fee,
-                        displayCtx.text[0], sizeof(displayCtx.text[0]),
-                        TOKEN_NAME, TOKEN_NAME_SIZE,
-                        TOKEN_DECIMALS);
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+                        transaction->fee,
+                        displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // DAG
     size_t dagLen = MAX_TEXT_LEN;

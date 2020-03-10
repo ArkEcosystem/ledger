@@ -133,8 +133,6 @@ size_t UintToString(uint64_t value, char *dst, size_t maxLen) {
     size_t n = 0;
     size_t i = 0;
 
-    const size_t maxN = 20;
-
     // count how many characters are needed
     while (base <= value && n <= UINT64_MAX_STRING_SIZE) {
         base *= UINT64_BASE_10;
@@ -158,27 +156,26 @@ size_t UintToString(uint64_t value, char *dst, size_t maxLen) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-size_t TokenAmountToString(uint64_t amount,
-                           char *dst, size_t maxLen,
-                           const char *tokenName, size_t tokenNameSize,
-                           size_t decimals) {
+size_t TokenAmountToString(const char *token, size_t tokenLen, size_t decimals,
+                           uint64_t amount,
+                           char *dst, size_t maxLen) {
     if (dst == NULL) {
         return 0;
     }
 
-    if (tokenNameSize > 0) {
-        bytecpy(dst, tokenName, tokenNameSize);
+    if (tokenLen > 0) {
+        bytecpy(dst, token, tokenLen);
     }
 
     if (decimals == 0) {
-        return tokenNameSize + UintToString(amount, dst + tokenNameSize, maxLen);
+        return tokenLen + UintToString(amount, dst + tokenLen, maxLen);
     }
     else {
         char buffer[TOKEN_AMOUNT_MAX_CHARS];
         const size_t len = UintToString(amount, buffer, maxLen);
-        return tokenNameSize +
+        return tokenLen +
                adjustDecimals(buffer, len,
-                              dst + tokenNameSize, maxLen,
+                              dst + tokenLen, maxLen,
                               decimals + 1);
     }
 }

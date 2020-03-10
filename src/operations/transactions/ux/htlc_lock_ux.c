@@ -26,7 +26,6 @@
 
 #include "transactions/ux/htlc_lock_ux.h"
 
-#include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
@@ -43,31 +42,13 @@
 #include "display/context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void displayHtlcLock(const Transaction *transaction) {
-    const char *const LABEL     = "HTLC Lock";
-    const size_t LABEL_SIZE     = 10;
-
-    const char *const LABEL_SECRET_HASH     = "Secret Hash";
-    const size_t LABEL_SECRET_HASH_SIZE     = 12;
-
-    const char *const LABEL_TIME        = "time: ";
-    const size_t LABEL_TIME_SIZE        = 6;    // sizeof - 1
-
-    const char *const LABEL_HEIGHT      = "height: ";
-    const size_t LABEL_HEIGHT_SIZE      = 8;    // sizeof - 1
-
-    bytecpy((char *)displayCtx.operation, LABEL,
-                                          LABEL_SIZE);
-    bytecpy((char *)displayCtx.title[0], LABEL_TO,
-                                         LABEL_TO_SIZE);
-    bytecpy((char *)displayCtx.title[1], LABEL_SECRET_HASH,
-                                         LABEL_SECRET_HASH_SIZE);
-    bytecpy((char *)displayCtx.title[2], LABEL_EXPIRATION,
-                                         LABEL_EXPIRATION_SIZE);
-    bytecpy((char *)displayCtx.title[3], LABEL_AMOUNT,
-                                         LABEL_AMOUNT_SIZE);
-    bytecpy((char *)displayCtx.title[4], LABEL_FEE,
-                                         LABEL_FEE_SIZE);
+void SetUxHtlcLock(const Transaction *transaction) {
+    SPRINTF(displayCtx.operation, "%s", UX_HTLC_LOCK_LABELS[0]);
+    SPRINTF(displayCtx.title[0], "%s:", UX_LABEL_RECIPIENT);
+    SPRINTF(displayCtx.title[1], "%s:", UX_HTLC_LOCK_LABELS[1]);
+    SPRINTF(displayCtx.title[2], "%s:", UX_LABEL_EXPIRATION);
+    SPRINTF(displayCtx.title[3], "%s:", UX_LABEL_AMOUNT);
+    SPRINTF(displayCtx.title[4], "%s:", UX_LABEL_FEE);
 
     // RecipientId
     encodeBase58PublicKey((uint8_t *)transaction->asset.htlcLock.recipientId,
@@ -78,34 +59,27 @@ void displayHtlcLock(const Transaction *transaction) {
                           1);
 
     // Secret Hash
-    bytesToHex((char *)displayCtx.text[1],
-               transaction->asset.htlcLock.secretHash,
-               HASH_32_LEN);
+    BytesToHex(transaction->asset.htlcLock.secretHash, HASH_32_LEN,
+               displayCtx.text[1], sizeof(displayCtx.text[1]));
 
     // Expiration
-    if (transaction->asset.htlcLock.expirationType == 1U) {
-        bytecpy(displayCtx.text[2], LABEL_TIME, LABEL_TIME_SIZE);
-        UintToString(transaction->asset.htlcLock.expiration,
-                     &displayCtx.text[2][LABEL_TIME_SIZE],
-                     sizeof(displayCtx.text[2]));
-    } else {
-        bytecpy(displayCtx.text[2], LABEL_HEIGHT, LABEL_HEIGHT_SIZE);
-        UintToString(transaction->asset.htlcLock.expiration,
-                     &displayCtx.text[2][LABEL_HEIGHT_SIZE],
-                     sizeof(displayCtx.text[2]));
-    }
+    const bool isTime = transaction->asset.htlcLock.expirationType == 1U;
+    SPRINTF(displayCtx.text[2], "%s: ", isTime ? UX_HTLC_LOCK_SUB_LABELS[0]
+                                               : UX_HTLC_LOCK_SUB_LABELS[1]);
+    const size_t expirationOffset = strlen(displayCtx.text[2]);
+    UintToString(transaction->asset.htlcLock.expiration,
+                 &displayCtx.text[2][expirationOffset],
+                 sizeof(displayCtx.text[2]));
 
     // Amount
-    TokenAmountToString(transaction->asset.htlcLock.amount,
-                        displayCtx.text[3], sizeof(displayCtx.text[3]),
-                        TOKEN_NAME, TOKEN_NAME_SIZE,
-                        TOKEN_DECIMALS);
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+                        transaction->asset.htlcLock.amount,
+                        displayCtx.text[3], sizeof(displayCtx.text[3]));
 
     // Fees
-    TokenAmountToString(transaction->fee,
-                        displayCtx.text[4], sizeof(displayCtx.text[4]),
-                        TOKEN_NAME, TOKEN_NAME_SIZE,
-                        TOKEN_DECIMALS);
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+                        transaction->fee,
+                        displayCtx.text[4], sizeof(displayCtx.text[4]));
 
     // VendorField
     if (transaction->vendorFieldLength > 0U) {

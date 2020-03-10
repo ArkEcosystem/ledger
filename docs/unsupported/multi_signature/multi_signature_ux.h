@@ -36,12 +36,12 @@
 #ifndef ARK_OPERATIONS_TRANSACTIONS_UX_MULTI_SIGNATURE_UX_H
 #define ARK_OPERATIONS_TRANSACTIONS_UX_MULTI_SIGNATURE_UX_H
 
-#include <stdint.h>
+#include <stddef.h>
 
 #include "operations/transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-static const uint8_t STEPS_MULTI_SIGNATURE_MIN = 2U;
+static const size_t UX_MULTI_SIGNATURE_STEPS = 2U;
 
 ////////////////////////////////////////////////////////////////////////////////
 void displayMultiSignature(const Transaction *transaction);

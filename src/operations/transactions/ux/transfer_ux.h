@@ -27,14 +27,15 @@
 #ifndef ARK_OPERATIONS_TRANSACTIONS_UX_TRANSFER_UX_H
 #define ARK_OPERATIONS_TRANSACTIONS_UX_TRANSFER_UX_H
 
-#include <stdint.h>
+#include <stddef.h>
 
 #include "operations/transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-static const uint8_t STEPS_TRANSFER_MIN = 4U;
+static const char *const UX_TRANSFER_LABEL  = "Transfer";
+static const size_t UX_TRANSFER_STEPS       = 4U;
 
 ////////////////////////////////////////////////////////////////////////////////
-void displayTransfer(const Transaction *transaction);
+void SetUxTransfer(const Transaction *transaction);
 
 #endif  // #define ARK_OPERATIONS_TRANSACTIONS_UX_TRANSFER_UX_H
