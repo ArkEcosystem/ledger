@@ -18,7 +18,7 @@ if [ ! -d "/opt/bolos" ]; then
     mkdir /opt/bolos/SDK
 
     printf "\n%s\n" "Installing ARM compilers, this will take a few minutes..."
-    cd /opt/bolos/CC
+    cd /opt/bolos/CC || exit
     wget -q https://launchpad.net/gcc-arm-embedded/5.0/5-2016-q1-update/+download/gcc-arm-none-eabi-5_3-2016q1-20160330-linux.tar.bz2
     tar xjf gcc-arm-none-eabi-5_3-2016q1-20160330-linux.tar.bz2
     ln -s /opt/bolos/CC/gcc-arm-none-eabi-5_3-2016q1/bin/arm-none-eabi-gcc /usr/bin/arm-none-eabi-gcc
@@ -34,9 +34,9 @@ fi
 
 if [ ! -d "/opt/bolos/SDK/nanos-secure-sdk" ]; then
     printf "\n%s\n" "Fetching the Nano S SDK"
-    cd /opt/bolos/SDK
+    cd /opt/bolos/SDK || exit
     git clone https://github.com/LedgerHQ/nanos-secure-sdk.git
-    cd nanos-secure-sdk/
+    cd nanos-secure-sdk/ || exit
     git -c advice.detachedHead=false checkout tags/nanos-160
 fi
 

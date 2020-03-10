@@ -53,7 +53,6 @@ extern void ui_idle(void);
 
 ////////////////////////////////////////////////////////////////////////////////
 void ark_main(void) {
-    volatile unsigned int rx = 0U;
     volatile unsigned int tx = 0U;
     volatile unsigned int flags = 0U;
 
@@ -65,10 +64,9 @@ void ark_main(void) {
     // APDU injection faults.
     for (;;) {
         volatile uint16_t sw = 0U;
-
         BEGIN_TRY {
             TRY {
-                rx = tx;
+                volatile unsigned int rx = tx;
                 // Ensure no race in catch_other if io_exchange throws an error
                 tx = 0U;
                 rx = io_exchange(CHANNEL_APDU | flags, rx);
@@ -79,7 +77,6 @@ void ark_main(void) {
                 if (rx == 0U) { THROW(0x6982); }
 
                 // New APDU received
-                // PRINTF("New APDU received:\n%.*H\n", rx, G_io_apdu_buffer);
                 handleOperation(&flags, &tx);
             }
 
@@ -107,9 +104,6 @@ void ark_main(void) {
         }
         END_TRY;
     }
-
-    // return_to_dashboard:
-    return;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
