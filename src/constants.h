@@ -66,6 +66,12 @@ static const char *const UX_LABEL_RECIPIENT     = "Recipient";
 static const uint64_t UINT64_BASE_10 = 10U;
 
 ////////////////////////////////////////////////////////////////////////////////
+// Signatures
+static const size_t SIG_ECDSA_MIN_LEN   = 64;
+static const size_t SIG_ECDSA_MAX_LEN   = 72;
+static const size_t SIG_SCHNORR_LEN     = HASH_64_LEN;
+
+////////////////////////////////////////////////////////////////////////////////
 // Strings
 static const size_t UINT64_MAX_STRING_SIZE = 20U;
 

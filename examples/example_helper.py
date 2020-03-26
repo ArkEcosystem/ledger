@@ -74,6 +74,7 @@ p1_last = "81"
 
 # Signing Flags P2
 p2_ecdsa = "40"
+p2_schnorr_leg = "50"
 
 ###############################################################################
 # Parser
@@ -97,6 +98,11 @@ parser.add_argument(
 parser.add_argument(
     '--tx',
     help="TX to sign, hex encoded"
+)
+parser.add_argument(
+    '--ecdsa',
+    help="Use Ecdsa Signatures, (default is Schnorr)",
+    action='store_true'
 )
 args = parser.parse_args()
 
@@ -217,8 +223,8 @@ split_apdu_payload(payload, payloadLen,
 # Set p1
 p1 = p1_single if chunkCount == 1 else p1_first
 
-# Signing Algorithm, (Only Ecdsa is supported)
-p2 = p2_ecdsa
+# Signing Algorithm, (default is Schnorr)
+p2 = p2_schnorr_leg if args.ecdsa is False else p2_ecdsa
 
 ###############################################################################
 # APDU

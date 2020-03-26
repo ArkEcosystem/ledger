@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 -   support large operations ([#72])
+-   support schnorr signatures ([#63])
 
 ## [2.0.1] - 2020-02-08
 
@@ -44,5 +45,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [2.0.0]: https://github.com/ArkEcosystem/ledger/compare/master...2.0.0
 [#66]: https://github.com/ArkEcosystem/ledger/pull/66
 [2.0.1]: https://github.com/ArkEcosystem/ledger/compare/master...2.0.1
+[#63]: https://github.com/ArkEcosystem/ledger/pull/63
 [#72]: https://github.com/ArkEcosystem/ledger/pull/72
 [unreleased]: https://github.com/ArkEcosystem/ledger/compare/master...develop

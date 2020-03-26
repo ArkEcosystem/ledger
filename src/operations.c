@@ -90,7 +90,8 @@
 #define P1_FIRST        0x00
 #define P1_MORE         0x01
 #define P1_LAST         0x80
-#define P2_SECP256K1    0x40
+#define P2_ECDSA        0x40
+#define P2_SCHNORR_LEG  0x50
 
 ////////////////////////////////////////////////////////////////////////////////
 #define INS_GET_PUBLIC_KEY          0x02
@@ -190,10 +191,15 @@ static void handleSigningContext() {
     uint16_t    dataLength = G_io_apdu_buffer[OFFSET_LC];
     uint8_t     *workBuffer = &G_io_apdu_buffer[OFFSET_CDATA];
 
-    bool last = (p1 & P1_LAST);
+    bool isLastPayload = (p1 & P1_LAST);
     p1 &= 0x7F;
 
+    // First payload,
+    // - Unpack the path from bytes.
+    // - Check and set the Signing Algo.
+    // - Set the curve-type.
     if (p1 == P1_FIRST) {
+        // Set and check the path length.
         tmpCtx.signing.pathLength = workBuffer[0];
         if (tmpCtx.signing.pathLength < 1 ||
             tmpCtx.signing.pathLength > ADDRESS_MAX_BIP32_PATH) {
@@ -204,15 +210,19 @@ static void handleSigningContext() {
         workBuffer++;
         dataLength--;
 
+        // Unpack the path.
         for (uint32_t i = 0U; i < tmpCtx.signing.pathLength; ++i) {
             tmpCtx.signing.bip32Path[i] = U4BE(workBuffer, 0U);
             workBuffer += 4U;
             dataLength -= 4U;
         }
 
-        if (p2 != P2_SECP256K1) {
+        if (p2 != P2_ECDSA && p2 != P2_SCHNORR_LEG) {
+            // Ecdsa or Schnorr must be selected.
             THROW(0x6B00);
         }
+
+        tmpCtx.signing.isSchnorr = p2 == P2_SCHNORR_LEG;
 
         tmpCtx.signing.curve = CX_CURVE_256K1;
     }
@@ -220,10 +230,12 @@ static void handleSigningContext() {
         THROW(0x6B00);
     }
 
+    // Iff first payload, copy to the signing context data.
     if (p1 == P1_FIRST) {
         tmpCtx.signing.dataLength = dataLength;
         bytecpy(tmpCtx.signing.data, workBuffer, dataLength);
     }
+    // Iff n'th payload, and append to signing context data and add to length.
     else if (p1 == P1_MORE) {
         if (tmpCtx.signing.dataLength + dataLength > MAX_RAW_OPERATION) {
             THROW(0x6A80);
@@ -236,7 +248,8 @@ static void handleSigningContext() {
         tmpCtx.signing.dataLength += dataLength;
     }
 
-    if (!last) {
+    // Throw "Finished", more data is expected.
+    if (!isLastPayload) {
         THROW(0x9000);
     }
 }
