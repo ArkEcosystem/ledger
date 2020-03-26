@@ -44,7 +44,7 @@
 
 #include "display/display.h"
 
-#include <os.h>
+#include "platform.h"
 
 #if defined(TARGET_NANOS) || defined(TARGET_NANOX)
 

@@ -30,6 +30,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "platform.h"
+
 ////////////////////////////////////////////////////////////////////////////////
 // General
 #if defined(SUPPORTS_LARGE_OPERATIONS)

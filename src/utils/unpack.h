@@ -45,19 +45,17 @@
 #ifndef ARK_UTILS_UNPACK_H
 #define ARK_UTILS_UNPACK_H
 
-// The Ledger SDK implements 2 and 4-byte little-endian integer packing.
+#if defined(HAVE_BOLOS_SDK)
+// The Ledger SDK implements 2 and 4-byte little-endian integer unpacking.
 // We only need to implement the 8-byte equivalent.
-#if defined(HAVE_BOLOS_UX)
-
 #include <os.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 #define U8LE(buf, off)                                                              \
         (((uint64_t)(U4LE(buf, off))                    & 0xFFFFFFFF)           |   \
          ((uint64_t)(U4LE(buf, off + sizeof(uint32_t))  & 0xFFFFFFFF) << 32U))
-
-// If not using the Ledger SDK, we need to implement the packing macros.
-#else  // if not HAVE_BOLOS_UX
+#else  // if not HAVE_BOLOS_SDK
+// If not using the Ledger SDK, we need to implement the unpacking macros.
 
 #include <stddef.h>
 #include <stdint.h>
@@ -91,7 +89,6 @@ static const uint64_t U4_SHIFT      = 32ULL;
     ((((uint64_t)((U4LE((src), (offset)))               & U4_MAX))                  |   \
      (((uint64_t)((U4LE((src), ((offset) + U4_SIZE)))   & U4_MAX)   << U4_SHIFT)))      \
                                                         & U8_MAX)
+#endif  // HAVE_BOLOS_SDK
 
-#endif  //#if defined(HAVE_BOLOS_UX)
-
-#endif  // #ifndef ARK_UTILS_UNPACK_H
+#endif  // ARK_UTILS_UNPACK_H
