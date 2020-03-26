@@ -27,16 +27,10 @@
 #ifndef ARK_DISPLAY_H
 #define ARK_DISPLAY_H
 
-#if defined(HAVE_BOLOS_UX)
+#include "platform.h"
 
-    #include <os.h>
-
-    #if defined(TARGET_NANOS) || defined(TARGET_NANOX)
-
-        #include "display/nano.h"
-
-    #endif  // defined(TARGET_NANOS) || defined(TARGET_NANOX)
-
-#endif  // defined(HAVE_BOLOS_UX)
+#if defined(TARGET_NANOS) || defined(TARGET_NANOX)
+    #include "display/nano.h"
+#endif  // TARGET_NANOS || TARGET_NANOX
 
 #endif  // #define ARK_DISPLAY_H

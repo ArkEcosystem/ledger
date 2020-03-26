@@ -29,6 +29,8 @@
 
 #include <stddef.h>
 
+#include "platform.h"
+
 ////////////////////////////////////////////////////////////////////////////////
 static const size_t DISPLAY_CTX_OP_SIZE         = 18;
 static const size_t DISPLAY_CTX_TEXT_SIZE_EXT   = 256;
