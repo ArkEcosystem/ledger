@@ -30,6 +30,8 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "platform.h"
+
 #include "transactions/transaction.h"
 
 #include "transactions/types/types.h"
@@ -37,6 +39,7 @@
 #include "transactions/ux/transfer_ux.h"
 #include "transactions/ux/second_signature_ux.h"
 #include "transactions/ux/vote_ux.h"
+#include "transactions/ux/multi_signature_ux.h"
 #include "transactions/ux/ipfs_ux.h"
 #include "transactions/ux/htlc_lock_ux.h"
 #include "transactions/ux/htlc_claim_ux.h"
@@ -71,6 +74,14 @@ void SetUx(const Transaction *transaction) {
             SetUxVote(transaction);
             SetUxDisplay(UX_VOTE_STEPS, false);
             break;
+
+#if defined(SUPPORTS_MULTISIGNATURE)
+        case MULTI_SIGNATURE_TYPE:
+            SetUxMultiSignature(transaction);
+            const size_t steps = 2U * transaction->asset.multiSignature.count;
+            SetUxDisplay(STEPS_MULTI_SIG_STEPS + steps, false);
+            break;
+#endif
 
         case IPFS_TYPE:
             SetUxIpfs(transaction);

@@ -24,35 +24,25 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
-#define ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
-
-#include "transactions/types/transfer.h"
-#include "transactions/types/second_signature.h"
-#include "transactions/types/vote.h"
-#include "transactions/types/multi_signature.h"
-#include "transactions/types/ipfs.h"
-#include "transactions/types/htlc_lock.h"
-#include "transactions/types/htlc_claim.h"
-#include "transactions/types/htlc_refund.h"
+#ifndef ARK_OPERATIONS_TRANSACTIONS_UX_MULTI_SIGNATURE_UX_H
+#define ARK_OPERATIONS_TRANSACTIONS_UX_MULTI_SIGNATURE_UX_H
 
 #include "platform.h"
 
-////////////////////////////////////////////////////////////////////////////////
-typedef union tx_asset_t {
-    Transfer                    transfer;               // Type 0
-    SecondSignatureRegistration secondSignature;        // Type 1
-/*  Delegate Registration                               // Type 2 */
-    Vote                        vote;                   // Type 3
 #if defined(SUPPORTS_MULTISIGNATURE)
-    MultiSignature              multiSignature;         // Type 4
-#endif
-    Ipfs                        ipfs;                   // Type 5
-/*  MultiPayment                                        // Type 6 */
-/*  Delegate Resignation                                // Type 7 */
-    HtlcLock                    htlcLock;               // Type 8
-    HtlcClaim                   htlcClaim;              // Type 9
-    HtlcRefund                  htlcRefund;             // Type 10
-} tx_asset_t;
 
-#endif  // ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
+#include <stddef.h>
+
+#include "operations/transactions/transaction.h"
+
+////////////////////////////////////////////////////////////////////////////////
+static const char *const MULTI_SIG_LABELS[] = { "MultiSig Reg.",
+                                                "PublicKey",
+                                                "Signature" };
+static const size_t STEPS_MULTI_SIG_STEPS   = 1U;
+
+////////////////////////////////////////////////////////////////////////////////
+void SetUxMultiSignature(const Transaction *transaction);
+
+#endif  // SUPPORTS_MULTISIGNATURE
+#endif  // ARK_OPERATIONS_TRANSACTIONS_UX_MULTI_SIGNATURE_UX_H

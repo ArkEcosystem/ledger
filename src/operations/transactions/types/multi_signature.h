@@ -24,35 +24,37 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
-#define ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
-
-#include "transactions/types/transfer.h"
-#include "transactions/types/second_signature.h"
-#include "transactions/types/vote.h"
-#include "transactions/types/multi_signature.h"
-#include "transactions/types/ipfs.h"
-#include "transactions/types/htlc_lock.h"
-#include "transactions/types/htlc_claim.h"
-#include "transactions/types/htlc_refund.h"
+#ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_MULTI_SIGNATURE_H
+#define ARK_OPERATIONS_TRANSACTIONS_TYPES_MULTI_SIGNATURE_H
 
 #include "platform.h"
 
-////////////////////////////////////////////////////////////////////////////////
-typedef union tx_asset_t {
-    Transfer                    transfer;               // Type 0
-    SecondSignatureRegistration secondSignature;        // Type 1
-/*  Delegate Registration                               // Type 2 */
-    Vote                        vote;                   // Type 3
 #if defined(SUPPORTS_MULTISIGNATURE)
-    MultiSignature              multiSignature;         // Type 4
-#endif
-    Ipfs                        ipfs;                   // Type 5
-/*  MultiPayment                                        // Type 6 */
-/*  Delegate Resignation                                // Type 7 */
-    HtlcLock                    htlcLock;               // Type 8
-    HtlcClaim                   htlcClaim;              // Type 9
-    HtlcRefund                  htlcRefund;             // Type 10
-} tx_asset_t;
 
-#endif  // ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+#include "constants.h"
+
+////////////////////////////////////////////////////////////////////////////////
+static const size_t MULTI_SIG_KEY_MIN       = 2U;
+static const size_t MULTI_SIG_KEY_MAX       = 16U;
+static const size_t MULTI_SIG_KEYS_SIZE     = MULTI_SIG_KEY_MAX *
+                                              PUBLICKEY_COMPRESSED_LEN;
+
+////////////////////////////////////////////////////////////////////////////////
+typedef struct multi_signature_asset_t {
+    uint8_t     min;
+    uint8_t     count;
+    uint8_t     keys        [MULTI_SIG_KEY_MAX] [PUBLICKEY_COMPRESSED_LEN];
+    uint8_t     signatures  [MULTI_SIG_KEY_MAX] [SIG_SCHNORR_LEN];
+} MultiSignature;
+
+////////////////////////////////////////////////////////////////////////////////
+bool deserializeMultiSignature(MultiSignature *registration,
+                               const uint8_t *buffer,
+                               size_t size);
+
+#endif  // SUPPORTS_MULTISIGNATURE
+#endif  // ARK_OPERATIONS_TRANSACTIONS_TYPES_MULTI_SIGNATURE_H
