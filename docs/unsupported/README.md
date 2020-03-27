@@ -13,12 +13,6 @@ however, this should help make implementation easier when needed--if ever.
   >Not Supported.
   >
   >Delegates Forge; forging cannot be done using a Ledger.
-* Type 4: MultiSignature Registration
-  >Development in progress.
-  >
-  >Max MultiSig can potentially take up lots of memory.  
-  >Handling and display logic requires careful consideration.  
-  >Schnorr signing also need implemented.
 * Type 6: MultiPayment
   >Not supported
   >
