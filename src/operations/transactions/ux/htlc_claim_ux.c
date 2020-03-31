@@ -31,6 +31,7 @@
 #include "operations/transactions/transaction.h"
 
 #include "utils/hex.h"
+#include "utils/print.h"
 #include "utils/utils.h"
 
 #include "display/context.h"

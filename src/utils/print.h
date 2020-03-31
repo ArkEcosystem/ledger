@@ -24,56 +24,43 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_OPERATIONS_MESSAGE_H
-#define ARK_OPERATIONS_MESSAGE_H
+#ifndef ARK_UTILS_PRINT_H
+#define ARK_UTILS_PRINT_H
 
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+#if defined(HAVE_BOLOS_SDK)
+    #include <os.h>
+    #include <os_io_seproxyhal.h>
 
-#include "constants.h"
+    #undef SPRINTF  // redefine BOLOS version as 'SPRINTF_'
+    #define SPRINTF_(strbuf, ...) snprintf(strbuf, sizeof(strbuf), __VA_ARGS__)
 
-#include "utils/print.h"
-#include "utils/str.h"
-#include "utils/utils.h"
+    #define SNPRINTF_ snprintf
+#else  // BOLOS NOT detected
+    #include <string.h>
 
-#include "display/context.h"
-#include "display/display.h"
-
-////////////////////////////////////////////////////////////////////////////////
-static const char *const UX_MESSAGE_LABELS[]    = { "Message", "Length" };
-static const size_t UX_MESSAGE_STEPS            = 2;
+    #define SPRINTF_ sprintf
+    #define SNPRINTF_ snprintf
+#endif  // HAS_BOLOS_SDK
 
 ////////////////////////////////////////////////////////////////////////////////
-extern void SetUxDisplay(size_t steps, bool isExtended);
-
-////////////////////////////////////////////////////////////////////////////////
-// Prepare a Message Operation for Display.
+// A platform wrapper for 'sprintf'.
 //
-// - UTF8 Encoded
-// - 255 Byte Max
+// @param char *s:              pointer to the destination buffer.
+// @param const char *format:   string print format.
+// @param ...:                  variadic arguments.
 //
 // ---
-bool handleMessage(const uint8_t *buffer, size_t length) {
-    MEMSET_TYPE_BZERO(&displayCtx, DisplayContext);
+#define SPRINTF SPRINTF_
 
-    if (length == 0 || length > MAX_TEXT_LEN) {
-        return false;
-    }
+////////////////////////////////////////////////////////////////////////////////
+// A platform wrapper for 'snprintf'.
+//
+// @param char *s:              pointer to the destination buffer.
+// @param size_t size:          maximum number of bytes to be written. 
+// @param const char *format:   string print format.
+// @param ...:                  variadic arguments.
+//
+// ---
+#define SNPRINTF SNPRINTF_
 
-    SPRINTF(displayCtx.operation, "%s", UX_MESSAGE_LABELS[0]);
-    SPRINTF(displayCtx.title[0], "%s:", UX_MESSAGE_LABELS[1]);
-    SPRINTF(displayCtx.title_ext, "%s:", UX_MESSAGE_LABELS[0]);
-
-    // Message Length
-    UintToString(length, displayCtx.text[0], sizeof(displayCtx.text[0]));
-
-    // Message Text
-    SNPRINTF(displayCtx.text_ext, length + 1, "%s", buffer);
-
-    SetUxDisplay(UX_MESSAGE_STEPS, true);
-
-    return true;
-}
-
-#endif  // #define ARK_OPERATIONS_MESSAGE_H
+#endif  // ARK_UTILS_PRINT_H

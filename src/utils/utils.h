@@ -56,10 +56,6 @@
 
     #define MEMCOPY_ memcpy
     #define MEMSET_BZERO_ explicit_bzero
-
-    // Ledger Nano SDK
-    // If using 8-byte numbers (e.g. uint64_t), use methods in 'utils/print.h'
-    #define SPRINTF(strbuf, ...) snprintf(strbuf, sizeof(strbuf), __VA_ARGS__)
 #endif  // HAVE_BOLOS_SDK
 
 ////////////////////////////////////////////////////////////////////////////////

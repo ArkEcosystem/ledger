@@ -33,6 +33,7 @@
 #include "operations/transactions/transaction.h"
 
 #include "utils/hex.h"
+#include "utils/print.h"
 #include "utils/str.h"
 #include "utils/utils.h"
 

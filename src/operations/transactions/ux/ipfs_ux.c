@@ -34,6 +34,7 @@
 #include "operations/transactions/transaction.h"
 
 #include "utils/base58.h"
+#include "utils/print.h"
 #include "utils/str.h"
 #include "utils/utils.h"
 
