@@ -56,12 +56,12 @@ void displayDelegateRegistration(const Transaction *transaction) {
     const char *const LABEL_USERNAME     = "Username";
     const size_t LABEL_USERNAME_SIZE     = 9;
 
-    bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
-    bytecpy((char *)displayCtx.title[0], LABEL_USERNAME, LABEL_USERNAME_SIZE);
-    bytecpy((char *)displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
+    MEMCOPY(displayCtx.operation, LABEL, LABEL_SIZE);
+    MEMCOPY(displayCtx.title[0], LABEL_USERNAME, LABEL_USERNAME_SIZE);
+    MEMCOPY(displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
 
     // Username
-    bytecpy((char *)displayCtx.text[0],
+    MEMCOPY(displayCtx.text[0],
             transaction->asset.delegateRegistration.username,
             transaction->asset.delegateRegistration.length);
 

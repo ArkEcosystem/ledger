@@ -50,7 +50,7 @@
 // - vote->n_votes = buffer[0];
 //
 // Vote - 1 + 33(Compressed PublicKey) Bytes:
-// - bytecpy(vote->data, &buffer[1], 34);
+// - MEMCOPY(vote->data, &buffer[1], 34);
 //
 // ---
 bool deserializeVote(Vote *vote, const uint8_t *buffer, size_t size) {
@@ -59,7 +59,7 @@ bool deserializeVote(Vote *vote, const uint8_t *buffer, size_t size) {
     }
 
     // skip vote count
-    bytecpy(vote->data, &buffer[sizeof(uint8_t)], VOTE_LEN);        // 34 Bytes
+    MEMCOPY(vote->data, &buffer[sizeof(uint8_t)], VOTE_LEN);        // 34 Bytes
 
     return true;
 }

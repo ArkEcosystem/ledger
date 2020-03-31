@@ -213,8 +213,8 @@ size_t TokenAmountToString(const char *token, size_t tokenLen, size_t decimals,
         const char *const separator = ": ";
         const size_t separatorLen = 2U;
 
-        bytecpy(dst, token, tokenLen);
-        bytecpy(dst + tokenLen, separator, separatorLen);
+        MEMCOPY(dst, token, tokenLen);
+        MEMCOPY(dst + tokenLen, separator, separatorLen);
         prefixLen += separatorLen;
     }
 

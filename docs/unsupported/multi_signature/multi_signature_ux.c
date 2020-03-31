@@ -58,9 +58,9 @@ void displayMultiSignature(const Transaction *transaction) {
     const char *const LABEL_COUNT       = "Key Count";
     const size_t LABEL_COUNT_SIZE       = 10;
 
-    bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
-    bytecpy((char *)displayCtx.title[0], LABEL_COUNT, LABEL_COUNT_SIZE);
-    bytecpy((char *)displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
+    MEMCOPY(displayCtx.operation, LABEL, LABEL_SIZE);
+    MEMCOPY(displayCtx.title[0], LABEL_COUNT, LABEL_COUNT_SIZE);
+    MEMCOPY(displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
 
     // Key Count
     UintToString(transaction->asset.multiSignature.count,

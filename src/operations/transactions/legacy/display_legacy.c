@@ -92,7 +92,7 @@ static void setVoteLegacy(const Transaction *transaction) {
     SPRINTF(displayCtx.title[1], "Fee:");
 
     const size_t voteOffset = 67;
-    bytecpy((char*)displayCtx.text[0], transaction->assetPtr, voteOffset);
+    MEMCOPY(displayCtx.text[0], transaction->assetPtr, voteOffset);
 
     TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->fee,
@@ -101,7 +101,7 @@ static void setVoteLegacy(const Transaction *transaction) {
 
 ////////////////////////////////////////////////////////////////////////////////
 void SetUxLegacy(const Transaction *transaction) {
-    explicit_bzero(&displayCtx, sizeof(displayCtx));
+    MEMSET_TYPE_BZERO(&displayCtx, DisplayContext);
 
     switch (transaction->type) {
         case TRANSFER_TYPE:

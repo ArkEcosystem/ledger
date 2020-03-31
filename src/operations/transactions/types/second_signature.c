@@ -47,7 +47,7 @@
 // Internals:
 //
 // Second PublicKey - 33 Bytes:
-// - bytecpy(registration->publicKey, buffer, 33);
+// - MEMCOPY(registration->publicKey, buffer, 33);
 //
 // ---
 bool deserializeSecondSignature(SecondSignatureRegistration *registration,
@@ -57,7 +57,7 @@ bool deserializeSecondSignature(SecondSignatureRegistration *registration,
         return false;
     }
 
-    bytecpy(registration->publicKey, buffer, PUBLICKEY_COMPRESSED_LEN);
+    MEMCOPY(registration->publicKey, buffer, PUBLICKEY_COMPRESSED_LEN);
 
     return true;
 }

@@ -51,7 +51,7 @@
 // - lock->amount = U4LE(buffer, 0);
 //
 // Secret Hash - 32 Bytes
-// - bytecpy(lock->secretHash, &buffer[8], 32);
+// - MEMCOPY(lock->secretHash, &buffer[8], 32);
 //
 // Expiration Type- 1 Byte
 // - lock->expirationType = buffer[40];
@@ -60,7 +60,7 @@
 // - lock->expirationValue = U4LE(buffer, 41);
 //
 // RecipientId - 21 Bytes
-// - bytecpy(lock->recipientId, &buffer[45], 21);
+// - MEMCOPY(lock->recipientId, &buffer[45], 21);
 //
 // ---
 bool deserializeHtlcLock(HtlcLock *lock, const uint8_t *buffer, size_t size) {
@@ -70,27 +70,19 @@ bool deserializeHtlcLock(HtlcLock *lock, const uint8_t *buffer, size_t size) {
 
     size_t offset = 0;
 
-    lock->amount            = U8LE(buffer, offset);             // 8 Bytes
+    lock->amount = U8LE(buffer, offset);                            // 8 Bytes
+    offset += sizeof(uint64_t);
 
-    offset += sizeof(uint64_t);     // += sizeof(amount)
+    MEMCOPY(lock->secretHash, &buffer[offset], HASH_32_LEN);        // 32 Bytes
+    offset += HASH_32_LEN;
 
-    bytecpy(lock->secretHash,                                   // 32 Bytes
-            &buffer[offset],
-            HASH_32_LEN);
+    lock->expirationType = buffer[offset];                          // 1 Byte
+    offset += sizeof(uint8_t);
 
-    offset += HASH_32_LEN;          // += sizeof(secretHash)
+    lock->expiration = U4LE(buffer, offset);                        // 4 Bytes
+    offset += sizeof(uint32_t);
 
-    lock->expirationType    = buffer[offset];                   // 1 Byte
-
-    offset += sizeof(uint8_t);      // += sizeof(expirationType)
-
-    lock->expiration        = U4LE(buffer, offset);             // 4 Bytes
-
-    offset += sizeof(uint32_t);     // += sizeof(expiration)
-
-    bytecpy(lock->recipientId,                                  // 21 Bytes
-            &buffer[offset],
-            ADDRESS_HASH_LEN);
+    MEMCOPY(lock->recipientId, &buffer[offset], ADDRESS_HASH_LEN);  // 21 Bytes
 
     return true;
 }

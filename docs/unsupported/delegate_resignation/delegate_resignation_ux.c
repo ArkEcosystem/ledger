@@ -57,9 +57,9 @@ void displayDelegateResignation(const Transaction *transaction) {
     const char *const LABEL_PUBLICKEY       = "PublicKey";
     const size_t LABEL_PUBLICKEY_SIZE       = 10;
 
-    bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
-    bytecpy((char *)displayCtx.title[0], LABEL_PUBLICKEY, LABEL_PUBLICKEY_SIZE);
-    bytecpy((char *)displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
+    MEMCOPY(displayCtx.operation, LABEL, LABEL_SIZE);
+    MEMCOPY(displayCtx.title[0], LABEL_PUBLICKEY, LABEL_PUBLICKEY_SIZE);
+    MEMCOPY(displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
 
     // Delegate PublicKey
     BytesToHex(transaction->senderPublicKey, PUBLICKEY_COMPRESSED_LEN,

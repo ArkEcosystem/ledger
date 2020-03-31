@@ -142,13 +142,13 @@ int encodeBase58PublicKey(uint8_t *in, size_t inSize,
         hash160(in, inSize, &temp[versionSize]);
     }
     else {
-        bytecpy(&temp[versionSize], &in[versionSize], HASH_20_LEN);
+        MEMCOPY(&temp[versionSize], &in[versionSize], HASH_20_LEN);
     }
 
     hash256(temp, ripeLength, checksum);
     hash256(checksum, HASH_32_LEN, checksum);
 
-    bytecpy(&temp[ripeLength], checksum, 4);
+    MEMCOPY(&temp[ripeLength], checksum, 4);
 
     return btchip_encode_base58(temp, ripeLength + 4, out, &outSize);
 }

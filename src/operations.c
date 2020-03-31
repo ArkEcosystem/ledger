@@ -157,10 +157,10 @@ static void handlePublicKeyContext(volatile unsigned int *tx) {
     // Initialize the privateKey to generate the publicKey,
     // clearing the private data sources after each respective use.
     cx_ecfp_init_private_key(curve, privateKeyData, HASH_32_LEN, &privateKey);
-    explicit_bzero(&privateKeyData, sizeof(privateKeyData));
+    MEMSET_BZERO(&privateKeyData, sizeof(privateKeyData));
 
     cx_ecfp_generate_pair(curve, &publicKey, &privateKey, 1U);
-    explicit_bzero(&privateKey, sizeof(privateKey));
+    MEMSET_TYPE_BZERO(&privateKey, cx_ecfp_private_key_t);
 
     // Compress and write the publicKey to the APDU buffer.
     // (compressedPublicKeyLength(33) + publicKey)
@@ -169,11 +169,11 @@ static void handlePublicKeyContext(volatile unsigned int *tx) {
     *tx += compressPublicKey(publicKey.W, &G_io_apdu_buffer[sizeof(uint8_t)]);
 
     // Clear the publicKey object.
-    explicit_bzero(&publicKey, sizeof(publicKey));
+    MEMSET_TYPE_BZERO(&publicKey, cx_ecfp_public_key_t);
 
     // Copy the chaincode if needed.
     if (tmpCtx.publicKey.needsChainCode) {
-        bytecpy(&G_io_apdu_buffer[*tx], tmpCtx.publicKey.chainCode, HASH_32_LEN);
+        MEMCOPY(&G_io_apdu_buffer[*tx], tmpCtx.publicKey.chainCode, HASH_32_LEN);
         *tx += HASH_32_LEN;
     }
 
@@ -233,7 +233,7 @@ static void handleSigningContext() {
     // Iff first payload, copy to the signing context data.
     if (p1 == P1_FIRST) {
         tmpCtx.signing.dataLength = dataLength;
-        bytecpy(tmpCtx.signing.data, workBuffer, dataLength);
+        MEMCOPY(tmpCtx.signing.data, workBuffer, dataLength);
     }
     // Iff n'th payload, and append to signing context data and add to length.
     else if (p1 == P1_MORE) {
@@ -241,7 +241,7 @@ static void handleSigningContext() {
             THROW(0x6A80);
         }
 
-        bytecpy(&tmpCtx.signing.data[tmpCtx.signing.dataLength],
+        MEMCOPY(&tmpCtx.signing.data[tmpCtx.signing.dataLength],
                 workBuffer,
                 dataLength);
 
@@ -281,7 +281,7 @@ void handleOperation(volatile unsigned int *flags, volatile unsigned int *tx) {
             if (handleTransaction(tmpCtx.signing.data,
                                   tmpCtx.signing.dataLength) == false) {
                 // Deserialization failed
-                explicit_bzero(&tmpCtx, sizeof(tmpCtx));
+                MEMSET_BZERO(&tmpCtx, sizeof(tmpCtx));
                 THROW(0x6A80);
             }
             break;
@@ -291,7 +291,7 @@ void handleOperation(volatile unsigned int *flags, volatile unsigned int *tx) {
             if (handleMessage(tmpCtx.signing.data,
                               tmpCtx.signing.dataLength) == false) {
                 // Parsing failed
-                explicit_bzero(&tmpCtx, sizeof(tmpCtx));
+                MEMSET_BZERO(&tmpCtx, sizeof(tmpCtx));
                 THROW(0x6A80);
             }
             break;

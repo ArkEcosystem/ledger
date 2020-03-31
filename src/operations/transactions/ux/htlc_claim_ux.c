@@ -46,7 +46,7 @@ void SetUxHtlcClaim(const Transaction *transaction) {
                displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // Secret
-    bytecpy(displayCtx.text[1],
+    MEMCOPY(displayCtx.text[1],
             transaction->asset.htlcClaim.secret,
             HASH_32_LEN);
 }

@@ -54,7 +54,7 @@ extern void SetUxDisplay(size_t steps, bool isExtended);
 //
 // ---
 bool handleMessage(const uint8_t *buffer, size_t length) {
-    explicit_bzero(&displayCtx, sizeof(displayCtx));
+    MEMSET_TYPE_BZERO(&displayCtx, DisplayContext);
 
     if (length == 0 || length > MAX_TEXT_LEN) {
         return false;
