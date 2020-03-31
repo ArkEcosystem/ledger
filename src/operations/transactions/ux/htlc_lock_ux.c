@@ -36,7 +36,7 @@
 
 #include "utils/base58.h"
 #include "utils/hex.h"
-#include "utils/print.h"
+#include "utils/str.h"
 #include "utils/utils.h"
 
 #include "display/context.h"
@@ -72,12 +72,12 @@ void SetUxHtlcLock(const Transaction *transaction) {
                  sizeof(displayCtx.text[2]));
 
     // Amount
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->asset.htlcLock.amount,
                         displayCtx.text[3], sizeof(displayCtx.text[3]));
 
     // Fees
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->fee,
                         displayCtx.text[4], sizeof(displayCtx.text[4]));
 

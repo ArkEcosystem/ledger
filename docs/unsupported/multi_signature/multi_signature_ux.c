@@ -67,7 +67,7 @@ void displayMultiSignature(const Transaction *transaction) {
                  displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // Fee
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->fee,
                         displayCtx.text[1], sizeof(displayCtx.text[1]));
 }

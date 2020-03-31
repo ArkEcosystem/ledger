@@ -42,7 +42,7 @@
 #include "transactions/ux/vendorfield_ux.h"
 
 #include "utils/base58.h"
-#include "utils/print.h"
+#include "utils/str.h"
 #include "utils/utils.h"
 
 #include "display/context.h"
@@ -70,12 +70,12 @@ void setTransferLegacy(const Transaction *transaction) {
     displayCtx.text[0][ADDRESS_LEN]  = ' ';
 
     // Amount
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->amount,
                         displayCtx.text[1], sizeof(displayCtx.text[1]));
 
     // Fee
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->fee,
                         displayCtx.text[2], sizeof(displayCtx.text[2]));
 
@@ -94,7 +94,7 @@ static void setVoteLegacy(const Transaction *transaction) {
     const size_t voteOffset = 67;
     bytecpy((char*)displayCtx.text[0], transaction->assetPtr, voteOffset);
 
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->fee,
                         displayCtx.text[1], sizeof(displayCtx.text[1]));
 }

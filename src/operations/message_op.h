@@ -33,7 +33,7 @@
 
 #include "constants.h"
 
-#include "utils/print.h"
+#include "utils/str.h"
 #include "utils/utils.h"
 
 #include "display/context.h"

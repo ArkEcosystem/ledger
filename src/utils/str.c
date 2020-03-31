@@ -24,7 +24,7 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#include "utils/print.h"
+#include "utils/str.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -34,16 +34,31 @@
 #include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+// Copy a Number-String, inserting a decimal '.' at a given location.
+//
+// e.g.
+// - adjustDecimals("10000", 5, buffer, 6, 2);
+// - "100.00"
+//
+// @param const char *src:      original string.
+// @param size_t srcSize:       size of the original string, w/null-terminator.
+// @param char *target:         destination where result will be copied.
+// @param size_t targetSize:    max length of writable space in destination.
+// @param size_t decimals:      decimal precision / how many values after '.'.
+//
+// @return size_t: final string length if successful, otherwise '0'.
+//
+// ---
 static size_t adjustDecimals(const char *src, size_t srcSize,
                              char *target, size_t targetSize,
                              size_t decimals) {
     size_t startOffset;
-    size_t lastZeroOffset = 0;
-    size_t offset = 0;
+    size_t lastZeroOffset = 0U;
+    size_t offset = 0U;
 
-    if ((srcSize == 1) && (*src == '0')) {
-        if (targetSize < 2) {
-            return 0;
+    if ((srcSize == 1U) && (*src == '0')) {
+        if (targetSize < 2U) {
+            return 0U;
         }
         target[offset++] = '0';
         target[offset++] = '\0';
@@ -52,31 +67,31 @@ static size_t adjustDecimals(const char *src, size_t srcSize,
 
     if (srcSize <= decimals) {
         size_t delta = decimals - srcSize;
-        if (targetSize < srcSize + 1 + 2 + delta) {
+        if (targetSize < srcSize + 1U + 2U + delta) {
             return offset;
         }
 
         target[offset++] = '0';
-        if (decimals > 0) {
+        if (decimals > 0U) {
           target[offset++] = '.';
         }
         
-        for (size_t i = 0; i < delta; i++) {
+        for (size_t i = 0U; i < delta; i++) {
             target[offset++] = '0';
         }
 
         startOffset = offset;
-        for (size_t i = 0; i < srcSize; i++) {
+        for (size_t i = 0U; i < srcSize; i++) {
             target[offset++] = src[i];
         }
 
         target[offset] = '\0';
     }
     else {
-        size_t sourceOffset = 0;
+        size_t sourceOffset = 0U;
         size_t delta = srcSize - decimals;
 
-        if (targetSize < srcSize + 1 + 1) {
+        if (targetSize < srcSize + 1U + 1U) {
             return offset;
         }
 
@@ -84,7 +99,7 @@ static size_t adjustDecimals(const char *src, size_t srcSize,
             target[offset++] = src[sourceOffset++];
         }
 
-        if (decimals != 0) {
+        if (decimals != 0U) {
             target[offset++] = '.';
         }
 
@@ -98,40 +113,53 @@ static size_t adjustDecimals(const char *src, size_t srcSize,
 
     for (size_t i = startOffset; i < offset; i++) {
         if (target[i] == '0') {
-            if (lastZeroOffset == 0) {
+            if (lastZeroOffset == 0U) {
                 lastZeroOffset = i;
             }
         }
         else {
-            lastZeroOffset = 0;
+            lastZeroOffset = 0U;
         }
     }
 
-    if (lastZeroOffset != 0) {
+    if (lastZeroOffset != 0U) {
         target[lastZeroOffset] = '\0';
-        if (target[lastZeroOffset - 1] == '.') {
-            target[lastZeroOffset - 1] = '\0';
+        if (target[lastZeroOffset - 1U] == '.') {
+            target[lastZeroOffset - 1U] = '\0';
         }
     }
 
     return offset + lastZeroOffset;
 }
 
-////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+// Convert a Unsigned Integer to a String using a Token Name and Decimal count.
+//
+// e.g.
+// - UintToString(1ULL, (char[])buffer, 25);
+// - "1"
+//
+// @param uint64_t value:   unsigned value to be converted.
+// @param char *dst:        destination char buffer.
+// @param size_t maxLen:    max length of writable space.
+//
+// @return size_t: final length w/null-terminator if successful, otherwise '0'.
+//
+// ---
 size_t UintToString(uint64_t value, char *dst, size_t maxLen) {
-    if (dst == NULL || maxLen < 2) {
-        return 0;
+    if (dst == NULL || maxLen < 2U) {
+        return 0U;
     }
 
-    if (value == 0) {
+    if (value == 0U) {
         dst[0] = '0';
         dst[1] = '\0';
-        return 2;
+        return 2U;
     }
 
-    uint64_t base = 1;
-    size_t n = 0;
-    size_t i = 0;
+    uint64_t base = 1U;
+    size_t n = 0U;
+    size_t i = 0U;
 
     // count how many characters are needed
     while (base <= value && n <= UINT64_MAX_STRING_SIZE) {
@@ -139,9 +167,9 @@ size_t UintToString(uint64_t value, char *dst, size_t maxLen) {
         n++;
     }
 
-    if (n > maxLen - 1) {
+    if (n > maxLen - 1U) {
         dst[0] = '\0';
-        return 0;
+        return 0U;
     }
 
     base /= UINT64_BASE_10;
@@ -152,30 +180,53 @@ size_t UintToString(uint64_t value, char *dst, size_t maxLen) {
 
     dst[i] = '\0';
 
-    return n + 1;
+    return n + 1U;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// Convert an Amount to a String using a Token Name and Decimal count.
+//
+// e.g.
+// - TokenAmountToString("ARK ", 4, 8, 1ULL, 25);
+// - "ARK: 0.00000001"
+//
+// @param const char *token     token/ticker name.
+// @param size_t tokenLen:      length of token, excluding the null-terminator.
+// @param size_t decimals:      decimal precision / how many values after '.'.
+// @param uint64_t amount:      unsigned value to be converted.
+// @param char *dst:            destination char buffer.
+// @param size_t maxLen:        max length of writable space.
+//
+// @return size_t: final length w/null-terminator if successful, otherwise '0'.
+//
+// ---
 size_t TokenAmountToString(const char *token, size_t tokenLen, size_t decimals,
                            uint64_t amount,
                            char *dst, size_t maxLen) {
     if (dst == NULL) {
-        return 0;
+        return 0U;
     }
 
-    if (tokenLen > 0) {
+    size_t prefixLen = tokenLen;
+
+    if (prefixLen > 0U) {
+        const char *const separator = ": ";
+        const size_t separatorLen = 2U;
+
         bytecpy(dst, token, tokenLen);
+        bytecpy(dst + tokenLen, separator, separatorLen);
+        prefixLen += separatorLen;
     }
 
-    if (decimals == 0) {
-        return tokenLen + UintToString(amount, dst + tokenLen, maxLen);
+    if (decimals == 0U) {
+        return prefixLen + UintToString(amount, dst + prefixLen, maxLen);
     }
     else {
-        char buffer[TOKEN_AMOUNT_MAX_CHARS];
+        char buffer[25];
         const size_t len = UintToString(amount, buffer, maxLen);
-        return tokenLen +
+        return prefixLen +
                adjustDecimals(buffer, len,
-                              dst + tokenLen, maxLen,
-                              decimals + 1);
+                              dst + prefixLen, maxLen,
+                              decimals + 1U);
     }
 }

@@ -24,18 +24,16 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_UTILS_PRINT_H
-#define ARK_UTILS_PRINT_H
+#ifndef ARK_UTILS_STR_H
+#define ARK_UTILS_STR_H
 
 #include <stddef.h>
 #include <stdint.h>
 
-////////////////////////////////////////////////////////////////////////////////
 size_t UintToString(uint64_t value, char *dst, size_t maxLen);
 
-////////////////////////////////////////////////////////////////////////////////
 size_t TokenAmountToString(const char *token, size_t tokenLen, size_t decimals,
                            uint64_t amount,
                            char *dst, size_t maxLen);
 
-#endif  // ARK_UTILS_PRINT_H
+#endif  // ARK_UTILS_STR_H

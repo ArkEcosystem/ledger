@@ -34,7 +34,7 @@
 #include "operations/transactions/transaction.h"
 
 #include "utils/base58.h"
-#include "utils/print.h"
+#include "utils/str.h"
 #include "utils/utils.h"
 
 #include "display/context.h"
@@ -46,7 +46,7 @@ void SetUxIpfs(const Transaction *transaction) {
     SPRINTF(displayCtx.title_ext, "%s:", UX_IPFS_LABELS[1]);
 
     // Fee
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->fee,
                         displayCtx.text[0], sizeof(displayCtx.text[0]));
 

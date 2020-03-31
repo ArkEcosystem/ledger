@@ -33,7 +33,7 @@
 #include "transactions/ux/vendorfield_ux.h"
 
 #include "utils/base58.h"
-#include "utils/print.h"
+#include "utils/str.h"
 #include "utils/utils.h"
 
 #include "display/context.h"
@@ -59,12 +59,12 @@ void SetUxTransfer(const Transaction *transaction) {
                  displayCtx.text[1], sizeof(displayCtx.text[1]));
 
     // Amount
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->asset.transfer.amount,
                         displayCtx.text[2], sizeof(displayCtx.text[2]));
 
     // Fee
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->fee,
                         displayCtx.text[3], sizeof(displayCtx.text[3]));
 
