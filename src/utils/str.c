@@ -190,7 +190,7 @@ size_t UintToString(uint64_t value, char *dst, size_t maxLen) {
 // - TokenAmountToString("ARK ", 4, 8, 1ULL, 25);
 // - "ARK: 0.00000001"
 //
-// @param const char *token     token/ticker name.
+// @param const char *token:    token/ticker name.
 // @param size_t tokenLen:      length of token, excluding the null-terminator.
 // @param size_t decimals:      decimal precision / how many values after '.'.
 // @param uint64_t amount:      unsigned value to be converted.

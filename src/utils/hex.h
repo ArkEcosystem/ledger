@@ -30,7 +30,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-////////////////////////////////////////////////////////////////////////////////
 size_t BytesToHex(const uint8_t *src, size_t srcLen, char *dst, size_t dstMax);
 
 #endif  // ARK_UTILS_HEX_H
