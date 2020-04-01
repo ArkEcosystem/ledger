@@ -50,11 +50,13 @@
     #include <os_io_seproxyhal.h>
 
     #define MEMCOPY_ os_memmove
+    #define MEMSET_ os_memset
     #define MEMSET_BZERO_ explicit_bzero
 #else  // if not HAVE_BOLOS_SDK
     #include <string.h>
 
     #define MEMCOPY_ memcpy
+    #define MEMSET_ memset
     #define MEMSET_BZERO_ explicit_bzero
 #endif  // HAVE_BOLOS_SDK
 
@@ -67,6 +69,17 @@
 //
 // ---
 #define MEMCOPY MEMCOPY_
+
+
+////////////////////////////////////////////////////////////////////////////////
+// A platform wrapper for 'memset'. Fills a block of memory with a given value.
+//
+// @param void *ptr:    pointer to the object.
+// @param int value:    value to fill the block of memory.
+// @param size_t n:     number of bytes to set.
+//
+// ---
+#define MEMSET MEMSET_
 
 ////////////////////////////////////////////////////////////////////////////////
 // Zero-out a block of memory, avoiding compiler optimization.

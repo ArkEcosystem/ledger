@@ -86,3 +86,4 @@ bool deserializeHtlcLock(HtlcLock *lock, const uint8_t *buffer, size_t size) {
 
     return true;
 }
+

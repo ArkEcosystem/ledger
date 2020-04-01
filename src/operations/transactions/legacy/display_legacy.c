@@ -60,12 +60,9 @@ void setTransferLegacy(const Transaction *transaction) {
     SPRINTF(displayCtx.title[2], "Fee:");
 
     // RecipientId
-    encodeBase58PublicKey((uint8_t*)transaction->recipientId,
-                          ADDRESS_HASH_LEN,
-                          (uint8_t*)displayCtx.text[0],
-                          sizeof(displayCtx.text[0]),
-                          transaction->recipientId[0],
-                          1U);
+    Base58CheckEncode(transaction->recipientId, ADDRESS_HASH_LEN,
+                      displayCtx.text[0], sizeof(displayCtx.text[0]));
+
     // somehow prevents displaying bad chars?
     // legacy, so let's not spend too much time on it.
     displayCtx.text[0][ADDRESS_LEN]  = ' ';

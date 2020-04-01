@@ -52,12 +52,8 @@ void SetUxHtlcLock(const Transaction *transaction) {
     SPRINTF(displayCtx.title[4], "%s:", UX_LABEL_FEE);
 
     // RecipientId
-    encodeBase58PublicKey((uint8_t *)transaction->asset.htlcLock.recipientId,
-                          ADDRESS_HASH_LEN,
-                          (uint8_t *)displayCtx.text[0],
-                          ADDRESS_LEN,
-                          transaction->asset.htlcLock.recipientId[0],
-                          1);
+    Base58CheckEncode(transaction->asset.htlcLock.recipientId, ADDRESS_HASH_LEN,
+                      displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // Secret Hash
     BytesToHex(transaction->asset.htlcLock.secretHash, HASH_32_LEN,

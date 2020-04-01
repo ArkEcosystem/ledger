@@ -26,7 +26,17 @@
  * -----
  * 
  * Parts of this software are based on the Ledger Bitcoin Wallet App
- *
+ * 
+ * (btchip_encode_base58)
+ * - src: https://github.com/LedgerHQ/ledger-app-btc/blob/master/src/btchip_base58.c#L79
+ * 
+ * changes:
+ * - rename 'btchip_encode_base58' -> 'Base58Encode'.
+ * - moved global 'MAX' variable to local scope.
+ * - added more checks.
+ * - added U suffix to integer literals.
+ * - use stdint-types.
+ * 
  *   Ledger App - Bitcoin Wallet
  *   (c) 2016-2019 Ledger
  *
@@ -56,9 +66,7 @@
 #include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-#define MAX_ENC_INPUT_SIZE 120
-
-////////////////////////////////////////////////////////////////////////////////
+// Base58 Alphabet Table
 static const uint8_t BASE58ALPHABET[] = {
     '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
     'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
@@ -67,42 +75,55 @@ static const uint8_t BASE58ALPHABET[] = {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// src: https://github.com/LedgerHQ/ledger-app-btc/blob/master/src/btchip_base58.c#L79
-int btchip_encode_base58(const unsigned char *in, size_t length,
-                         unsigned char *out, size_t *outlen) {
-    unsigned char buffer[MAX_ENC_INPUT_SIZE * 138 / 100 + 1] = {0};
-    size_t i = 0, j;
-    size_t startAt, stopAt;
-    size_t zeroCount = 0;
-    size_t outputSize;
+// Base58 Encode an input stream. Outputs a formatted string.
+//
+// @param const unsigned char *in:  input byte-array to be encoded.
+// @param size_t length:            length of the input.
+// @param unsigned char *out:       destination where output will be written.
+// @param size_t *outlen:           ptr to the max length of writable space.
+//
+// @return int: '0' if successful, otherwise '-1'.
+//
+// ---
+int Base58Encode(const uint8_t *in, size_t length, char *out, size_t *outlen) {
+    const size_t MAX_ENC_INPUT_SIZE = 120U;
 
-    if (length > MAX_ENC_INPUT_SIZE) {
+    if (in == NULL || length == 0U ||
+        out == NULL || *out < 0U || outlen == 0U ||
+        length > MAX_ENC_INPUT_SIZE) {
         return -1;
     }
 
-    while ((zeroCount < length) && (in[zeroCount] == 0)) {
+    size_t i = 0U, j;
+    size_t startAt, stopAt;
+    size_t zeroCount = 0U;
+    size_t outputSize;
+
+    while ((zeroCount < length) && (in[zeroCount] == 0U)) {
         ++zeroCount;
     }
 
-    outputSize = (length - zeroCount) * 138 / 100 + 1;
-    stopAt = outputSize - 1;
+    unsigned char buffer[MAX_ENC_INPUT_SIZE * 138U / 100U + 1U] = { 0U };
+
+    outputSize = (length - zeroCount) * 138U / 100U + 1U;
+    stopAt = outputSize - 1U;
     for (startAt = zeroCount; startAt < length; startAt++) {
         int carry = in[startAt];
-        for (j = outputSize - 1; (int)j >= 0; j--) {
-            carry += 256 * buffer[j];
-            buffer[j] = carry % 58;
-            carry /= 58;
+        for (j = outputSize - 1U; (int)j >= 0U; j--) {
+            carry += 256U * buffer[j];
+            buffer[j] = carry % 58U;
+            carry /= 58U;
 
-            if (j <= stopAt - 1 && carry == 0) {
+            if (j <= stopAt - 1U && carry == 0U) {
                 break;
             }
         }
         stopAt = j;
     }
 
-    j = 0;
-    while (j < outputSize && buffer[j] == 0) {
-        j += 1;
+    j = 0U;
+    while (j < outputSize && buffer[j] == 0U) {
+        j += 1U;
     }
 
     if (*outlen < zeroCount + outputSize - j) {
@@ -110,7 +131,7 @@ int btchip_encode_base58(const unsigned char *in, size_t length,
         return -1;
     }
 
-    os_memset(out, BASE58ALPHABET[0], zeroCount);
+    MEMSET(out, BASE58ALPHABET[0], zeroCount);
 
     i = zeroCount;
     while (j < outputSize) {
@@ -118,37 +139,53 @@ int btchip_encode_base58(const unsigned char *in, size_t length,
     }
     *outlen = i;
 
-    return 0;
+    return 0U;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-int encodeBase58PublicKey(uint8_t *in, size_t inSize,
-                          uint8_t *out, size_t outSize,
-                          uint16_t version, uint8_t alreadyHashed) {
-    uint8_t temp[inSize + 4];
+// Base58Check Encode an input stream, Outputs a formatted string.
+//
+// for more information on Base58Check Encoding:
+// - https://en.bitcoin.it/wiki/Base58Check_encoding
+//
+// @param const uint8_t *in:    input byte-array to be encoded.
+// @param size_t length:        length of the input.
+// @param char *out:            destination where output will be written.
+// @param size_t outLen:        max length of writable space.
+//
+// @return int: '0' if successful, otherwise '-1'.
+//
+// --
+int Base58CheckEncode(const uint8_t *in, size_t length,
+                      char *out, size_t outLen) {
+    const size_t BASE58_CHECKSUM_LEN = 4U;
+
+    if (in == NULL || length == 0U || out == NULL ||
+        length + BASE58_CHECKSUM_LEN > outLen) {
+        return -1;
+    }
+
+    uint8_t temp[length + BASE58_CHECKSUM_LEN];
     uint8_t checksum[HASH_32_LEN];
-    size_t versionSize = (version > 255U ? 2 : 1);
-    size_t ripeLength = versionSize + HASH_20_LEN;
 
-    if (version > 255U) {
-        temp[0] = (uint8_t)(version >> 8);
-        temp[1] = (uint8_t)version;
-    }
-    else {
-        temp[0] = (uint8_t)version;
-    }
+    MEMCOPY(temp, in, length);
 
-    if (!alreadyHashed) {
-        hash160(in, inSize, &temp[versionSize]);
-    }
-    else {
-        MEMCOPY(&temp[versionSize], &in[versionSize], HASH_20_LEN);
-    }
-
-    hash256(temp, ripeLength, checksum);
+    // Calculate the checksum.
+    hash256(temp, length, checksum);
     hash256(checksum, HASH_32_LEN, checksum);
 
-    MEMCOPY(&temp[ripeLength], checksum, 4);
+    // append the first 4 bytes of the checksum to the output.
+    MEMCOPY(&temp[length], checksum, BASE58_CHECKSUM_LEN);
+    MEMSET_BZERO(checksum, HASH_32_LEN);
 
-    return btchip_encode_base58(temp, ripeLength + 4, out, &outSize);
+    if (Base58Encode(temp, length + BASE58_CHECKSUM_LEN, out, &outLen) < 0) {
+        MEMSET_BZERO(temp, length + BASE58_CHECKSUM_LEN);
+        MEMSET_BZERO(out, outLen);
+
+        return -1;
+    }
+
+    MEMSET_BZERO(temp, length + BASE58_CHECKSUM_LEN);
+
+    return 0U;
 }

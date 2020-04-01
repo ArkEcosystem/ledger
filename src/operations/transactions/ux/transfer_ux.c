@@ -48,12 +48,8 @@ void SetUxTransfer(const Transaction *transaction) {
     SPRINTF(displayCtx.title[3], "%s:", UX_LABEL_FEE);
 
     // RecipientId
-    encodeBase58PublicKey((uint8_t *)transaction->asset.transfer.recipientId,
-                          ADDRESS_HASH_LEN,
-                          (uint8_t *)displayCtx.text[0],
-                          sizeof(displayCtx.text[0]),
-                          transaction->asset.transfer.recipientId[0],
-                          1U);
+    Base58CheckEncode(transaction->asset.transfer.recipientId, ADDRESS_HASH_LEN,
+                      displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // Expiration
     UintToString(transaction->asset.transfer.expiration,

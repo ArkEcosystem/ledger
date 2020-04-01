@@ -53,8 +53,6 @@ void SetUxIpfs(const Transaction *transaction) {
 
     // DAG
     size_t dagLen = MAX_TEXT_LEN;
-    btchip_encode_base58(transaction->asset.ipfs.dag,
-                         transaction->asset.ipfs.length,
-                         (uint8_t *)displayCtx.text_ext,
-                         &dagLen);
+    Base58Encode(transaction->asset.ipfs.dag, transaction->asset.ipfs.length,
+                 displayCtx.text_ext, &dagLen);
 }
