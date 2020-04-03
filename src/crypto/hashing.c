@@ -33,14 +33,6 @@
 #include <cx.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-// Generate a Ripemd160 hash
-void hash160(uint8_t *in, size_t inSize, uint8_t *out) {
-    cx_ripemd160_t ripeHash;
-    cx_ripemd160_init(&ripeHash);
-    cx_hash(&ripeHash.header, CX_LAST, in, inSize, out, CX_SHA256_SIZE);
-}
-
-////////////////////////////////////////////////////////////////////////////////
 void hash256(uint8_t *in, size_t inSize, uint8_t *out) {
     cx_sha256_t ctx;
     cx_sha256_init(&ctx);

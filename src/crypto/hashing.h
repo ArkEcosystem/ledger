@@ -30,8 +30,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-////////////////////////////////////////////////////////////////////////////////
-void hash160(uint8_t *in, size_t inSize, uint8_t *out);
 void hash256(uint8_t *in, size_t inSize, uint8_t *out);
 
 #endif  // #define ARK_CRYPTO_HASHING_H
