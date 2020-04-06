@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.1.0] - 2020-04-06
 
 ### Added
 -   support large operations ([#72])
@@ -44,7 +44,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#55]: https://github.com/ArkEcosystem/ledger/pull/53
 [2.0.0]: https://github.com/ArkEcosystem/ledger/compare/master...2.0.0
 [#66]: https://github.com/ArkEcosystem/ledger/pull/66
-[2.0.1]: https://github.com/ArkEcosystem/ledger/compare/master...2.0.1
+[2.0.1]: https://github.com/ArkEcosystem/ledger/compare/2.0.0...2.0.1
 [#63]: https://github.com/ArkEcosystem/ledger/pull/63
 [#72]: https://github.com/ArkEcosystem/ledger/pull/72
-[unreleased]: https://github.com/ArkEcosystem/ledger/compare/master...develop
+[2.1.0]: https://github.com/ArkEcosystem/ledger/compare/2.0.1...develop
