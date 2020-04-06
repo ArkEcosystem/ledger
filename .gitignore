@@ -1,3 +1,7 @@
+# IDE
+.vscode
+
+# Ledger/BOLOS SDK
 bin
 debug
 dep
@@ -5,4 +9,9 @@ obj
 src/glyphs.c
 src/glyphs.h
 
+# OS
 .DS_Store
+
+# Vagrant
+*console.log
+.vagrant
