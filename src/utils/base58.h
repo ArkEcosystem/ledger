@@ -49,12 +49,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-////////////////////////////////////////////////////////////////////////////////
-int btchip_encode_base58(const unsigned char *in, size_t length,
-                         unsigned char *out, size_t *outlen);
+int Base58Encode(const uint8_t *in, size_t length, char *out, size_t *outlen);
 
-int encodeBase58PublicKey(uint8_t *in, size_t inSize,
-                          uint8_t *out, size_t outSize,
-                          uint16_t version, uint8_t alreadyHashed);
+int Base58CheckEncode(const uint8_t *in, size_t length,
+                      char *out, size_t outLen);
 
 #endif  // ARK_UTILS_BASE58_H

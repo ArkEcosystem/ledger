@@ -57,7 +57,7 @@
 // - registration->length = buffer[0];
 //
 // Username - 3 <=> 20 Bytes:
-// - bytecpy(registration->username, &buffer[1], registration->length)
+// - MEMCOPY(registration->username, &buffer[1], registration->length)
 //
 // ---
 bool deserializeDelegateRegistration(DelegateRegistration *registration,
@@ -70,9 +70,9 @@ bool deserializeDelegateRegistration(DelegateRegistration *registration,
     }
 
     registration->length = (int)buffer[0];
-    bytecpy((void *)registration->username,
+    MEMCOPY(registration->username,
             &buffer[1],
-            (int)registration->length);
+            registration->length);
 
     return true;
 }

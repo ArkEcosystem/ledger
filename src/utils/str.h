@@ -24,40 +24,16 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#include "transactions/types/second_signature.h"
+#ifndef ARK_UTILS_STR_H
+#define ARK_UTILS_STR_H
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-#include "constants.h"
+size_t UintToString(uint64_t value, char *dst, size_t maxLen);
 
-#include "utils/utils.h"
+size_t TokenAmountToString(const char *token, size_t tokenLen, size_t decimals,
+                           uint64_t amount,
+                           char *dst, size_t maxLen);
 
-////////////////////////////////////////////////////////////////////////////////
-// Second Signature Registration (Type 1) - 33 Bytes
-//
-// @param SecondSignatureRegistration *registration
-// @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
-// @param size_t size: The Asset Buffer Size.
-//
-// @return bool: true if deserialization was successful.
-//
-// ---
-// Internals:
-//
-// Second PublicKey - 33 Bytes:
-// - MEMCOPY(registration->publicKey, buffer, 33);
-//
-// ---
-bool deserializeSecondSignature(SecondSignatureRegistration *registration,
-                                const uint8_t *buffer,
-                                size_t size) {
-    if (size != PUBLICKEY_COMPRESSED_LEN) {
-        return false;
-    }
-
-    MEMCOPY(registration->publicKey, buffer, PUBLICKEY_COMPRESSED_LEN);
-
-    return true;
-}
+#endif  // ARK_UTILS_STR_H

@@ -42,7 +42,7 @@
 
 #include "operations/transactions/transaction.h"
 
-#include "utils/print.h"
+#include "utils/str.h"
 #include "utils/utils.h"
 
 #include "display/context.h"
@@ -61,14 +61,10 @@ void displayMultiPayment(const Transaction *transaction) {
     const char *const LABEL_TOTAL_AMOUNT    = "Total Amount";
     const size_t LABEL_TOTAL_AMOUNT_SIZE    = 13;
 
-    bytecpy((char *)displayCtx.operation, LABEL,
-                                          LABEL_SIZE);
-    bytecpy((char *)displayCtx.title[0], LABEL_COUNT,
-                                         LABEL_COUNT_SIZE);
-    bytecpy((char *)displayCtx.title[1], LABEL_TOTAL_AMOUNT,
-                                         LABEL_TOTAL_AMOUNT_SIZE);
-    bytecpy((char *)displayCtx.title[2], LABEL_FEE,
-                                         LABEL_FEE_SIZE);
+    MEMCOPY(displayCtx.operation, LABEL, LABEL_SIZE);
+    MEMCOPY(displayCtx.title[0], LABEL_COUNT, LABEL_COUNT_SIZE);
+    MEMCOPY(displayCtx.title[1], LABEL_TOTAL_AMOUNT, LABEL_TOTAL_AMOUNT_SIZE);
+    MEMCOPY(displayCtx.title[2], LABEL_FEE, LABEL_FEE_SIZE);
 
     // Payment Count
 

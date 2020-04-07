@@ -43,7 +43,7 @@
 #include "operations/transactions/transaction.h"
 
 #include "utils/hex.h"
-#include "utils/print.h"
+#include "utils/str.h"
 #include "utils/utils.h"
 
 #include "display/context.h"
@@ -57,16 +57,16 @@ void displayDelegateResignation(const Transaction *transaction) {
     const char *const LABEL_PUBLICKEY       = "PublicKey";
     const size_t LABEL_PUBLICKEY_SIZE       = 10;
 
-    bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
-    bytecpy((char *)displayCtx.title[0], LABEL_PUBLICKEY, LABEL_PUBLICKEY_SIZE);
-    bytecpy((char *)displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
+    MEMCOPY(displayCtx.operation, LABEL, LABEL_SIZE);
+    MEMCOPY(displayCtx.title[0], LABEL_PUBLICKEY, LABEL_PUBLICKEY_SIZE);
+    MEMCOPY(displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
 
     // Delegate PublicKey
     BytesToHex(transaction->senderPublicKey, PUBLICKEY_COMPRESSED_LEN,
                displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // Fee
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->fee,
                         displayCtx.text[1], sizeof(displayCtx.text[1]));
 }

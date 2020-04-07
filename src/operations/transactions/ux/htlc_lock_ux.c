@@ -37,6 +37,7 @@
 #include "utils/base58.h"
 #include "utils/hex.h"
 #include "utils/print.h"
+#include "utils/str.h"
 #include "utils/utils.h"
 
 #include "display/context.h"
@@ -51,12 +52,8 @@ void SetUxHtlcLock(const Transaction *transaction) {
     SPRINTF(displayCtx.title[4], "%s:", UX_LABEL_FEE);
 
     // RecipientId
-    encodeBase58PublicKey((uint8_t *)transaction->asset.htlcLock.recipientId,
-                          ADDRESS_HASH_LEN,
-                          (uint8_t *)displayCtx.text[0],
-                          ADDRESS_LEN,
-                          transaction->asset.htlcLock.recipientId[0],
-                          1);
+    Base58CheckEncode(transaction->asset.htlcLock.recipientId, ADDRESS_HASH_LEN,
+                      displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // Secret Hash
     BytesToHex(transaction->asset.htlcLock.secretHash, HASH_32_LEN,
@@ -72,12 +69,12 @@ void SetUxHtlcLock(const Transaction *transaction) {
                  sizeof(displayCtx.text[2]));
 
     // Amount
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->asset.htlcLock.amount,
                         displayCtx.text[3], sizeof(displayCtx.text[3]));
 
     // Fees
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->fee,
                         displayCtx.text[4], sizeof(displayCtx.text[4]));
 

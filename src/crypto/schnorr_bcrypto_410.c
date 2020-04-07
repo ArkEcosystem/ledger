@@ -35,6 +35,8 @@
 
 #include "constants.h"
 
+#include "utils/utils.h"
+
 static unsigned char const SECP256K1_G[] = {
     // Gx: 0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798
     0x79, 0xbe, 0x66, 0x7e, 0xf9, 0xdc, 0xbb, 0xac,
@@ -203,7 +205,7 @@ uint32_t schnorr_sign_bcrypto_410(const uint8_t *privateKey,
 
     // R must not be '0'
     if (cx_math_is_zero(signature, d_len)) {
-        explicit_bzero(&signature, SIG_SCHNORR_LEN);
+        MEMSET_BZERO(&signature, SIG_SCHNORR_LEN);
         sig_len = 0;
         goto CLEAR_LOCALS;
     }
@@ -244,18 +246,18 @@ uint32_t schnorr_sign_bcrypto_410(const uint8_t *privateKey,
     cx_math_addm(signature + d_len, k, e, SECP256K1_N, d_len);
 
     if (cx_math_is_zero(signature + d_len, d_len)) {
-        explicit_bzero(signature, SIG_SCHNORR_LEN);
+        MEMSET_BZERO(signature, SIG_SCHNORR_LEN);
         sig_len = 0;
     }
 
     ////////////////////////////////////////////////////////////
     CLEAR_LOCALS:
-    explicit_bzero((void *)&H, sizeof(H));
-    explicit_bzero(&a, sizeof(a));
-    explicit_bzero(&k, sizeof(k));
-    explicit_bzero(&R, sizeof(R));
-    explicit_bzero(&A, sizeof(A));
-    explicit_bzero(&e, sizeof(e));
+    MEMSET_BZERO((void *)&H, sizeof(H));
+    MEMSET_BZERO(&a, sizeof(a));
+    MEMSET_BZERO(&k, sizeof(k));
+    MEMSET_BZERO(&R, sizeof(R));
+    MEMSET_BZERO(&A, sizeof(A));
+    MEMSET_BZERO(&e, sizeof(e));
 
     return sig_len;
 }

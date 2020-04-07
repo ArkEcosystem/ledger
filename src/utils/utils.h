@@ -49,15 +49,61 @@
     #include <os.h>
     #include <os_io_seproxyhal.h>
 
-    #define bytecpy os_memmove
+    #define MEMCOPY_ os_memmove
+    #define MEMSET_ os_memset
+    #define MEMSET_BZERO_ explicit_bzero
 #else  // if not HAVE_BOLOS_SDK
     #include <string.h>
 
-    #define bytecpy memcpy
-
-    // Ledger Nano SDK
-    // If using 8-byte numbers (e.g. uint64_t), use methods in 'utils/print.h'
-    #define SPRINTF(strbuf, ...) snprintf(strbuf, sizeof(strbuf), __VA_ARGS__)
+    #define MEMCOPY_ memcpy
+    #define MEMSET_ memset
+    #define MEMSET_BZERO_ explicit_bzero
 #endif  // HAVE_BOLOS_SDK
+
+////////////////////////////////////////////////////////////////////////////////
+// A platform wrapper for 'memcpy' / 'os_memmove'.
+//
+// @param void *dst:        pointer to the destination buffer.
+// @param const void *src:  pointer to the source buffer.
+// @param size_t n:         number of bytes to copy.
+//
+// ---
+#define MEMCOPY MEMCOPY_
+
+
+////////////////////////////////////////////////////////////////////////////////
+// A platform wrapper for 'memset'. Fills a block of memory with a given value.
+//
+// @param void *ptr:    pointer to the object.
+// @param int value:    value to fill the block of memory.
+// @param size_t n:     number of bytes to set.
+//
+// ---
+#define MEMSET MEMSET_
+
+////////////////////////////////////////////////////////////////////////////////
+// Zero-out a block of memory, avoiding compiler optimization.
+//
+// @param void *ptr:    pointer to the object.
+// @param size_t len:   number of bytes to zero-out.
+//
+// ---
+#define MEMSET_BZERO MEMSET_BZERO_
+
+////////////////////////////////////////////////////////////////////////////////
+// Zero-out a block of memory with additional type-safety.
+//
+// TODO: use Static Assertion
+//
+// @param void *ptr:        pointer to the object.
+// @param void expected_t:  type of object to be zeroed-out.
+//
+// ---
+#define MEMSET_TYPE_BZERO(ptr, expected_t) do {     \
+    if (sizeof(expected_t) == sizeof(*(ptr))) {     \
+        MEMSET_BZERO(ptr, sizeof(expected_t));      \
+    }                                               \
+} while(0);
+
 
 #endif  // ARK_UTILS_H

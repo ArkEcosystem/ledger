@@ -47,10 +47,10 @@
 // Internals:
 //
 // Lock Transaction Id - 32 Bytes:
-// - bytecpy(claim->id, &buffer[0], 32);
+// - MEMCOPY(claim->id, &buffer[0], 32);
 //
 // Unlock Secret - 32 Bytes
-// - bytecpy(claim->secret, &buffer[32], 32);
+// - MEMCOPY(claim->secret, &buffer[32], 32);
 //
 // ---
 bool deserializeHtlcClaim(HtlcClaim *claim, const uint8_t *buffer, size_t size) {
@@ -58,8 +58,8 @@ bool deserializeHtlcClaim(HtlcClaim *claim, const uint8_t *buffer, size_t size) 
         return false;
     }
 
-    bytecpy(claim->id, &buffer[0], HASH_32_LEN);                    // 32 Bytes
-    bytecpy(claim->secret, &buffer[HASH_32_LEN], HASH_32_LEN);      // 32 Bytes
+    MEMCOPY(claim->id, &buffer[0], HASH_32_LEN);                    // 32 Bytes
+    MEMCOPY(claim->secret, &buffer[HASH_32_LEN], HASH_32_LEN);      // 32 Bytes
 
     return true;
 }

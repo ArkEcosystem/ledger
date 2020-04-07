@@ -50,7 +50,7 @@
 // - ipfs->length = buffer[1] + 2U;
 //
 // Dag - 0 <=> 64 Bytes
-// - bytecpy(ipfs->dag, buffer, ipfs->length);
+// - MEMCOPY(ipfs->dag, buffer, ipfs->length);
 //
 // ---
 bool deserializeIpfs(Ipfs *ipfs, const uint8_t *buffer, size_t size) {
@@ -67,7 +67,7 @@ bool deserializeIpfs(Ipfs *ipfs, const uint8_t *buffer, size_t size) {
         return false;
     }
 
-    bytecpy(ipfs->dag, buffer, size);                       // 0 <=> 64 Bytes
+    MEMCOPY(ipfs->dag, buffer, size);                       // 0 <=> 64 Bytes
 
     return true;
 }

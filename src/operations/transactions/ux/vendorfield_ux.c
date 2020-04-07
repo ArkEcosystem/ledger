@@ -30,6 +30,7 @@
 
 #include "operations/transactions/transaction.h"
 
+#include "utils/print.h"
 #include "utils/utils.h"
 
 #include "display/context.h"
@@ -38,7 +39,7 @@
 void setVendorField(const Transaction *transaction) {
     SPRINTF(displayCtx.title_ext, "%s:", UX_VENDORFIELD_LABEL);
 
-    snprintf(displayCtx.text_ext,
+    SNPRINTF(displayCtx.text_ext,
              transaction->vendorFieldLength + 1,
              "%s", transaction->vendorField);
 }

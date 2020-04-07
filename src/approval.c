@@ -55,6 +55,8 @@
 
 #include "display/context.h"
 
+#include "utils/utils.h"
+
 ////////////////////////////////////////////////////////////////////////////////
 extern void ui_idle(void);
 
@@ -66,7 +68,7 @@ union {
 
 ////////////////////////////////////////////////////////////////////////////////
 unsigned int ioApprove(const bagl_element_t *e) {
-    explicit_bzero(&displayCtx, sizeof(displayCtx));
+    MEMSET_TYPE_BZERO(&displayCtx, DisplayContext);
 
     unsigned short tx = 0;
 
@@ -84,7 +86,7 @@ unsigned int ioApprove(const bagl_element_t *e) {
                              HASH_32_LEN,
                              &privateKey);
 
-    explicit_bzero(privateKeyData, sizeof(privateKeyData));
+    MEMSET_BZERO(privateKeyData, sizeof(privateKeyData));
 
     if (tmpCtx.signing.curve == CX_CURVE_256K1) {
         uint8_t hash[CX_SHA256_SIZE];
@@ -97,8 +99,8 @@ unsigned int ioApprove(const bagl_element_t *e) {
             : signEcdsa(&privateKey, hash, G_io_apdu_buffer, SIG_ECDSA_MAX_LEN);
     }
 
-    explicit_bzero(&privateKey, sizeof(privateKey));
-    explicit_bzero(&tmpCtx, sizeof(tmpCtx));
+    MEMSET_TYPE_BZERO(&privateKey, cx_ecfp_private_key_t);
+    MEMSET_BZERO(&tmpCtx, sizeof(tmpCtx));
 
     G_io_apdu_buffer[tx++] = 0x90;
     G_io_apdu_buffer[tx++] = 0x00;
@@ -115,8 +117,8 @@ unsigned int ioApprove(const bagl_element_t *e) {
 
 ////////////////////////////////////////////////////////////////////////////////
 unsigned int ioCancel(const bagl_element_t *e) {
-    explicit_bzero(&displayCtx, sizeof(displayCtx));
-    explicit_bzero(&tmpCtx, sizeof(tmpCtx));
+    MEMSET_TYPE_BZERO(&displayCtx, DisplayContext);
+    MEMSET_BZERO(&tmpCtx, sizeof(tmpCtx));
 
     G_io_apdu_buffer[0] = 0x69;
     G_io_apdu_buffer[1] = 0x85;
@@ -133,8 +135,8 @@ unsigned int ioCancel(const bagl_element_t *e) {
 
 ////////////////////////////////////////////////////////////////////////////////
 unsigned int ioExit(const bagl_element_t *e) {
-    explicit_bzero(&displayCtx, sizeof(displayCtx));
-    explicit_bzero(&tmpCtx, sizeof(tmpCtx));
+    MEMSET_TYPE_BZERO(&displayCtx, DisplayContext);
+    MEMSET_BZERO(&tmpCtx, sizeof(tmpCtx));
 
     // Go back to the dashboard
     os_sched_exit(0);
