@@ -63,7 +63,7 @@
 // - payments->amounts[i] = U8LE(&buffer[sizeof(uint16_t) + (i * sizeof(uint64_t))], sizeof(uint64_t))
 //
 // Addresses[] - 21 Bytes * n_payments
-// - bytecpy(&payments->addresses[i * 21], &buffer[(sizeof(uint16_t) + (i * (sizeof(uint64_t) + 21))], 21);
+// - MEMCOPY(&payments->addresses[i * 21], &buffer[(sizeof(uint16_t) + (i * (sizeof(uint64_t) + 21))], 21);
 //
 // ---
 bool deserializeMultiPayment(MultiPaymentAsset *payments,
@@ -75,7 +75,7 @@ bool deserializeMultiPayment(MultiPaymentAsset *payments,
         payments->amounts[i] = U8LE(&buffer[sizeof(uint16_t) + i * sizeof(uint64_t)],
                                     sizeof(uint64_t));
 
-        bytecpy(&payments->addresses[i * ADDRESS_HASH_LEN],
+        MEMCOPY(&payments->addresses[i * ADDRESS_HASH_LEN],
                 &buffer[sizeof(uint16_t) + payments->n_payments * sizeof(uint64_t) + i * ADDRESS_HASH_LEN],
                 ADDRESS_HASH_LEN);
     }

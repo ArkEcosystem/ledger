@@ -42,7 +42,7 @@
 
 #include "operations/transactions/transaction.h"
 
-#include "utils/print.h"
+#include "utils/str.h"
 #include "utils/utils.h"
 
 #include "display/context.h"
@@ -56,17 +56,17 @@ void displayDelegateRegistration(const Transaction *transaction) {
     const char *const LABEL_USERNAME     = "Username";
     const size_t LABEL_USERNAME_SIZE     = 9;
 
-    bytecpy((char *)displayCtx.operation, LABEL, LABEL_SIZE);
-    bytecpy((char *)displayCtx.title[0], LABEL_USERNAME, LABEL_USERNAME_SIZE);
-    bytecpy((char *)displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
+    MEMCOPY(displayCtx.operation, LABEL, LABEL_SIZE);
+    MEMCOPY(displayCtx.title[0], LABEL_USERNAME, LABEL_USERNAME_SIZE);
+    MEMCOPY(displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
 
     // Username
-    bytecpy((char *)displayCtx.text[0],
+    MEMCOPY(displayCtx.text[0],
             transaction->asset.delegateRegistration.username,
             transaction->asset.delegateRegistration.length);
 
     // Fee
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->fee,
                         displayCtx.text[1], sizeof(displayCtx.text[1]));
 }

@@ -61,6 +61,8 @@
 
 #include "display/context.h"
 
+#include "utils/utils.h"
+
 ////////////////////////////////////////////////////////////////////////////////
 ux_state_t G_ux;
 
@@ -180,7 +182,7 @@ ux_flow_step_t* ux_flow_container[UX_FLOW_CONTAINTER_MAX];
 ////////////////////////////////////////////////////////////////////////////////
 // Initialize the Flow Container
 void ux_flow_container_init(size_t steps, bool isExtended) {
-    explicit_bzero(ux_flow_container, sizeof(ux_flow_container));
+    MEMSET_BZERO(ux_flow_container, sizeof(ux_flow_container));
 
     // copy all UX Flow steps to the Flow Container
     os_memmove(ux_flow_container, ux_flow_container_, sizeof(ux_flow_container_));

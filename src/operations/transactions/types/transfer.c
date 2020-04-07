@@ -54,7 +54,7 @@
 // - transfer->expiration = U4LE(buffer, 8);
 //
 // RecipientId - 21 Bytes:
-// - bytecpy(transfer->recipientId, &buffer[12], 21);
+// - MEMCOPY(transfer->recipientId, &buffer[12], 21);
 //
 // ---
 bool deserializeTransfer(Transfer *transfer,
@@ -68,7 +68,7 @@ bool deserializeTransfer(Transfer *transfer,
 
     transfer->amount        = U8LE(buffer, 0);                      // 8 Bytes
     transfer->expiration    = U4LE(buffer, sizeof(uint64_t));       // 4 Bytes
-    bytecpy(transfer->recipientId,                                  // 21 Bytes
+    MEMCOPY(transfer->recipientId,                                  // 21 Bytes
             &buffer[sizeof(uint64_t) + sizeof(uint32_t)],
             ADDRESS_HASH_LEN);
 

@@ -45,7 +45,7 @@ void deserializeCommonLegacy(Transaction *transaction,
     transaction->version        = TRANSACTION_VERSION_LEGACY;
     transaction->type           = buffer[TYPE_OFFSET_LEGACY];
 
-    bytecpy(transaction->recipientId,
+    MEMCOPY(transaction->recipientId,
             &buffer[RECIPIENT_OFFSET_LEGACY],
             ADDRESS_HASH_LEN);
 

@@ -58,7 +58,7 @@ size_t compressPublicKey(const uint8_t *uncompressed, uint8_t *compressed) {
             ? EC_PUBLICKEY_ODD_PREFIX
             : EC_PUBLICKEY_EVEN_PREFIX);
 
-    bytecpy(&compressed[1], &uncompressed[1], HASH_32_LEN);
+    MEMCOPY(&compressed[1], &uncompressed[1], HASH_32_LEN);
 
     return PUBLICKEY_COMPRESSED_LEN;
 }

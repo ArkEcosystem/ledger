@@ -54,12 +54,14 @@
 // #include "display/context.h"
 // #include "display/display.h"
 
+// #include "utils/utils.h"
+
 // ////////////////////////////////////////////////////////////////////////////////
 // extern void SetUxDisplay(size_t steps, bool isExtended);
 
 // ////////////////////////////////////////////////////////////////////////////////
 // void SetUx(const Transaction *transaction) {
-//     explicit_bzero(&displayCtx, sizeof(displayCtx));
+//     MEMSET_TYPE_BZERO(&displayCtx, DisplayContext);
 
 //     const bool hasVendorField = transaction->vendorFieldLength > 0;
 

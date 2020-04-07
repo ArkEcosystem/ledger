@@ -30,11 +30,19 @@
 #include <stdint.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-// Convert Bytes to a Hex string.
-// NULL terminated at (n + 1)
+// Convert Bytes to a Hex string, with null-terminator at N+1.
+//
+// @param const uint8_t *src:   source byte-array.
+// @param size_t srcLen:        length of the byte-array.
+// @param char *dst:            destination hex-string buffer.
+// @param size_t dstMax:        max length of writable space.
+//
+// @return size_t: final length w/null-terminator if successful, otherwise '0'.
+//
+// ---
 size_t BytesToHex(const uint8_t *src, size_t srcLen, char *dst, size_t dstMax) {
-    if (src == NULL || dst == NULL || (srcLen * 2) + 1 > dstMax) {
-        return 0;
+    if (src == NULL || dst == NULL || (srcLen * 2U) + 1U > dstMax) {
+        return 0U;
     }
 
     const char *const HEX_DIGITS = "0123456789abcdef";
@@ -42,12 +50,12 @@ size_t BytesToHex(const uint8_t *src, size_t srcLen, char *dst, size_t dstMax) {
     size_t len = srcLen;
 
     do {
-        *dst++ = HEX_DIGITS[(*src >> 4) & 0xF];
+        *dst++ = HEX_DIGITS[(*src >> 4U) & 0xF];
         *dst++ = HEX_DIGITS[*src & 0xF];
         ++src;
-    } while (len-- > 1);
+    } while (len-- > 1U);
 
     *dst = '\0';
 
-    return (srcLen * 2) + 1;
+    return (srcLen * 2U) + 1U;
 }

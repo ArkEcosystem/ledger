@@ -80,9 +80,9 @@ static const size_t UINT64_MAX_STRING_SIZE = 20U;
 ////////////////////////////////////////////////////////////////////////////////
 // Token
 static const size_t TOKEN_AMOUNT_MAX_CHARS  = 25U;
-static const size_t TOKEN_DECIMALS          = 8;
-static const char *const TOKEN_NAME         = "ARK ";
-static const size_t TOKEN_NAME_SIZE         = 4;        // sizeof("ARK ") - 1
+static const size_t TOKEN_DECIMALS          = 8U;
+static const char *const TOKEN_NAME         = "ARK";
+static const size_t TOKEN_NAME_LEN          = 3U;       // strlen("ARK")
 static const uint8_t TOKEN_NETWORK_BYTE     = 0x1e;     // ARK Mainnet
 
 ////////////////////////////////////////////////////////////////////////////////

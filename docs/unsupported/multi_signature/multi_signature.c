@@ -63,7 +63,7 @@
 // - multiSig->count = buffer[1];
 //
 // PublicKeys - 33N Bytes
-// - bytecpy(&multiSig->keys[0], &buffer[2], multiSig->count);
+// - MEMCOPY(&multiSig->keys[0], &buffer[2], multiSig->count);
 //
 // ---
 bool deserializeMultiSignature(MultiSignature *multiSignature,
@@ -75,7 +75,7 @@ bool deserializeMultiSignature(MultiSignature *multiSignature,
 
     multiSig->min = buffer[0];
     multiSig->count = buffer[1];
-    bytecpy(&multiSig->keys[0], &buffer[2], multiSig->count);
+    MEMCOPY(&multiSig->keys[0], &buffer[2], multiSig->count);
 
     return true;
 }

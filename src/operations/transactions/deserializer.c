@@ -77,7 +77,7 @@ Transaction transaction;
 // - transaction->nonce = U8LE(&buffer[9]);
 //
 // SenderPublicKey - 33 Bytes:
-// - bytecpy(transaction->senderPublicKey, &buffer[17], 33);
+// - MEMCOPY(transaction->senderPublicKey, &buffer[17], 33);
 //
 // Fee - 8 bytes
 // - transaction->fee = U8LE(buffer, 50);
@@ -95,7 +95,7 @@ static void deserializeCommon(Transaction *transaction, const uint8_t *buffer) {
     transaction->network            = buffer[NETWORK_OFFSET];       // 1 Byte
     transaction->type               = U2LE(buffer, TYPE_OFFSET);    // 2 Bytes
 
-    bytecpy(transaction->senderPublicKey,                           // 33 Bytes
+    MEMCOPY(transaction->senderPublicKey,                           // 33 Bytes
             &buffer[SENDER_PUBLICKEY_OFFSET],
             PUBLICKEY_COMPRESSED_LEN);
 
@@ -131,7 +131,7 @@ static void deserializeCommon(Transaction *transaction, const uint8_t *buffer) {
 // - data->timestamp = unpack4LE(buffer, 4);
 //
 // SenderPublicKey - 33 Bytes:
-// - std::copy_n(&buffer.at(8), 33, data->senderPublicKey.begin());
+// - MEMCOPY(&buffer.at(8), data->senderPublicKey, 33);
 //
 // Fee - 8 bytes
 // - data->fee = unpack8LE(buffer, 41);
@@ -150,7 +150,7 @@ static void deserializeCommonV1(Transaction *transaction,
     transaction->network            = buffer[NETWORK_OFFSET];       // 1 Byte
     transaction->type               = buffer[TYPE_OFFSET_V1];       // 1 Byte
 
-    bytecpy(transaction->senderPublicKey,                           // 33 Bytes
+    MEMCOPY(transaction->senderPublicKey,                           // 33 Bytes
             &buffer[SENDER_PUBLICKEY_OFFSET_V1],
             PUBLICKEY_COMPRESSED_LEN);
 
@@ -299,7 +299,7 @@ bool deserialize(const uint8_t *buffer, size_t size) {
             : internalDeserializeLegacy(&transaction, buffer, size);
 
     if (!successful) {
-        explicit_bzero(&transaction, sizeof(transaction));
+        MEMSET_TYPE_BZERO(&transaction, Transaction);
     }
 
     return successful;
