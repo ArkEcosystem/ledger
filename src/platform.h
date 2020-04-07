@@ -24,31 +24,23 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#include "transactions/ux/second_signature_ux.h"
+#ifndef ARK_PLATFORM_H
+#define ARK_PLATFORM_H
 
-#include "constants.h"
+// This file detects available features and improves portability.
+//
+// Use this file (vs including '<os.h>') before detecting platform variables,
+// such as 'TARGET_NANOS' or 'TARGET_NANOX'.
+//
+// 'HAVE_BOLOS_SDK' is a variable unique to this app;
+// use it in instances where we only need to detect the BOLOS environment.
+//
+// ---
+#if defined(HAVE_BOLOS_SDK)
+    #include <os.h>
 
-#include "operations/transactions/transaction.h"
-
-#include "utils/hex.h"
-#include "utils/print.h"
-#include "utils/utils.h"
-
-#include "display/context.h"
-
-////////////////////////////////////////////////////////////////////////////////
-void SetUxSecondSignature(const Transaction *transaction) {
-    SPRINTF(displayCtx.operation, "%s", UX_SECOND_SIGNATURE_LABELS[0]);
-    SPRINTF(displayCtx.title[0], "%s:", UX_SECOND_SIGNATURE_LABELS[1]);
-    SPRINTF(displayCtx.title[1], "%s:", UX_LABEL_FEE);
-
-    // PublicKey of Second Signature
-    BytesToHex(transaction->asset.secondSignature.publicKey,
-               PUBLICKEY_COMPRESSED_LEN,
-               displayCtx.text[0], sizeof(displayCtx.text[0]));
-
-    // Fee
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
-                        transaction->fee,
-                        displayCtx.text[1], sizeof(displayCtx.text[1]));
-}
+    #if defined(TARGET_NANOX)
+        #define SUPPORTS_LARGE_OPERATIONS
+    #endif
+#endif  // HAVE_BOLOS_SDK
+#endif  // ARK_PLATFORM_H

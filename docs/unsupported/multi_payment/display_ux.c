@@ -47,7 +47,7 @@
 // #include "transactions/ux/second_signature_ux.h"
 // #include "transactions/ux/vote_ux.h"
 // #include "transactions/ux/ipfs_ux.h"
-#include "transactions/ux/multi_payment.h"
+#include "transactions/ux/multi_payment_ux.h"
 // #include "transactions/ux/htlc_lock_ux.h"
 // #include "transactions/ux/htlc_claim_ux.h"
 // #include "transactions/ux/htlc_refund_ux.h"
@@ -56,56 +56,54 @@
 // #include "display/display.h"
 
 // ////////////////////////////////////////////////////////////////////////////////
-// extern void setDisplaySteps(uint8_t steps, bool isExtended);
+// extern void SetUxDisplay(size_t steps, bool isExtended);
 
 // ////////////////////////////////////////////////////////////////////////////////
-// void setDisplay(const Transaction *transaction) {
+// void SetUx(const Transaction *transaction) {
 //     explicit_bzero(&displayCtx, sizeof(displayCtx));
+
+//     const bool hasVendorField = transaction->vendorFieldLength > 0;
 
 //     switch (transaction->type) {
 //         case TRANSFER_TYPE:
-//             displayTransfer(transaction);
-//             bool hasVendorField = transaction->vendorFieldLength > 0;
-//             setDisplaySteps(STEPS_TRANSFER_MIN + (uint8_t)hasVendorField,
-//                             hasVendorField);
+//             SetUxTransfer(transaction);
+//             SetUxDisplay(UX_TRANSFER_STEPS + hasVendorField, hasVendorField);
 //             break;
 
 //         case SECOND_SIGNATURE_TYPE:
-//             displaySecondSignature(transaction);
-//             setDisplaySteps(STEPS_SECOND_SIGNATURE, false);
+//             SetUxSecondSignature(transaction);
+//             SetUxDisplay(UX_SECOND_SIGNATURE_STEPS, false);
 //             break;
 
 //         case VOTE_TYPE:
-//             displayVote(transaction);
-//             setDisplaySteps(STEPS_VOTE, false);
+//             SetUxVote(transaction);
+//             SetUxDisplay(UX_VOTE_STEPS, false);
 //             break;
 
 //         case IPFS_TYPE:
-//             displayIpfs(transaction);
-//             setDisplaySteps(STEPS_IPFS, true);
+//             SetUxIpfs(transaction);
+//             SetUx(UX_IPFS_STEPS, true);
 //             break;
 
         case MULTI_PAYMENT_TYPE:
             displayMultiPayment(transaction);
             size_t n_payments = transaction->asset.multipayment.n_payments;
-            setDisplaySteps(STEPS_MULTI_PAYMENT_MIN + n_payments, true);
+            SetUxDisplay(UX_MULTI_PAYMENT_STEPS + n_payments, true);
             break;
 
 //         case HTLC_LOCK_TYPE:
-//             displayHtlcLock(transaction);
-//             bool hasVendorField = transaction->vendorFieldLength > 0;
-//             setDisplaySteps(STEPS_HTLC_LOCK_MIN + (uint8_t)hasVendorField,
-//                             hasVendorField);
+//             SetUxHtlcLock(transaction);
+//             SetUxDisplay(UX_HTLC_LOCK_STEPS + hasVendorField, hasVendorField);
 //             break;
 
 //         case HTLC_CLAIM_TYPE:
-//             displayHtlcClaim(transaction);
-//             setDisplaySteps(STEPS_HTLC_CLAIM, false);
+//             SetUxHtlcClaim(transaction);
+//             SetUxDisplay(UX_HTLC_CLAIM_STEPS, false);
 //             break;
 
 //         case HTLC_REFUND_TYPE:
-//             displayHtlcRefund(transaction);
-//             setDisplaySteps(STEPS_HTLC_REFUND, false);
+//             SetUxHtlcRefund(transaction);
+//             SetUxDisplay(UX_HTLC_REFUND_STEPS, false);
 //             break;
 
 //         default: break;

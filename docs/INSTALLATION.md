@@ -131,33 +131,20 @@ Connect the Ledger device in before flashing.
 
 The Build and Flash commands are executed from project root:
 
-**Vagrant Shell**:
+**Vagrant Shell**: `~/apps/ledger-app-ark`
 
-* `apps/ledger-app-ark`
+### Rebuild Script
 
-**ledgerblue CLI**:
-
-* `ledger-app-ark`
-
-### Building the Ledger ARK app
+#### NanoS
 
 ```shell
-make
+bash ./scripts/rebuild.sh
 ```
 
-### Flashing the Ledger ARK app
+#### NanoX
 
 ```shell
-make && make load
-```
-
-### Rebuilding and Flashing Changes
-
-This is the go-to script to push changes to a Ledger device.  
-It cleans, builds, deletes and re-flashes the app.
-
-```shell
-sh ./scripts/rebuild.sh
+bash ./scripts/rebuild.sh -x
 ```
 
 ---

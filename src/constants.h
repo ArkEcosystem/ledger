@@ -30,10 +30,17 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "platform.h"
+
 ////////////////////////////////////////////////////////////////////////////////
 // General
-static const size_t MAX_RAW_OPERATION       = 704;      // 64-byte-aligned
-static const size_t MAX_TEXT_LEN            = 255;
+#if defined(SUPPORTS_LARGE_OPERATIONS)
+    static const size_t MAX_RAW_OPERATION   = 2496;     // 64-byte-aligned
+#else
+    static const size_t MAX_RAW_OPERATION   = 704;      // 64-byte-aligned
+#endif
+
+static const size_t MAX_TEXT_LEN = 255;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Hash
@@ -51,20 +58,28 @@ static const size_t PUBLICKEY_UNCOMPRESSED_LEN      = 65;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Labels
-static const char *const LABEL_AMOUNT       = "Amount";
-static const size_t LABEL_AMOUNT_SIZE       = 7;
+static const char *const UX_LABEL_AMOUNT        = "Amount";
+static const char *const UX_LABEL_EXPIRATION    = "Expiration";
+static const char *const UX_LABEL_FEE           = "Fee";
+static const char *const UX_LABEL_RECIPIENT     = "Recipient";
 
-static const char *const LABEL_EXPIRATION       = "Expiration";
-static const size_t LABEL_EXPIRATION_SIZE       = 11;
+////////////////////////////////////////////////////////////////////////////////
+// Numbers
+static const uint64_t UINT64_BASE_10 = 10U;
 
-static const char *const LABEL_FEE      = "Fee";
-static const size_t LABEL_FEE_SIZE      = 4;
+////////////////////////////////////////////////////////////////////////////////
+// Signatures
+static const size_t SIG_ECDSA_MIN_LEN   = 64;
+static const size_t SIG_ECDSA_MAX_LEN   = 72;
+static const size_t SIG_SCHNORR_LEN     = HASH_64_LEN;
 
-static const char *const LABEL_TO       = "To";
-static const size_t LABEL_TO_SIZE       = 3;
+////////////////////////////////////////////////////////////////////////////////
+// Strings
+static const size_t UINT64_MAX_STRING_SIZE = 20U;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Token
+static const size_t TOKEN_AMOUNT_MAX_CHARS  = 25U;
 static const size_t TOKEN_DECIMALS          = 8;
 static const char *const TOKEN_NAME         = "ARK ";
 static const size_t TOKEN_NAME_SIZE         = 4;        // sizeof("ARK ") - 1

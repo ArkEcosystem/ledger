@@ -27,14 +27,16 @@
 #ifndef ARK_OPERATIONS_TRANSACTION_UX_SECOND_SIGNATURE_UX_H
 #define ARK_OPERATIONS_TRANSACTION_UX_SECOND_SIGNATURE_UX_H
 
-#include <stdint.h>
+#include <stddef.h>
 
 #include "operations/transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-static const uint8_t STEPS_SECOND_SIGNATURE = 2U;
+static const char *const UX_SECOND_SIGNATURE_LABELS[]   = { "2nd Signature",
+                                                            "PublicKey" };
+static const size_t UX_SECOND_SIGNATURE_STEPS           = 2U;
 
 ////////////////////////////////////////////////////////////////////////////////
-void displaySecondSignature(const Transaction *transaction);
+void SetUxSecondSignature(const Transaction *transaction);
 
 #endif  // #define ARK_OPERATIONS_TRANSACTION_UX_SECOND_SIGNATURE_UX_H

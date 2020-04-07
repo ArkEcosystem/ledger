@@ -45,9 +45,7 @@
 #include "approval.h"
 
 #include <os.h>
-
 #include <ux.h>
-#include <os_io_seproxyhal.h>
 
 #include "constants.h"
 
@@ -70,7 +68,7 @@ union {
 unsigned int ioApprove(const bagl_element_t *e) {
     explicit_bzero(&displayCtx, sizeof(displayCtx));
 
-    uint32_t tx = 0;
+    unsigned short tx = 0;
 
     uint8_t                 privateKeyData[HASH_32_LEN];
     cx_ecfp_private_key_t   privateKey;
@@ -94,9 +92,9 @@ unsigned int ioApprove(const bagl_element_t *e) {
                 tmpCtx.signing.dataLength,
                 hash);
 
-        tx = signEcdsa(&privateKey, hash,
-                       G_io_apdu_buffer,
-                       sizeof(G_io_apdu_buffer));
+        tx = tmpCtx.signing.isSchnorr
+            ? signSchnorr(&privateKey, hash, G_io_apdu_buffer)
+            : signEcdsa(&privateKey, hash, G_io_apdu_buffer, SIG_ECDSA_MAX_LEN);
     }
 
     explicit_bzero(&privateKey, sizeof(privateKey));

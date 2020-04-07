@@ -27,14 +27,17 @@
 #ifndef ARK_OPERATIONS_TRANSACTION_UX_HTLC_LOCK_UX_H
 #define ARK_OPERATIONS_TRANSACTION_UX_HTLC_LOCK_UX_H
 
-#include <stdint.h>
+#include <stddef.h>
 
 #include "operations/transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-static const uint8_t STEPS_HTLC_LOCK_MIN = 5U;
+static const char *const UX_HTLC_LOCK_LABELS[]      = { "HTLC Lock",
+                                                        "Secret Hash" };
+static const char *const UX_HTLC_LOCK_SUB_LABELS[]  = { "Time", "Height" };
+static const size_t UX_HTLC_LOCK_STEPS              = 5U;
 
 ////////////////////////////////////////////////////////////////////////////////
-void displayHtlcLock(const Transaction *transaction);
+void SetUxHtlcLock(const Transaction *transaction);
 
 #endif  // #define ARK_OPERATIONS_TRANSACTION_UX_HTLC_LOCK_UX_H

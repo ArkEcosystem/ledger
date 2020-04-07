@@ -27,14 +27,17 @@
 #ifndef ARK_OPERATIONS_TRANSACTION_UX_HTLC_CLAIM_UX_H
 #define ARK_OPERATIONS_TRANSACTION_UX_HTLC_CLAIM_UX_H
 
-#include <stdint.h>
+#include <stddef.h>
 
 #include "operations/transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-static const uint8_t STEPS_HTLC_CLAIM = 2U;
+static const char *const UX_HTLC_CLAIM_LABELS[] = { "HTLC Claim",
+                                                    "Lock Id",
+                                                    "Secret" };
+static const size_t UX_HTLC_CLAIM_STEPS         = 2U;
 
 ////////////////////////////////////////////////////////////////////////////////
-void displayHtlcClaim(const Transaction *transaction);
+void SetUxHtlcClaim(const Transaction *transaction);
 
 #endif  // #define ARK_OPERATIONS_TRANSACTION_UX_HTLC_CLAIM_UX_H

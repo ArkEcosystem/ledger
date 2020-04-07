@@ -22,33 +22,17 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ * 
  ******************************************************************************/
 
-#include "transactions/ux/second_signature_ux.h"
+#ifndef ARK_CRYPTO_SCHNORR_BCRYPTO_410_H
+#define ARK_CRYPTO_SCHNORR_BCRYPTO_410_H
 
-#include "constants.h"
-
-#include "operations/transactions/transaction.h"
-
-#include "utils/hex.h"
-#include "utils/print.h"
-#include "utils/utils.h"
-
-#include "display/context.h"
+#include <stdint.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-void SetUxSecondSignature(const Transaction *transaction) {
-    SPRINTF(displayCtx.operation, "%s", UX_SECOND_SIGNATURE_LABELS[0]);
-    SPRINTF(displayCtx.title[0], "%s:", UX_SECOND_SIGNATURE_LABELS[1]);
-    SPRINTF(displayCtx.title[1], "%s:", UX_LABEL_FEE);
+uint32_t schnorr_sign_bcrypto_410(const uint8_t *privateKey,
+                                  const uint8_t *hash,
+                                  uint8_t *signature);
 
-    // PublicKey of Second Signature
-    BytesToHex(transaction->asset.secondSignature.publicKey,
-               PUBLICKEY_COMPRESSED_LEN,
-               displayCtx.text[0], sizeof(displayCtx.text[0]));
-
-    // Fee
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
-                        transaction->fee,
-                        displayCtx.text[1], sizeof(displayCtx.text[1]));
-}
+#endif  // ARK_CRYPTO_SCHNORR_BCRYPTO_410_H

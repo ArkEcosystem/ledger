@@ -49,8 +49,8 @@
 #include <os_io_seproxyhal.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-uint8_t io_event(uint8_t channel);
-uint16_t io_exchange_al(uint8_t channel, uint16_t tx_len);
+uint8_t io_event(unsigned char channel);
+uint16_t io_exchange_al(unsigned char channel, unsigned short tx_len);
 void io_seproxyhal_display(const bagl_element_t *element);
 
 #endif  // #define ARK_IO_H
