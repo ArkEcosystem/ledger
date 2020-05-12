@@ -1,12 +1,3 @@
-
-////////////////////////////////////////////////////////////////////////////////
-
-// The Following are only examples and places where this code could be implemented.
-//  It is not final or guaranteed working.
-//  This should only serve as a reference for implementing.
-
-////////////////////////////////////////////////////////////////////////////////
-
 /*******************************************************************************
  * This file is part of the ARK Ledger App.
  *
@@ -33,23 +24,25 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
-#define ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
+#ifndef ARK_OPERATIONS_TRANSACTIONS_UX_MULTI_SIGNATURE_UX_H
+#define ARK_OPERATIONS_TRANSACTIONS_UX_MULTI_SIGNATURE_UX_H
+
+#include "platform.h"
+
+#if defined(SUPPORTS_MULTISIGNATURE)
+
+#include <stddef.h>
+
+#include "operations/transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-// ARK Transaction Types
-enum TransactionTypes {
-    TRANSFER_TYPE                   = 0,
-    SECOND_SIGNATURE_TYPE           = 1,
-/*  DELEGATE_REGISTRATION_TYPE      = 2, */
-    VOTE_TYPE                       = 3,
-    MULTI_SIGNATURE_TYPE            = 4,
-    IPFS_TYPE                       = 5,
-/*  MULTI_PAYMENT_TYPE              = 6, */
-/*  DELEGATE_RESIGNATION_TYPE       = 7, */
-    HTLC_LOCK_TYPE                  = 8,
-    HTLC_CLAIM_TYPE                 = 9,
-    HTLC_REFUND_TYPE                = 10
-};
+static const char *const MULTI_SIG_LABELS[] = { "MultiSig Reg.",
+                                                "PublicKey",
+                                                "Signature" };
+static const size_t STEPS_MULTI_SIG_STEPS   = 1U;
 
-#endif  // #define ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
+////////////////////////////////////////////////////////////////////////////////
+void SetUxMultiSignature(const Transaction *transaction);
+
+#endif  // SUPPORTS_MULTISIGNATURE
+#endif  // ARK_OPERATIONS_TRANSACTIONS_UX_MULTI_SIGNATURE_UX_H

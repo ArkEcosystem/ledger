@@ -1,12 +1,3 @@
-
-////////////////////////////////////////////////////////////////////////////////
-
-// The Following are only examples and places where this code could be implemented.
-//  It is not final or guaranteed working.
-//  This should only serve as a reference for implementing.
-
-////////////////////////////////////////////////////////////////////////////////
-
 /*******************************************************************************
  * This file is part of the ARK Ledger App.
  *
@@ -33,41 +24,49 @@
  * SOFTWARE.
  ******************************************************************************/
 
+#include "platform.h"
+
+#if defined(SUPPORTS_MULTISIGNATURE)
+
 #include "transactions/ux/multi_signature_ux.h"
 
 #include <stddef.h>
-#include <stdint.h>
 
 #include "constants.h"
 
 #include "operations/transactions/transaction.h"
 
+#include "utils/hex.h"
 #include "utils/print.h"
-#include "utils/utils.h"
+#include "utils/str.h"
 
 #include "display/context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-//
-// Incomplete. Needs more consideration on safe logic behind displaying values.
-//
-void displayMultiSignature(const Transaction *transaction) {
-    const char *const LABEL     = "MultiSignature";
-    const size_t LABEL_SIZE     = 15;
-
-    const char *const LABEL_COUNT       = "Key Count";
-    const size_t LABEL_COUNT_SIZE       = 10;
-
-    MEMCOPY(displayCtx.operation, LABEL, LABEL_SIZE);
-    MEMCOPY(displayCtx.title[0], LABEL_COUNT, LABEL_COUNT_SIZE);
-    MEMCOPY(displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
-
-    // Key Count
-    UintToString(transaction->asset.multiSignature.count,
-                 displayCtx.text[0], sizeof(displayCtx.text[0]));
+void SetUxMultiSignature(const Transaction *transaction) {
+    SPRINTF(displayCtx.operation, "%s", MULTI_SIG_LABELS[0]);
+    SPRINTF(displayCtx.title[0], "%s:", UX_LABEL_FEE);
 
     // Fee
     TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->fee,
-                        displayCtx.text[1], sizeof(displayCtx.text[1]));
+                        displayCtx.text[0], sizeof(displayCtx.text[0]));
+
+    const char* const KFMT = "%s: %d/%d";
+    const size_t count = transaction->asset.multiSignature.count;
+    for (size_t i = 0U, n = 0U; n < count; i += 2U, ++n) {
+        // Key(N)
+        SPRINTF(displayCtx.title[i + 1U], KFMT, MULTI_SIG_LABELS[1], n, count);
+        BytesToHex(transaction->asset.multiSignature.keys[n],
+                   PUBLICKEY_COMPRESSED_LEN,
+                   displayCtx.text[i + 1U], sizeof(displayCtx.text[i + 1U]));
+
+        // Signature(N)
+        SPRINTF(displayCtx.title[i + 2U], KFMT, MULTI_SIG_LABELS[2], n, count);
+        BytesToHex(transaction->asset.multiSignature.signatures[n],
+                   SIG_SCHNORR_LEN,
+                   displayCtx.text[i + 2U], sizeof(displayCtx.text[i + 2U]));
+    }
 }
+
+#endif  // SUPPORTS_MULTISIGNATURE

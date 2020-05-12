@@ -34,6 +34,7 @@
 // - Transfer                           (type 0)
 // - Second Signature Registration      (type 1)
 // - Vote/Unvote                        (type 3)
+// - MultiSignature Registration        (type 4)  <-- NanoX Only
 // - Ipfs                               (type 5)
 // - Htlc Lock                          (type 8)
 // - Htlc Claim                         (type 9)
@@ -48,14 +49,9 @@
 //   Delegates Forge;
 //   forging can't be done using a Ledger.
 //
-// - MultiSignature Registration        (type 4)
-//   *Under Development*
-//   Handling and display logic need careful consideration.
-//   Schnorr also needs implemented.
-//
 // - MultiPayment                       (type 6)
-//   *Not Supported*
-//   Max MultiPayment won't fit on Ledger hardware.
+//   *Not Currently Supported*
+//   Max MultiPayment won't fit on NanoS hardware.
 //
 // - Delegate Resignation               (type 7)
 //   *Not Supported*
@@ -69,7 +65,7 @@ enum TransactionTypes {
     SECOND_SIGNATURE_TYPE           = 1,
 /*  DELEGATE_REGISTRATION_TYPE      = 2, */
     VOTE_TYPE                       = 3,
-/*  MULTI_SIGNATURE_TYPE            = 4, */
+    MULTI_SIGNATURE_TYPE            = 4,
     IPFS_TYPE                       = 5,
 /*  MULTI_PAYMENT_TYPE              = 6, */
 /*  DELEGATE_RESIGNATION_TYPE       = 7, */
@@ -78,4 +74,4 @@ enum TransactionTypes {
     HTLC_REFUND_TYPE                = 10
 };
 
-#endif  // #define ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
+#endif  // ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H

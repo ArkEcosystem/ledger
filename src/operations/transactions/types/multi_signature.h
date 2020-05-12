@@ -1,12 +1,3 @@
-
-////////////////////////////////////////////////////////////////////////////////
-
-// The Following are only examples and places where this code could be implemented.
-//  It is not final or guaranteed working.
-//  This should only serve as a reference for implementing.
-
-////////////////////////////////////////////////////////////////////////////////
-
 /*******************************************************************************
  * This file is part of the ARK Ledger App.
  *
@@ -33,17 +24,37 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTIONS_UX_MULTI_SIGNATURE_UX_H
-#define ARK_OPERATIONS_TRANSACTIONS_UX_MULTI_SIGNATURE_UX_H
+#ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_MULTI_SIGNATURE_H
+#define ARK_OPERATIONS_TRANSACTIONS_TYPES_MULTI_SIGNATURE_H
 
+#include "platform.h"
+
+#if defined(SUPPORTS_MULTISIGNATURE)
+
+#include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
-#include "operations/transactions/transaction.h"
-
-////////////////////////////////////////////////////////////////////////////////
-static const size_t UX_MULTI_SIGNATURE_STEPS = 2U;
+#include "constants.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void displayMultiSignature(const Transaction *transaction);
+static const size_t MULTI_SIG_KEY_MIN       = 2U;
+static const size_t MULTI_SIG_KEY_MAX       = 16U;
+static const size_t MULTI_SIG_KEYS_SIZE     = MULTI_SIG_KEY_MAX *
+                                              PUBLICKEY_COMPRESSED_LEN;
 
-#endif  // #define ARK_OPERATIONS_TRANSACTIONS_UX_MULTI_SIGNATURE_UX_H
+////////////////////////////////////////////////////////////////////////////////
+typedef struct multi_signature_asset_t {
+    uint8_t     min;
+    uint8_t     count;
+    uint8_t     keys        [MULTI_SIG_KEY_MAX] [PUBLICKEY_COMPRESSED_LEN];
+    uint8_t     signatures  [MULTI_SIG_KEY_MAX] [SIG_SCHNORR_LEN];
+} MultiSignature;
+
+////////////////////////////////////////////////////////////////////////////////
+bool deserializeMultiSignature(MultiSignature *registration,
+                               const uint8_t *buffer,
+                               size_t size);
+
+#endif  // SUPPORTS_MULTISIGNATURE
+#endif  // ARK_OPERATIONS_TRANSACTIONS_TYPES_MULTI_SIGNATURE_H

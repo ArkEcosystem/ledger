@@ -30,11 +30,13 @@
 #include "transactions/types/transfer.h"
 #include "transactions/types/second_signature.h"
 #include "transactions/types/vote.h"
-/* #include "transactions/types/multi_signature.h" */  // <- Under Development
+#include "transactions/types/multi_signature.h"
 #include "transactions/types/ipfs.h"
 #include "transactions/types/htlc_lock.h"
 #include "transactions/types/htlc_claim.h"
 #include "transactions/types/htlc_refund.h"
+
+#include "platform.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 typedef union tx_asset_t {
@@ -42,7 +44,9 @@ typedef union tx_asset_t {
     SecondSignatureRegistration secondSignature;        // Type 1
 /*  Delegate Registration                               // Type 2 */
     Vote                        vote;                   // Type 3
-/*  MultiSignature                                      // Type 4 */
+#if defined(SUPPORTS_MULTISIGNATURE)
+    MultiSignature              multiSignature;         // Type 4
+#endif
     Ipfs                        ipfs;                   // Type 5
 /*  MultiPayment                                        // Type 6 */
 /*  Delegate Resignation                                // Type 7 */
@@ -51,4 +55,4 @@ typedef union tx_asset_t {
     HtlcRefund                  htlcRefund;             // Type 10
 } tx_asset_t;
 
-#endif  // #define ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
+#endif  // ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
