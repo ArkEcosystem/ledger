@@ -1,5 +1,8 @@
 
 # ARK Ledger
+<p align="center">
+    <img src="./banner.png" />
+</p>
 
 > A simple Ledger NanoS/NanoX app for the ARK Blockchain.
 

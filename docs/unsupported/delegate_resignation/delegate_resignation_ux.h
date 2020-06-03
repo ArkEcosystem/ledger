@@ -36,12 +36,12 @@
 #ifndef ARK_OPERATIONS_TRANSACTIONS_UX_DELEGATE_RESIGNATION_UX_H
 #define ARK_OPERATIONS_TRANSACTIONS_UX_DELEGATE_RESIGNATION_UX_H
 
-#include <stdint.h>
+#include <stddef.h>
 
 #include "operations/transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-static const uint8_t STEPS_DELEGATE_REGISTRATION = 2U;
+static const size_t UX_DELEGATE_REGISTRATION_STEPS = 2U;
 
 ////////////////////////////////////////////////////////////////////////////////
 void displayDelegateResignation(const Transaction *transaction);

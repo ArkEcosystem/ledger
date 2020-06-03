@@ -27,8 +27,6 @@
 #include "transactions/ux/vote_ux.h"
 
 #include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
 
 #include "constants.h"
 
@@ -41,33 +39,22 @@
 #include "display/context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void displayVote(const Transaction *transaction) {
-    const char *const LABEL_VOTE    = "Vote";
-    const size_t LABEL_VOTE_SIZE    = 5;
+void SetUxVote(const Transaction *transaction) {
+    bool isVote = transaction->asset.vote.data[0] == 1U;
 
-    const char *const LABEL_UNVOTE  = "Unvote";
-    const size_t LABEL_UNVOTE_SIZE  = 7;
-
-    const char SYMBOL_PLUS      = '+';
-    const char SYMBOL_MINUS     = '-';
-
-    bool isVote = (transaction->asset.vote.data[0] == 1U);
-    const char *voteLabel       = isVote ? LABEL_VOTE : LABEL_UNVOTE;
-    const size_t voteLabelSize  = isVote ? LABEL_VOTE_SIZE : LABEL_UNVOTE_SIZE;
-    const char voteSymbol       = isVote ? SYMBOL_PLUS : SYMBOL_MINUS;
-
-    bytecpy((char *)displayCtx.operation, LABEL_VOTE, LABEL_VOTE_SIZE);
-    bytecpy((char *)displayCtx.title[0], voteLabel, voteLabelSize);
-    bytecpy((char *)displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
+    SPRINTF(displayCtx.operation, "%s",
+            isVote ? UX_VOTE_LABELS[1] : UX_VOTE_LABELS[0]);
+    SPRINTF(displayCtx.title[0], "%s:", UX_VOTE_LABELS[2]);
+    SPRINTF(displayCtx.title[1], "%s:", UX_LABEL_FEE);
 
     // Vote
-    displayCtx.text[0][0] = voteSymbol;
-    bytesToHex((char *)&displayCtx.text[0][1],
-                &transaction->asset.vote.data[1],
-                PUBLICKEY_COMPRESSED_LEN);
+    displayCtx.text[0][0] = isVote ? UX_VOTE_SYMBOLS[1] : UX_VOTE_SYMBOLS[0];
+    BytesToHex(&transaction->asset.vote.data[1], PUBLICKEY_COMPRESSED_LEN,
+               &displayCtx.text[0][1], sizeof(displayCtx.text[0]) - 1);
 
     // Fee
-    printAmount(transaction->fee,
-                (uint8_t *)displayCtx.text[1], sizeof(displayCtx.text[1]),
-                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+                        transaction->fee,
+                        displayCtx.text[1], sizeof(displayCtx.text[1]));
 }
+

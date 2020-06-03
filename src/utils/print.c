@@ -26,7 +26,6 @@
 
 #include "utils/print.h"
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -35,28 +34,26 @@
 #include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-static bool adjustDecimals(char *src,
-                           size_t srcSize,
-                           char *target,
-                           size_t targetSize,
-                           uint8_t decimals) {
+static size_t adjustDecimals(const char *src, size_t srcSize,
+                             char *target, size_t targetSize,
+                             size_t decimals) {
     size_t startOffset;
     size_t lastZeroOffset = 0;
     size_t offset = 0;
 
     if ((srcSize == 1) && (*src == '0')) {
         if (targetSize < 2) {
-            return false;
+            return 0;
         }
         target[offset++] = '0';
         target[offset++] = '\0';
-        return true;
+        return offset;
     }
 
     if (srcSize <= decimals) {
         size_t delta = decimals - srcSize;
         if (targetSize < srcSize + 1 + 2 + delta) {
-            return false;
+            return offset;
         }
 
         target[offset++] = '0';
@@ -80,7 +77,7 @@ static bool adjustDecimals(char *src,
         size_t delta = srcSize - decimals;
 
         if (targetSize < srcSize + 1 + 1) {
-            return false;
+            return offset;
         }
 
         while (offset < delta) {
@@ -117,52 +114,68 @@ static bool adjustDecimals(char *src,
         }
     }
 
-    return true;
+    return offset + lastZeroOffset;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-size_t printAmount(uint64_t amount,
-                   uint8_t *out,
-                   size_t outSize,
-                   const char *tokenName,
-                   size_t tokenNameSize,
-                   uint8_t decimals) {
-    uint8_t tmp[ADDRESS_HASH_LEN];
-    uint8_t tmp2[sizeof(tmp) + tokenNameSize];
-    size_t numDigits = 0, i;
-    uint64_t base = 1ULL;
-
-    while (base <= amount) {
-        base *= 0x0A;
-        numDigits++;
-    }
-
-    if (numDigits > sizeof(tmp) - 1) {
+size_t UintToString(uint64_t value, char *dst, size_t maxLen) {
+    if (dst == NULL || maxLen < 2) {
         return 0;
     }
 
-    base /= 0x0A;
-    for (i = 0; i < numDigits; i++) {
-        tmp[i] = '0' + ((amount / base) % 0x0A);
-        base /= 0x0A;
+    if (value == 0) {
+        dst[0] = '0';
+        dst[1] = '\0';
+        return 2;
     }
 
-    tmp[i] = '\0';
+    uint64_t base = 1;
+    size_t n = 0;
+    size_t i = 0;
 
-    if (tokenNameSize > 0) {
-        bytecpy(tmp2, tokenName, tokenNameSize);
+    // count how many characters are needed
+    while (base <= value && n <= UINT64_MAX_STRING_SIZE) {
+        base *= UINT64_BASE_10;
+        n++;
     }
 
-    adjustDecimals((char *)tmp, i,
-                   (char *)tmp2 + tokenNameSize,
-                   sizeof(tmp2) - tokenNameSize,
-                   decimals);
-
-    if (sizeof(tmp2) < outSize - 1) {
-        bytecpy(out, tmp2, sizeof(tmp2));
-    } else {
-        out[0] = '\0';
+    if (n > maxLen - 1) {
+        dst[0] = '\0';
+        return 0;
     }
 
-    return sizeof(tmp2);
+    base /= UINT64_BASE_10;
+    while (i < n) {
+        dst[i++] = '0' + ((value / base) % UINT64_BASE_10);
+        base /= UINT64_BASE_10;
+    }
+
+    dst[i] = '\0';
+
+    return n + 1;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+size_t TokenAmountToString(const char *token, size_t tokenLen, size_t decimals,
+                           uint64_t amount,
+                           char *dst, size_t maxLen) {
+    if (dst == NULL) {
+        return 0;
+    }
+
+    if (tokenLen > 0) {
+        bytecpy(dst, token, tokenLen);
+    }
+
+    if (decimals == 0) {
+        return tokenLen + UintToString(amount, dst + tokenLen, maxLen);
+    }
+    else {
+        char buffer[TOKEN_AMOUNT_MAX_CHARS];
+        const size_t len = UintToString(amount, buffer, maxLen);
+        return tokenLen +
+               adjustDecimals(buffer, len,
+                              dst + tokenLen, maxLen,
+                              decimals + 1);
+    }
 }

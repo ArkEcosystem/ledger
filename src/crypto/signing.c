@@ -26,30 +26,40 @@
 
 #include "crypto/signing.h"
 
-#include <stddef.h>
+#include <stdint.h>
 
 #include <os.h>
 #include <cx.h>
 
 #include "constants.h"
 
+#include "schnorr_bcrypto_410.h"
+
 ////////////////////////////////////////////////////////////////////////////////
 uint32_t signEcdsa(const cx_ecfp_private_key_t *privateKey,
                    const uint8_t *hash,
                    uint8_t *signature,
                    size_t signatureSize) {
-    #if CX_APILEVEL >= 8U
-        return cx_ecdsa_sign(privateKey,
-                             CX_RND_RFC6979 | CX_LAST, CX_SHA256,
-                             hash, HASH_32_LEN,
-                             signature, signatureSize,
-                             NULL);
-    #else
-        UNUSED(signatureLength);
-        return cx_ecdsa_sign(&privateKey,
-                             CX_RND_RFC6979 | CX_LAST, CX_SHA256,
-                             hash, HASH_32_LEN,
-                             signature);
-        signature[0] = 0x30;
-    #endif
+    if (privateKey == NULL || hash == NULL || signature == NULL ||
+        signatureSize < SIG_ECDSA_MIN_LEN ||
+        signatureSize > SIG_ECDSA_MAX_LEN) {
+        return 0;
+    }
+
+    return cx_ecdsa_sign(privateKey,
+                         CX_RND_RFC6979 | CX_LAST, CX_SHA256,
+                         hash, HASH_32_LEN,
+                         signature, signatureSize,
+                         NULL);
 } 
+
+////////////////////////////////////////////////////////////////////////////////
+uint32_t signSchnorr(const cx_ecfp_private_key_t *privateKey,
+                     const uint8_t *hash,
+                     uint8_t *signature) {
+    if (privateKey == NULL || hash == NULL || signature == NULL) {
+        return 0;
+    }
+
+    return schnorr_sign_bcrypto_410(privateKey->d, hash, signature);
+}

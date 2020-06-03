@@ -27,14 +27,16 @@
 #ifndef ARK_OPERATIONS_TRANSACTIONS_UX_VOTE_UX_H
 #define ARK_OPERATIONS_TRANSACTIONS_UX_VOTE_UX_H
 
-#include <stdint.h>
+#include <stddef.h>
 
 #include "operations/transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-static const uint8_t STEPS_VOTE = 2U;
+static const char *const UX_VOTE_LABELS[]   = { "Unvote", "Vote", "Delegate" };
+static const char UX_VOTE_SYMBOLS[]         = { '-', '+' };
+static const size_t UX_VOTE_STEPS           = 2U;
 
 ////////////////////////////////////////////////////////////////////////////////
-void displayVote(const Transaction *transaction);
+void SetUxVote(const Transaction *transaction);
 
 #endif  // #define ARK_OPERATIONS_TRANSACTIONS_UX_VOTE_UX_H

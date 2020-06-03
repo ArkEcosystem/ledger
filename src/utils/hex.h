@@ -31,6 +31,6 @@
 #include <stdint.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-void bytesToHex(char *dest, const uint8_t *src, size_t length);
+size_t BytesToHex(const uint8_t *src, size_t srcLen, char *dst, size_t dstMax);
 
-#endif  // #ifndef ARK_UTILS_HEX_H
+#endif  // ARK_UTILS_HEX_H

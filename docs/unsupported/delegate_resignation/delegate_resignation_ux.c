@@ -62,12 +62,11 @@ void displayDelegateResignation(const Transaction *transaction) {
     bytecpy((char *)displayCtx.title[1], LABEL_FEE, LABEL_FEE_SIZE);
 
     // Delegate PublicKey
-    bytesToHex((char *)displayCtx.text[0],
-               transaction->senderPublicKey,
-               PUBLICKEY_COMPRESSED_LEN);
+    BytesToHex(transaction->senderPublicKey, PUBLICKEY_COMPRESSED_LEN,
+               displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // Fee
-    printAmount(transaction->fee,
-                (uint8_t *)displayCtx.text[1], sizeof(displayCtx.text[1]),
-                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+                        transaction->fee,
+                        displayCtx.text[1], sizeof(displayCtx.text[1]));
 }

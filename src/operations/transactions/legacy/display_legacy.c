@@ -49,15 +49,14 @@
 #include "display/display.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-extern void setDisplaySteps(uint8_t steps, bool isExtended);
+extern void SetUxDisplay(size_t steps, bool isExtended);
 
 ////////////////////////////////////////////////////////////////////////////////
 void setTransferLegacy(const Transaction *transaction) {
-    bytecpy((char*)displayCtx.operation, "Transfer", 9);
-    bytecpy((char*)displayCtx.title[0], "To", 3);
-
-    bytecpy((char*)displayCtx.title[1], "Amount", 7);
-    bytecpy((char*)displayCtx.title[2], "Fees", 5);
+    SPRINTF(displayCtx.operation, "Transfer");
+    SPRINTF(displayCtx.title[0], "Recipient:");
+    SPRINTF(displayCtx.title[1], "Amount:");
+    SPRINTF(displayCtx.title[2], "Fee:");
 
     // RecipientId
     encodeBase58PublicKey((uint8_t*)transaction->recipientId,
@@ -71,16 +70,14 @@ void setTransferLegacy(const Transaction *transaction) {
     displayCtx.text[0][ADDRESS_LEN]  = ' ';
 
     // Amount
-    printAmount(transaction->amount,
-                displayCtx.text[1],
-                sizeof(displayCtx.text[1]),
-                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+                        transaction->amount,
+                        displayCtx.text[1], sizeof(displayCtx.text[1]));
 
     // Fee
-    printAmount(transaction->fee,
-                displayCtx.text[2],
-                sizeof(displayCtx.text[2]),
-                TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS);
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+                        transaction->fee,
+                        displayCtx.text[2], sizeof(displayCtx.text[2]));
 
     // VendorField
     if (transaction->vendorFieldLength > 0) {
@@ -90,35 +87,32 @@ void setTransferLegacy(const Transaction *transaction) {
 
 ////////////////////////////////////////////////////////////////////////////////
 static void setVoteLegacy(const Transaction *transaction) {
-    bytecpy((char*)displayCtx.operation, "Vote", 5);
-    bytecpy((char*)displayCtx.title[0], "Vote", 5);
-    bytecpy((char*)displayCtx.title[1], "Fees", 5);
+    SPRINTF(displayCtx.operation, "Vote");
+    SPRINTF(displayCtx.title[0], "Vote:");
+    SPRINTF(displayCtx.title[1], "Fee:");
 
     const size_t voteOffset = 67;
     bytecpy((char*)displayCtx.text[0], transaction->assetPtr, voteOffset);
 
-    printAmount(transaction->fee,
-                displayCtx.text[1],
-                sizeof(displayCtx.text[1]),
-                TOKEN_NAME,
-                TOKEN_NAME_SIZE,
-                TOKEN_DECIMALS);
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+                        transaction->fee,
+                        displayCtx.text[1], sizeof(displayCtx.text[1]));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void setDisplayLegacy(const Transaction *transaction) {
+void SetUxLegacy(const Transaction *transaction) {
     explicit_bzero(&displayCtx, sizeof(displayCtx));
 
     switch (transaction->type) {
         case TRANSFER_TYPE:
             setTransferLegacy(transaction);
-            bool hasVendorField = transaction->vendorFieldLength > 0;
-            setDisplaySteps(3U + (uint8_t)hasVendorField, hasVendorField);
+            const bool hasVendorField = transaction->vendorFieldLength > 0;
+            SetUxDisplay(3U + hasVendorField, hasVendorField);
             break;
 
         case VOTE_TYPE:
             setVoteLegacy(transaction);
-            setDisplaySteps(2U, false);
+            SetUxDisplay(2U, false);
             break;
 
         default: break;
