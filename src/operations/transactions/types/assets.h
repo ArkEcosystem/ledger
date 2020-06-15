@@ -28,7 +28,6 @@
 #define ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
 
 #include "transactions/types/transfer.h"
-#include "transactions/types/second_signature.h"
 #include "transactions/types/vote.h"
 #include "transactions/types/multi_signature.h"
 #include "transactions/types/ipfs.h"
@@ -41,7 +40,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 typedef union tx_asset_t {
     Transfer                    transfer;               // Type 0
-    SecondSignatureRegistration secondSignature;        // Type 1
+/*  SecondSignatureRegistration secondSignature;        // Type 1 */
 /*  Delegate Registration                               // Type 2 */
     Vote                        vote;                   // Type 3
 #if defined(SUPPORTS_MULTISIGNATURE)

@@ -37,7 +37,6 @@
 #include "transactions/types/types.h"
 
 #include "transactions/ux/transfer_ux.h"
-#include "transactions/ux/second_signature_ux.h"
 #include "transactions/ux/vote_ux.h"
 #include "transactions/ux/multi_signature_ux.h"
 #include "transactions/ux/ipfs_ux.h"
@@ -63,11 +62,6 @@ void SetUx(const Transaction *transaction) {
         case TRANSFER_TYPE:
             SetUxTransfer(transaction);
             SetUxDisplay(UX_TRANSFER_STEPS + hasVendorField,hasVendorField);
-            break;
-
-        case SECOND_SIGNATURE_TYPE:
-            SetUxSecondSignature(transaction);
-            SetUxDisplay(UX_SECOND_SIGNATURE_STEPS, false);
             break;
 
         case VOTE_TYPE:
