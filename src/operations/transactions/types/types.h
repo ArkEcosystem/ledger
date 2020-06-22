@@ -32,7 +32,6 @@
 //
 // Supported Tx Types:
 // - Transfer                           (type 0)
-// - Second Signature Registration      (type 1)
 // - Vote/Unvote                        (type 3)
 // - MultiSignature Registration        (type 4)  <-- NanoX Only
 // - Ipfs                               (type 5)
@@ -43,26 +42,15 @@
 // ---
 //
 // Unsupported Tx Types:
-//
+// - Second Signature Registration      (type 1)
 // - Delegate Registration              (type 2)
-//   *Not Supported*
-//   Delegates Forge;
-//   forging can't be done using a Ledger.
-//
 // - MultiPayment                       (type 6)
-//   *Not Currently Supported*
-//   Max MultiPayment won't fit on NanoS hardware.
-//
 // - Delegate Resignation               (type 7)
-//   *Not Supported*
-//   Delegates Forge;
-//   forging can't be done using a Ledger.
 //
-// for more info, see the "unsupported" section of the ARK Ledger App docs.
 // ---
 enum TransactionTypes {
     TRANSFER_TYPE                   = 0,
-    SECOND_SIGNATURE_TYPE           = 1,
+/*  SECOND_SIGNATURE_TYPE           = 1, */
 /*  DELEGATE_REGISTRATION_TYPE      = 2, */
     VOTE_TYPE                       = 3,
     MULTI_SIGNATURE_TYPE            = 4,

@@ -175,7 +175,6 @@ static void deserializeCommonV1(Transaction *transaction,
 // Internals:
 //
 // - case TRANSFER
-// - case SECOND_SIGNATURE
 // - case VOTE
 // - case IPFS
 // - case HTLC_LOCK
@@ -191,14 +190,6 @@ static bool deserializeAsset(Transaction *transaction,
         case TRANSFER_TYPE:
             return deserializeTransfer(
                     &transaction->asset.transfer, buffer, size);
-
-        // Second Signature Registration
-        case SECOND_SIGNATURE_TYPE:
-            return deserializeSecondSignature(
-                    &transaction->asset.secondSignature, buffer, size);
-
-        // Delegate Registration
-        /* case DELEGATE_REGISTRATION_TYPE: */      // <- Not Supported
 
         // Vote
         case VOTE_TYPE:
@@ -216,12 +207,6 @@ static bool deserializeAsset(Transaction *transaction,
         case IPFS_TYPE:
             return deserializeIpfs(
                     &transaction->asset.ipfs, buffer, size);
-
-        // MultiPayment
-        /* case MULTI_PAYMENT_TYPE: */              // <- Not Supported
-
-        // Delegate Resignation
-        /* case DELEGATE_RESIGNATION_TYPE: */       // <- Not Supported
 
         // Htlc Lock
         case HTLC_LOCK_TYPE:
