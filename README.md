@@ -22,14 +22,13 @@ This app is written in C for the Ledger NanoS and NanoX devices.
 
 While the Ledger ARK app _is_ compatible with the Ledger NanoX, there is currently no way to load a custom app until LedgerHQ releases the nanox-secure-sdk.
 
-The Ledger NanoS is—however— fully supported for development and flashing.
+The Ledger NanoS is fully supported for development and flashing.
 
 For more development resources or environment installation and usage, see the following links:
 
 * [ARK Ledger App Example Payloads](./docs/PAYLOADS.md)
 * [Development Resources](./docs/RESOURCES.md)
 * [Development Environment Installation and Usage](./docs/INSTALLATION.md)
-* [Unsupported Transaction Types](./docs/unsupported/README.md)
 
 ## Security
 
