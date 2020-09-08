@@ -33,11 +33,11 @@ if [ ! -d "/opt/bolos" ]; then
 fi
 
 if [ ! -d "/opt/bolos/SDK/nanos-secure-sdk" ]; then
-    printf "\n%s\n" "Fetching the Nano S SDK"
+    printf "\n%s\n" "Fetching the Nano S SDK 1.6.1"
     cd /opt/bolos/SDK || exit
     git clone https://github.com/LedgerHQ/nanos-secure-sdk.git
     cd nanos-secure-sdk/ || exit
-    git -c advice.detachedHead=false checkout tags/nanos-160
+    git -c advice.detachedHead=false checkout tags/nanos-161
 fi
 
 # The NanoX SDK is not currently available to the public.
