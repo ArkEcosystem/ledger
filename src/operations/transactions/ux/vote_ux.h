@@ -32,9 +32,8 @@
 #include "operations/transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-static const char *const UX_VOTE_LABELS[]   = { "Unvote", "Vote", "Delegate" };
-static const char UX_VOTE_SYMBOLS[]         = { '-', '+' };
-static const size_t UX_VOTE_STEPS           = 2U;
+static const char *const UX_VOTE_LABELS[]       = { "Unvote", "Vote" };
+static const size_t UX_VOTE_BASE_STEPS      = 1U;
 
 ////////////////////////////////////////////////////////////////////////////////
 void SetUxVote(const Transaction *transaction);
