@@ -18,6 +18,8 @@
     * [Transfer - With VendorField - 137 length](#transfer-with-vendorfield---137-characters)
     * [Transfer - With VendorField - 255 length](#transfer-with-vendorfield---255-characters)
   * [Vote (Type 3)](#vote-type-3)
+    * [Vote - Single](#vote-single-vote)
+    * [Vote - Double](#vote-double-vote)
   * [Ipfs (Type 5)](#ipfs-type-5)
   * [Htlc Lock (Type 8)](#htlc-lock-type-8)
     * [Htlc Lock - No VendorField](#htlc-lock-no-vendorfield)
@@ -94,7 +96,13 @@
 
 ### Vote (Type 3)
 
+#### Vote: Single Vote
+
 `python3 examples/example_helper.py --tx ff0217010000000300020000000000000002555806bca6737eaeaff6434d5171bac8aeb72533ed9bafb280dd11b328a3822d00e1f5050000000000010102555806bca6737eaeaff6434d5171bac8aeb72533ed9bafb280dd11b328a3822d`
+
+#### Vote: Double Vote
+
+`python3 examples/example_helper.py --tx ff0217010000000300020000000000000002555806bca6737eaeaff6434d5171bac8aeb72533ed9bafb280dd11b328a3822d00e1f5050000000000020102555806bca6737eaeaff6434d5171bac8aeb72533ed9bafb280dd11b328a3822d0002555806bca6737eaeaff6434d5171bac8aeb72533ed9bafb280dd11b328a3822d`
 
 ### MultiSignature (Type 4)
 

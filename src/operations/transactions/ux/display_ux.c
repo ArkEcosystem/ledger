@@ -66,7 +66,8 @@ void SetUx(const Transaction *transaction) {
 
         case VOTE_TYPE:
             SetUxVote(transaction);
-            SetUxDisplay(UX_VOTE_STEPS, false);
+            SetUxDisplay(UX_VOTE_BASE_STEPS + transaction->asset.vote.count,
+                         false);
             break;
 
 #if defined(SUPPORTS_MULTISIGNATURE)
