@@ -54,7 +54,8 @@
 //
 // ---
 bool deserializeVote(Vote *vote, const uint8_t *buffer, size_t size) {
-    if (((size - sizeof(uint8_t)) % VOTE_LEN) != 0) {
+    if (((size - sizeof(uint8_t)) % VOTE_LEN) != 0 ||
+        buffer[0] > VOTE_MAX_COUNT) {
         return false;
     }
 
