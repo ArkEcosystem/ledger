@@ -40,7 +40,7 @@ static const size_t VOTE_MAX_COUNT = 2U;
 ////////////////////////////////////////////////////////////////////////////////
 typedef struct vote_asset_t {
     uint8_t     count;
-    uint8_t     data[VOTE_MAX_COUNT] [VOTE_LEN];
+    uint8_t     data[VOTE_MAX_COUNT] [VOTE_LEN];  // ('0x00/0x01' + pubKey[33])
 } Vote;
 
 ////////////////////////////////////////////////////////////////////////////////

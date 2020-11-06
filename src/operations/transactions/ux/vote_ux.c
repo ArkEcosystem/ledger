@@ -52,8 +52,8 @@ void SetUxVote(const Transaction *transaction) {
     // Vote(s)
     for (uint8_t i = 0U; i < transaction->asset.vote.count; ++i) {
         const char* voteTag = transaction->asset.vote.data[i][0] == 1U
-                ? UX_VOTE_LABELS[1]
-                : UX_VOTE_LABELS[0];
+                ? UX_VOTE_LABELS[1]     // vote
+                : UX_VOTE_LABELS[0];    // unvote
 
         SPRINTF(displayCtx.title[UX_VOTE_BASE_STEPS + i], "%s: ", voteTag);
         BytesToHex(&transaction->asset.vote.data[i][1], PUBLICKEY_COMPRESSED_LEN,
