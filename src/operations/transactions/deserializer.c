@@ -196,12 +196,7 @@ static bool deserializeAsset(Transaction *transaction,
             return deserializeVote(
                     &transaction->asset.vote, buffer, size);
 
-#if defined(SUPPORTS_MULTISIGNATURE)
-        // MultiSignature Registration
-        case MULTI_SIGNATURE_TYPE:
-            return deserializeMultiSignature(
-                    &transaction->asset.multiSignature, buffer, size);
-#endif
+        // case MULTI_SIGNATURE_TYPE:
 
         // Ipfs
         case IPFS_TYPE:

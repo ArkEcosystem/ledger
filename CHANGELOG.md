@@ -7,9 +7,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-### Added
--   support MultiSignature Registration on the NanoX ([#80])
-
 ### Changed
 
 -   upgraded `nanos-secure-sdk` version `160` -> `161` ([#94])
@@ -57,6 +54,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#63]: https://github.com/ArkEcosystem/ledger/pull/63
 [#72]: https://github.com/ArkEcosystem/ledger/pull/72
 [2.1.0]: https://github.com/ArkEcosystem/ledger/compare/2.0.1...2.1.0
-[#80]: https://github.com/ArkEcosystem/ledger/pull/80
 [#94]: https://github.com/ArkEcosystem/ledger/pull/94
 [unreleased]: https://github.com/ArkEcosystem/ledger/compare/master...develop

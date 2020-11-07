@@ -41,7 +41,6 @@
 
     #if defined(TARGET_NANOX)
         #define SUPPORTS_LARGE_OPERATIONS
-        #define SUPPORTS_MULTISIGNATURE
     #endif
 #endif  // HAVE_BOLOS_SDK
 #endif  // ARK_PLATFORM_H

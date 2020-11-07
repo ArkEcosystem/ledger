@@ -38,7 +38,6 @@
 
 #include "transactions/ux/transfer_ux.h"
 #include "transactions/ux/vote_ux.h"
-#include "transactions/ux/multi_signature_ux.h"
 #include "transactions/ux/ipfs_ux.h"
 #include "transactions/ux/htlc_lock_ux.h"
 #include "transactions/ux/htlc_claim_ux.h"
@@ -70,13 +69,7 @@ void SetUx(const Transaction *transaction) {
                          false);
             break;
 
-#if defined(SUPPORTS_MULTISIGNATURE)
-        case MULTI_SIGNATURE_TYPE:
-            SetUxMultiSignature(transaction);
-            const size_t steps = 2U * transaction->asset.multiSignature.count;
-            SetUxDisplay(STEPS_MULTI_SIG_STEPS + steps, false);
-            break;
-#endif
+        // case MULTI_SIGNATURE_TYPE:
 
         case IPFS_TYPE:
             SetUxIpfs(transaction);
