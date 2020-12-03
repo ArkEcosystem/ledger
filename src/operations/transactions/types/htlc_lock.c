@@ -26,7 +26,6 @@
 
 #include "transactions/types/htlc_lock.h"
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -42,7 +41,8 @@
 // @param uint8_t *buffer: The serialized buffer at the Assets offset.
 // @param size_t size: The Asset Buffer Size.
 //
-// @return bool: true if deserialization was successful.
+// @return   0: error
+// @return > 0: asset size
 //
 // ---
 // Internals:
@@ -63,9 +63,9 @@
 // - MEMCOPY(lock->recipientId, &buffer[45], 21);
 //
 // ---
-bool deserializeHtlcLock(HtlcLock *lock, const uint8_t *buffer, size_t size) {
-    if (size != TRANSACTION_TYPE_HTLC_LOCK_SIZE) {
-        return false;
+size_t deserializeHtlcLock(HtlcLock *lock, const uint8_t *buffer, size_t size) {
+    if (size < TRANSACTION_TYPE_HTLC_LOCK_SIZE) {
+        return 0U;
     }
 
     size_t offset = 0;
@@ -84,6 +84,6 @@ bool deserializeHtlcLock(HtlcLock *lock, const uint8_t *buffer, size_t size) {
 
     MEMCOPY(lock->recipientId, &buffer[offset], ADDRESS_HASH_LEN);  // 21 Bytes
 
-    return true;
+    return TRANSACTION_TYPE_HTLC_LOCK_SIZE;
 }
 

@@ -27,7 +27,6 @@
 #ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_IPFS_H
 #define ARK_OPERATIONS_TRANSACTIONS_TYPES_IPFS_H
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -40,6 +39,6 @@ typedef struct ipfs_asset_t {
 } Ipfs;
 
 ////////////////////////////////////////////////////////////////////////////////
-bool deserializeIpfs(Ipfs *ipfs, const uint8_t *buffer, size_t size);
+size_t deserializeIpfs(Ipfs *ipfs, const uint8_t *buffer, size_t size);
 
 #endif  // #define ARK_OPERATIONS_TRANSACTIONS_TYPES_IPFS_H

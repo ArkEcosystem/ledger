@@ -169,7 +169,8 @@ static void deserializeCommonV1(Transaction *transaction,
 // @param uint8_t *buffer: The serialized buffer at the asset offset.
 // @param size_t size: The Asset Buffer Size.
 //
-// @return bool: true if successful
+// @return   0: error
+// @return > 0: okay/asset size
 //
 // ---
 // Internals:
@@ -182,9 +183,9 @@ static void deserializeCommonV1(Transaction *transaction,
 // - case HTLC_REFUND
 //
 // ---
-static bool deserializeAsset(Transaction *transaction,
-                                     const uint8_t *buffer,
-                                     size_t size) {
+static size_t deserializeAsset(Transaction *transaction,
+                               const uint8_t *buffer,
+                               size_t size) {
     switch (transaction->type) {
         // Transfer
         case TRANSFER_TYPE:
@@ -219,16 +220,16 @@ static bool deserializeAsset(Transaction *transaction,
                     &transaction->asset.htlcRefund, buffer, size);
 
         // Unknown Transaction Type
-        default: return false;
+        default: return 0U;
     };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // v2 and v1 Transactions
 static bool internalDeserialize(Transaction *transaction,
-                                        const uint8_t *buffer,
-                                        size_t size) {
-    size_t assetOffset = 0;
+                                const uint8_t *buffer,
+                                size_t size) {
+    size_t assetOffset = 0U;
     switch (buffer[VERSION_OFFSET]) {
         // v2
         case TRANSACTION_VERSION_TYPE_2:
@@ -245,15 +246,17 @@ static bool internalDeserialize(Transaction *transaction,
         default: return false;
     }
 
-    if (deserializeAsset(transaction,
-                         &buffer[assetOffset],
-                         size - assetOffset)) {
-        SetUx(transaction);
-        return true;
+    size_t assetSize = deserializeAsset(transaction,
+                                        &buffer[assetOffset],
+                                        size - assetOffset);
+            
+    if (assetSize == 0U) {
+        // Asset deserialization failed
+        return false;
     }
 
-    // Unknown Transaction Version
-    return false;
+    SetUx(transaction);
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

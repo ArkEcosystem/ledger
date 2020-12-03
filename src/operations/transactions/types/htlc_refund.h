@@ -27,7 +27,6 @@
 #ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_HTLC_REFUND_H
 #define ARK_OPERATIONS_TRANSACTIONS_TYPES_HTLC_REFUND_H
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -39,8 +38,8 @@ typedef struct htlc_refund_asset_t {
 } HtlcRefund;
 
 ////////////////////////////////////////////////////////////////////////////////
-bool deserializeHtlcRefund(HtlcRefund *refund,
-                           const uint8_t *buffer,
-                           size_t size);
+size_t deserializeHtlcRefund(HtlcRefund *refund,
+                             const uint8_t *buffer,
+                             size_t size);
 
 #endif  // #define ARK_OPERATIONS_TRANSACTIONS_TYPES_HTLC_REFUND_H

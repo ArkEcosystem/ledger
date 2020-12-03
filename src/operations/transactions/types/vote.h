@@ -27,7 +27,6 @@
 #ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_VOTE_H
 #define ARK_OPERATIONS_TRANSACTIONS_TYPES_VOTE_H
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -44,6 +43,6 @@ typedef struct vote_asset_t {
 } Vote;
 
 ////////////////////////////////////////////////////////////////////////////////
-bool deserializeVote(Vote *vote, const uint8_t *buffer, size_t size);
+size_t deserializeVote(Vote *vote, const uint8_t *buffer, size_t size);
 
 #endif  // #define ARK_OPERATIONS_TRANSACTIONS_TYPES_VOTE_H

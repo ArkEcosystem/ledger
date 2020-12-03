@@ -26,7 +26,6 @@
 
 #include "transactions/types/transfer.h"
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -42,7 +41,8 @@
 // @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
 // @param size_t size: The Asset Size.
 //
-// @return bool: true if deserialization was successful.
+// @return   0: error
+// @return > 0: asset size
 //
 // ---
 // Internals:
@@ -57,13 +57,13 @@
 // - MEMCOPY(transfer->recipientId, &buffer[12], 21);
 //
 // ---
-bool deserializeTransfer(Transfer *transfer,
-                         const uint8_t *buffer,
-                         size_t size) {
+size_t deserializeTransfer(Transfer *transfer,
+                           const uint8_t *buffer,
+                           size_t size) {
     if (transfer == NULL ||
         buffer == NULL ||
-        size != TRANSACTION_TYPE_TRANSFER_SIZE) {
-        return false;
+        size < TRANSACTION_TYPE_TRANSFER_SIZE) {
+        return 0U;
     }
 
     transfer->amount        = U8LE(buffer, 0);                      // 8 Bytes
@@ -72,5 +72,5 @@ bool deserializeTransfer(Transfer *transfer,
             &buffer[sizeof(uint64_t) + sizeof(uint32_t)],
             ADDRESS_HASH_LEN);
 
-    return true;
+    return TRANSACTION_TYPE_TRANSFER_SIZE;
 }

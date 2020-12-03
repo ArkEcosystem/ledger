@@ -26,7 +26,6 @@
 
 #include "transactions/types/htlc_claim.h"
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -41,7 +40,8 @@
 // @param uint8_t *buffer: The serialized buffer beginning at the Assets offset.
 // @param size_t size: The Asset Buffer Size.
 //
-// @return bool: true if deserialization was successful.
+// @return   0: error
+// @return > 0: asset size
 //
 // ---
 // Internals:
@@ -53,13 +53,15 @@
 // - MEMCOPY(claim->secret, &buffer[32], 32);
 //
 // ---
-bool deserializeHtlcClaim(HtlcClaim *claim, const uint8_t *buffer, size_t size) {
-    if (size <= HASH_32_LEN) {
-        return false;
+size_t deserializeHtlcClaim(HtlcClaim *claim,
+                            const uint8_t *buffer,
+                            size_t size) {
+    if (size < 2U * HASH_32_LEN) {
+        return 0U;
     }
 
     MEMCOPY(claim->id, &buffer[0], HASH_32_LEN);                    // 32 Bytes
     MEMCOPY(claim->secret, &buffer[HASH_32_LEN], HASH_32_LEN);      // 32 Bytes
 
-    return true;
+    return 2U * HASH_32_LEN;
 }
