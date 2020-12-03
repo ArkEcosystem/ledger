@@ -146,6 +146,11 @@ UX_STEP_NOCB(ux_step_32, bnnn_paging, UX_STEP_VAR(31));
 UX_STEP_NOCB(ux_step_33, bnnn_paging, UX_STEP_VAR(32));
 UX_STEP_NOCB(ux_step_34, bnnn_paging, UX_STEP_VAR(33));
 UX_STEP_NOCB(ux_step_35, bnnn_paging, UX_STEP_VAR(34));
+UX_STEP_NOCB(ux_step_36, bnnn_paging, UX_STEP_VAR(35));
+UX_STEP_NOCB(ux_step_37, bnnn_paging, UX_STEP_VAR(36));
+UX_STEP_NOCB(ux_step_38, bnnn_paging, UX_STEP_VAR(37));
+UX_STEP_NOCB(ux_step_39, bnnn_paging, UX_STEP_VAR(38));
+UX_STEP_NOCB(ux_step_40, bnnn_paging, UX_STEP_VAR(39));
 #endif  // SUPPORTS_LARGE_OPERATIONS
 
 UX_STEP_NOCB(ux_step_ext, bnnn_paging, UX_STEP_EXT);
@@ -173,6 +178,7 @@ const ux_flow_step_t* const ux_flow_container_[1 + DISPLAY_CTX_STEP_COUNT] = {
     &ux_step_21, &ux_step_22, &ux_step_23, &ux_step_24, &ux_step_25,
     &ux_step_26, &ux_step_27, &ux_step_28, &ux_step_29, &ux_step_30,
     &ux_step_31, &ux_step_32, &ux_step_33, &ux_step_34, &ux_step_35,
+    &ux_step_36, &ux_step_37, &ux_step_38, &ux_step_39, &ux_step_40,
 #endif  // SUPPORTS_LARGE_OPERATIONS
 };
 
