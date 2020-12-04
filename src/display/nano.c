@@ -187,15 +187,15 @@ ux_flow_step_t* ux_flow_container[UX_FLOW_CONTAINTER_MAX];
 
 ////////////////////////////////////////////////////////////////////////////////
 // Initialize the Flow Container
-void ux_flow_container_init(size_t steps, bool isExtended) {
+void ux_flow_container_init(size_t steps, size_t extendedStep) {
     MEMSET_BZERO(ux_flow_container, sizeof(ux_flow_container));
 
     // copy all UX Flow steps to the Flow Container
     os_memmove(ux_flow_container, ux_flow_container_, sizeof(ux_flow_container_));
 
-    if (isExtended) {
+    if (extendedStep > 0U) {
         // assign the final step as extended
-        ux_flow_container[steps] = (ux_flow_step_t *)&ux_step_ext;
+        ux_flow_container[extendedStep] = (ux_flow_step_t *)&ux_step_ext;
     }
 
     // set the final approval steps  
@@ -205,8 +205,8 @@ void ux_flow_container_init(size_t steps, bool isExtended) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void SetUxDisplay(size_t steps, bool isExtended) {
-    ux_flow_container_init(steps, isExtended);
+void SetUxDisplay(size_t steps, size_t extendedStep) {
+    ux_flow_container_init(steps, extendedStep);
     ux_flow_init(0U, (const ux_flow_step_t *const *)ux_flow_container, NULL);
 }
 

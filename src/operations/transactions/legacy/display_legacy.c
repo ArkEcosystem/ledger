@@ -50,7 +50,7 @@
 #include "display/display.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-extern void SetUxDisplay(size_t steps, bool isExtended);
+extern void SetUxDisplay(size_t steps, size_t extendedStep);
 
 ////////////////////////////////////////////////////////////////////////////////
 void setTransferLegacy(const Transaction *transaction) {
@@ -104,13 +104,14 @@ void SetUxLegacy(const Transaction *transaction) {
     switch (transaction->type) {
         case TRANSFER_TYPE:
             setTransferLegacy(transaction);
-            const bool hasVendorField = transaction->vendorFieldLength > 0;
-            SetUxDisplay(3U + hasVendorField, hasVendorField);
+            const bool hasVendorField = transaction->vendorFieldLength > 0U;
+            const size_t steps = 3U + hasVendorField;
+            SetUxDisplay(steps, hasVendorField ? steps : 0U);
             break;
 
         case VOTE_TYPE:
             setVoteLegacy(transaction);
-            SetUxDisplay(2U, false);
+            SetUxDisplay(2U, 0U);
             break;
 
         default: break;

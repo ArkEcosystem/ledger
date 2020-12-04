@@ -52,21 +52,21 @@
 #include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-extern void SetUxDisplay(size_t steps, bool isExtended);
+extern void SetUxDisplay(size_t steps, size_t extendedStep);
 
 ////////////////////////////////////////////////////////////////////////////////
 void SetUx(const Transaction *transaction) {
     MEMSET_TYPE_BZERO(&displayCtx, DisplayContext);
 
-    size_t steps = 0;
-    bool isExtended = false;
+    size_t steps = 0U;
+    size_t extendedStep = 0U;
     const bool hasVendorField = transaction->vendorFieldLength > 0U;
 
     switch (transaction->type) {
         case TRANSFER_TYPE:
             SetUxTransfer(transaction);
-            isExtended = hasVendorField;    // isExtended
             steps = UX_TRANSFER_STEPS + hasVendorField;
+            extendedStep = hasVendorField ? steps : 0U;
             break;
 
         case VOTE_TYPE:
@@ -82,14 +82,14 @@ void SetUx(const Transaction *transaction) {
 
         case IPFS_TYPE:
             SetUxIpfs(transaction);
-            isExtended = true;              // isExtended
             steps = UX_IPFS_STEPS;
+            extendedStep = steps;
             break;
 
         case HTLC_LOCK_TYPE:
             SetUxHtlcLock(transaction);
-            isExtended = hasVendorField;    // isExtended
             steps = UX_HTLC_LOCK_STEPS + hasVendorField;
+            extendedStep = hasVendorField ? steps : 0U;
             break;
 
         case HTLC_CLAIM_TYPE:
@@ -112,9 +112,9 @@ void SetUx(const Transaction *transaction) {
     }
 
     if (transaction->signatures.count > 0U) {
-        steps += SetUxSignatures(transaction, steps - isExtended);
+        steps += SetUxSignatures(transaction, steps);
     }
 #endif  // SUPPORTS_MULTISIGNATURE
 
-    SetUxDisplay(steps, isExtended);
+    SetUxDisplay(steps, extendedStep);
 }
