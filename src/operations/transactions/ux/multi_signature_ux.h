@@ -24,42 +24,25 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_H
-#define ARK_OPERATIONS_TRANSACTION_H
+#ifndef ARK_OPERATIONS_TRANSACTIONS_UX_MULTI_SIGNATURE_UX_H
+#define ARK_OPERATIONS_TRANSACTIONS_UX_MULTI_SIGNATURE_UX_H
+
+#include "platform.h"
+
+#if defined(SUPPORTS_MULTISIGNATURE)
 
 #include <stddef.h>
-#include <stdint.h>
 
-#include "constants.h"
-
-#include "transactions/types/assets.h"
-#include "transactions/types/signatures.h"
+#include "operations/transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-typedef struct transaction_t {
-    uint8_t     header;
-    uint8_t     version;
-    uint8_t     network;
-    uint16_t    type;
-    uint8_t     senderPublicKey[PUBLICKEY_COMPRESSED_LEN];
-    uint64_t    fee;
-    size_t      vendorFieldLength;
-    uint8_t     *vendorField;
-    union {
-        struct {  // v2
-            tx_asset_t  asset;
-#if defined(SUPPORTS_MULTISIGNATURE)
-            Signatures  signatures;
-#endif  // SUPPORTS_MULTISIGNATURE
-        };
-        struct {  // Legacy
-            uint8_t     recipientId[ADDRESS_HASH_LEN];
-            uint64_t    amount;
-            size_t      assetOffset;
-            size_t      assetSize;
-            uint8_t     *assetPtr;
-        };
-    };
-} Transaction;
+static const char *const MULTI_SIG_LABELS[] = { "MultiSig",
+                                                "Reg.",
+                                                "PublicKey" };
+static const size_t MULTI_SIG_BASE_STEPS    = 1U;
 
-#endif  // #define ARK_OPERATIONS_TRANSACTION_H
+////////////////////////////////////////////////////////////////////////////////
+size_t SetUxMultiSignature(const Transaction *transaction);
+
+#endif  // SUPPORTS_MULTISIGNATURE
+#endif  // ARK_OPERATIONS_TRANSACTIONS_UX_MULTI_SIGNATURE_UX_H

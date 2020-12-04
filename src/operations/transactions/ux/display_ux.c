@@ -38,10 +38,13 @@
 
 #include "transactions/ux/transfer_ux.h"
 #include "transactions/ux/vote_ux.h"
+#include "transactions/ux/multi_signature_ux.h"
 #include "transactions/ux/ipfs_ux.h"
 #include "transactions/ux/htlc_lock_ux.h"
 #include "transactions/ux/htlc_claim_ux.h"
 #include "transactions/ux/htlc_refund_ux.h"
+
+#include "transactions/ux/signatures_ux.h"
 
 #include "display/context.h"
 #include "display/display.h"
@@ -55,42 +58,63 @@ extern void SetUxDisplay(size_t steps, bool isExtended);
 void SetUx(const Transaction *transaction) {
     MEMSET_TYPE_BZERO(&displayCtx, DisplayContext);
 
-    const bool hasVendorField = transaction->vendorFieldLength > 0;
+    size_t steps = 0;
+    bool isExtended = false;
+    const bool hasVendorField = transaction->vendorFieldLength > 0U;
 
     switch (transaction->type) {
         case TRANSFER_TYPE:
             SetUxTransfer(transaction);
-            SetUxDisplay(UX_TRANSFER_STEPS + hasVendorField,hasVendorField);
+            isExtended = hasVendorField;    // isExtended
+            steps = UX_TRANSFER_STEPS + hasVendorField;
             break;
 
         case VOTE_TYPE:
             SetUxVote(transaction);
-            SetUxDisplay(UX_VOTE_BASE_STEPS + transaction->asset.vote.count,
-                         false);
+            steps = UX_VOTE_BASE_STEPS + transaction->asset.vote.count;
             break;
 
-        // case MULTI_SIGNATURE_TYPE:
+#if defined(SUPPORTS_MULTISIGNATURE)
+        case MULTI_SIG_REGISTRATION_TYPE:
+            steps = SetUxMultiSignature(transaction);
+            break;
+#endif  // SUPPORTS_MULTISIGNATURE
 
         case IPFS_TYPE:
             SetUxIpfs(transaction);
-            SetUxDisplay(UX_IPFS_STEPS, true);
+            isExtended = true;              // isExtended
+            steps = UX_IPFS_STEPS;
             break;
 
         case HTLC_LOCK_TYPE:
             SetUxHtlcLock(transaction);
-            SetUxDisplay(UX_HTLC_LOCK_STEPS + hasVendorField, hasVendorField);
+            isExtended = hasVendorField;    // isExtended
+            steps = UX_HTLC_LOCK_STEPS + hasVendorField;
             break;
 
         case HTLC_CLAIM_TYPE:
             SetUxHtlcClaim(transaction);
-            SetUxDisplay(UX_HTLC_CLAIM_STEPS, false);
+            steps = UX_HTLC_CLAIM_STEPS;
             break;
 
         case HTLC_REFUND_TYPE:
             SetUxHtlcRefund(transaction);
-            SetUxDisplay(UX_HTLC_REFUND_STEPS, false);
+            steps = UX_HTLC_REFUND_STEPS;
             break;
 
         default: break;
     };
+
+#if defined(SUPPORTS_MULTISIGNATURE)
+    if (transaction->signatures.count > 0U &&
+        transaction->type != MULTI_SIG_REGISTRATION_TYPE) {
+        SetUxMultiSignature(transaction);
+    }
+
+    if (transaction->signatures.count > 0U) {
+        steps += SetUxSignatures(transaction, steps - isExtended);
+    }
+#endif  // SUPPORTS_MULTISIGNATURE
+
+    SetUxDisplay(steps, isExtended);
 }

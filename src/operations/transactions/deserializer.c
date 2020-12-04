@@ -177,6 +177,7 @@ static void deserializeCommonV1(Transaction *transaction,
 //
 // - case TRANSFER
 // - case VOTE
+// - case MULTI_SIG_REGISTRATION_TYPE
 // - case IPFS
 // - case HTLC_LOCK
 // - case HTLC_CLAIM
@@ -197,7 +198,12 @@ static size_t deserializeAsset(Transaction *transaction,
             return deserializeVote(
                     &transaction->asset.vote, buffer, size);
 
-        // case MULTI_SIGNATURE_TYPE:
+#if defined(SUPPORTS_MULTISIGNATURE)
+        // MultiSignature Registration
+        case MULTI_SIG_REGISTRATION_TYPE:
+            return deserializeMultiSignature(
+                    &transaction->asset.multiSignature, buffer, size);
+#endif  // SUPPORTS_MULTISIGNATURE
 
         // Ipfs
         case IPFS_TYPE:
@@ -229,31 +235,41 @@ static size_t deserializeAsset(Transaction *transaction,
 static bool internalDeserialize(Transaction *transaction,
                                 const uint8_t *buffer,
                                 size_t size) {
-    size_t assetOffset = 0U;
+    size_t cursor = 0U;
     switch (buffer[VERSION_OFFSET]) {
         // v2
         case TRANSACTION_VERSION_TYPE_2:
             deserializeCommon(transaction, buffer);
-            assetOffset = VF_OFFSET + transaction->vendorFieldLength;
+            cursor = VF_OFFSET + transaction->vendorFieldLength;
             break;
 
         // v1
         case TRANSACTION_VERSION_TYPE_1:
             deserializeCommonV1(transaction, buffer);
-            assetOffset = VF_OFFSET_V1 + transaction->vendorFieldLength;
+            cursor = VF_OFFSET_V1 + transaction->vendorFieldLength;
             break;
 
         default: return false;
     }
 
     size_t assetSize = deserializeAsset(transaction,
-                                        &buffer[assetOffset],
-                                        size - assetOffset);
-            
+                                        &buffer[cursor],
+                                        size - cursor);
+
     if (assetSize == 0U) {
         // Asset deserialization failed
         return false;
     }
+#if defined(SUPPORTS_MULTISIGNATURE)
+    cursor += assetSize;
+
+    if (cursor < size &&
+        deserializeSignatures(&transaction->signatures,
+                              &buffer[cursor],
+                              size - cursor) == 0U) {
+        return false;
+    }
+#endif  // SUPPORTS_MULTISIGNATURE
 
     SetUx(transaction);
     return true;
@@ -282,6 +298,8 @@ static bool internalDeserializeLegacy(Transaction *transaction,
 
 ////////////////////////////////////////////////////////////////////////////////
 bool deserialize(const uint8_t *buffer, size_t size) {
+    MEMSET_BZERO(&transaction, sizeof(Transaction));
+
     bool successful = buffer[HEADER_OFFSET] == TRANSACTION_HEADER
             ? internalDeserialize(&transaction, buffer, size)
             : internalDeserializeLegacy(&transaction, buffer, size);

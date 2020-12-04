@@ -29,6 +29,7 @@
 
 #include "transactions/types/transfer.h"
 #include "transactions/types/vote.h"
+#include "transactions/types/multi_signature.h"
 #include "transactions/types/ipfs.h"
 #include "transactions/types/htlc_lock.h"
 #include "transactions/types/htlc_claim.h"
@@ -42,7 +43,9 @@ typedef union tx_asset_t {
 /*  SecondSignatureRegistration secondSignature;        // Type 1 */
 /*  Delegate Registration                               // Type 2 */
     Vote                        vote;                   // Type 3
-/*  MultiSignature              multiSignature;         // Type 4 */
+#if defined(SUPPORTS_MULTISIGNATURE)
+    MultiSignature              multiSignature;         // Type 4 */
+#endif  // SUPPORTS_MULTISIGNATURE
     Ipfs                        ipfs;                   // Type 5
 /*  MultiPayment                                        // Type 6 */
 /*  Delegate Resignation                                // Type 7 */

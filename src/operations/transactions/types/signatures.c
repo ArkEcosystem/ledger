@@ -24,42 +24,58 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_H
-#define ARK_OPERATIONS_TRANSACTION_H
+#include "platform.h"
+
+#if defined(SUPPORTS_MULTISIGNATURE)
+
+#include "transactions/types/signatures.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include "constants.h"
-
-#include "transactions/types/assets.h"
-#include "transactions/types/signatures.h"
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-typedef struct transaction_t {
-    uint8_t     header;
-    uint8_t     version;
-    uint8_t     network;
-    uint16_t    type;
-    uint8_t     senderPublicKey[PUBLICKEY_COMPRESSED_LEN];
-    uint64_t    fee;
-    size_t      vendorFieldLength;
-    uint8_t     *vendorField;
-    union {
-        struct {  // v2
-            tx_asset_t  asset;
-#if defined(SUPPORTS_MULTISIGNATURE)
-            Signatures  signatures;
-#endif  // SUPPORTS_MULTISIGNATURE
-        };
-        struct {  // Legacy
-            uint8_t     recipientId[ADDRESS_HASH_LEN];
-            uint64_t    amount;
-            size_t      assetOffset;
-            size_t      assetSize;
-            uint8_t     *assetPtr;
-        };
-    };
-} Transaction;
+// Deserialize Signatures - 65N bytes
+//
+// @param Signatures *signatures
+// @param uint8_t *buffer: The serialized buffer beginning at Signatures.
+// @param size_t size: The Asset Size.
+//
+// @return   0: error
+// @return > 0: asset size
+//
+// ---
+// Internals:
+//
+// Counts:
+// - signatures->count = size / TRANSACTION_SIGNATURES_SIZE;
+//
+// Signatures - 64N Bytes:
+// - MEMCOPY(transfer->signatures.data, &buffer[N], 64);
+//
+// ---
+size_t deserializeSignatures(Signatures *signatures,
+                             const uint8_t *buffer,
+                             size_t size) {
+    if (signatures == NULL ||
+        buffer == NULL ||
+        size % TRANSACTION_SIGNATURES_SIZE != 0) {
+        return 0U;
+    }
 
-#endif  // #define ARK_OPERATIONS_TRANSACTION_H
+    signatures->count = size / TRANSACTION_SIGNATURES_SIZE;
+    if (signatures->count > MULTI_SIG_MAX) {
+        return 0U;
+    }
+
+    for (size_t i = 0; i < signatures->count; ++i) {
+        MEMCOPY(signatures->data[i],
+                &buffer[sizeof(uint8_t) + (i * TRANSACTION_SIGNATURES_SIZE)],
+                SIG_SCHNORR_LEN);
+    }
+
+    return signatures->count * TRANSACTION_SIGNATURES_SIZE;
+}
+
+#endif  // SUPPORTS_MULTISIGNATURE

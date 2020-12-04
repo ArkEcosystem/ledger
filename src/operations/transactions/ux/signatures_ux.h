@@ -24,42 +24,22 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTION_H
-#define ARK_OPERATIONS_TRANSACTION_H
+#ifndef ARK_OPERATIONS_TRANSACTIONS_UX_SIGNATURES_UX_H
+#define ARK_OPERATIONS_TRANSACTIONS_UX_SIGNATURES_UX_H
+
+#include "platform.h"
+
+#if defined(SUPPORTS_MULTISIGNATURE)
 
 #include <stddef.h>
-#include <stdint.h>
 
-#include "constants.h"
-
-#include "transactions/types/assets.h"
-#include "transactions/types/signatures.h"
+#include "transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-typedef struct transaction_t {
-    uint8_t     header;
-    uint8_t     version;
-    uint8_t     network;
-    uint16_t    type;
-    uint8_t     senderPublicKey[PUBLICKEY_COMPRESSED_LEN];
-    uint64_t    fee;
-    size_t      vendorFieldLength;
-    uint8_t     *vendorField;
-    union {
-        struct {  // v2
-            tx_asset_t  asset;
-#if defined(SUPPORTS_MULTISIGNATURE)
-            Signatures  signatures;
-#endif  // SUPPORTS_MULTISIGNATURE
-        };
-        struct {  // Legacy
-            uint8_t     recipientId[ADDRESS_HASH_LEN];
-            uint64_t    amount;
-            size_t      assetOffset;
-            size_t      assetSize;
-            uint8_t     *assetPtr;
-        };
-    };
-} Transaction;
+static const char *const UX_SIGNATURES_LABEL = "Signature";
 
-#endif  // #define ARK_OPERATIONS_TRANSACTION_H
+////////////////////////////////////////////////////////////////////////////////
+size_t SetUxSignatures(const Transaction *transaction, size_t offset);
+
+#endif  // SUPPORTS_MULTISIGNATURE
+#endif  // #define ARK_OPERATIONS_TRANSACTIONS_UX_SIGNATURES_UX_H
