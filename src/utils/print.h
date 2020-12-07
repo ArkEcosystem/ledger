@@ -27,15 +27,40 @@
 #ifndef ARK_UTILS_PRINT_H
 #define ARK_UTILS_PRINT_H
 
-#include <stddef.h>
-#include <stdint.h>
+#if defined(HAVE_BOLOS_SDK)
+    #include <os.h>
+    #include <os_io_seproxyhal.h>
+
+    #undef SPRINTF  // redefine BOLOS version as 'SPRINTF_'
+    #define SPRINTF_(strbuf, ...) snprintf(strbuf, sizeof(strbuf), __VA_ARGS__)
+
+    #define SNPRINTF_ snprintf
+#else  // BOLOS NOT detected
+    #include <string.h>
+
+    #define SPRINTF_ sprintf
+    #define SNPRINTF_ snprintf
+#endif  // HAS_BOLOS_SDK
 
 ////////////////////////////////////////////////////////////////////////////////
-size_t UintToString(uint64_t value, char *dst, size_t maxLen);
+// A platform wrapper for 'sprintf'.
+//
+// @param char *s:              pointer to the destination buffer.
+// @param const char *format:   string print format.
+// @param ...:                  variadic arguments.
+//
+// ---
+#define SPRINTF SPRINTF_
 
 ////////////////////////////////////////////////////////////////////////////////
-size_t TokenAmountToString(const char *token, size_t tokenLen, size_t decimals,
-                           uint64_t amount,
-                           char *dst, size_t maxLen);
+// A platform wrapper for 'snprintf'.
+//
+// @param char *s:              pointer to the destination buffer.
+// @param size_t size:          maximum number of bytes to be written. 
+// @param const char *format:   string print format.
+// @param ...:                  variadic arguments.
+//
+// ---
+#define SNPRINTF SNPRINTF_
 
 #endif  // ARK_UTILS_PRINT_H

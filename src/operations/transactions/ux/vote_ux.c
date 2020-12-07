@@ -34,27 +34,30 @@
 
 #include "utils/hex.h"
 #include "utils/print.h"
+#include "utils/str.h"
 #include "utils/utils.h"
 
 #include "display/context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 void SetUxVote(const Transaction *transaction) {
-    bool isVote = transaction->asset.vote.data[0] == 1U;
-
-    SPRINTF(displayCtx.operation, "%s",
-            isVote ? UX_VOTE_LABELS[1] : UX_VOTE_LABELS[0]);
-    SPRINTF(displayCtx.title[0], "%s:", UX_VOTE_LABELS[2]);
-    SPRINTF(displayCtx.title[1], "%s:", UX_LABEL_FEE);
-
-    // Vote
-    displayCtx.text[0][0] = isVote ? UX_VOTE_SYMBOLS[1] : UX_VOTE_SYMBOLS[0];
-    BytesToHex(&transaction->asset.vote.data[1], PUBLICKEY_COMPRESSED_LEN,
-               &displayCtx.text[0][1], sizeof(displayCtx.text[0]) - 1);
+    SPRINTF(displayCtx.operation, "%s", UX_VOTE_LABELS[1]);
 
     // Fee
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+    SPRINTF(displayCtx.title[0], "%s:", UX_LABEL_FEE);
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->fee,
-                        displayCtx.text[1], sizeof(displayCtx.text[1]));
-}
+                        displayCtx.text[0], sizeof(displayCtx.text[0]));
 
+    // Vote(s)
+    for (uint8_t i = 0U; i < transaction->asset.vote.count; ++i) {
+        const char* voteTag = transaction->asset.vote.data[i][0] == 1U
+                ? UX_VOTE_LABELS[1]     // vote
+                : UX_VOTE_LABELS[0];    // unvote
+
+        SPRINTF(displayCtx.title[UX_VOTE_BASE_STEPS + i], "%s: ", voteTag);
+        BytesToHex(&transaction->asset.vote.data[i][1], PUBLICKEY_COMPRESSED_LEN,
+                   displayCtx.text[UX_VOTE_BASE_STEPS + i],
+                   sizeof(displayCtx.text[UX_VOTE_BASE_STEPS + i]));
+    }
+}

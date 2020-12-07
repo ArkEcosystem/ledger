@@ -35,7 +35,7 @@
 #include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-// Vote (Type 3) - 34 Bytes
+// Vote (Type 3) - 35 <=> 69 Bytes
 //
 // @param Vote *vote
 // @param const uint8_t *buffer: The serialized buffer at the Assets offset.
@@ -46,20 +46,26 @@
 // ---
 // Internals:
 //
-// Number of Votes - 1 Byte: Not Needed
-// - vote->n_votes = buffer[0];
+// Number of Votes - 1 Byte
+// - vote->count = buffer[0];
 //
 // Vote - 1 + 33(Compressed PublicKey) Bytes:
-// - bytecpy(vote->data, &buffer[1], 34);
+// - MEMCOPY(vote->data, &buffer[1 + 34N], 34);
 //
 // ---
 bool deserializeVote(Vote *vote, const uint8_t *buffer, size_t size) {
-    if (size != sizeof(uint8_t) + VOTE_LEN) {
+    if (((size - sizeof(uint8_t)) % VOTE_LEN) != 0 ||
+        buffer[0] > VOTE_MAX_COUNT) {
         return false;
     }
 
-    // skip vote count
-    bytecpy(vote->data, &buffer[sizeof(uint8_t)], VOTE_LEN);        // 34 Bytes
+    vote->count = buffer[0];
+
+    for (uint8_t i = 0U; i < vote->count; ++i) {
+        MEMCOPY(vote->data[i],                                  // 34 Bytes
+                &buffer[sizeof(uint8_t) + (i * VOTE_LEN)],
+                VOTE_LEN);        
+    }
 
     return true;
 }

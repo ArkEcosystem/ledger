@@ -47,7 +47,7 @@
 // Internals:
 //
 // Lock Transaction Id - 32 Bytes:
-// - bytecpy(refund->id, &buffer[0], 32);
+// - MEMCOPY(refund->id, &buffer[0], 32);
 //
 // ---
 bool deserializeHtlcRefund(HtlcRefund *refund,
@@ -57,7 +57,7 @@ bool deserializeHtlcRefund(HtlcRefund *refund,
         return false;
     }
 
-    bytecpy(refund->id, &buffer[0], HASH_32_LEN);               // 32 Bytes
+    MEMCOPY(refund->id, &buffer[0], HASH_32_LEN);               // 32 Bytes
 
     return true;
 }

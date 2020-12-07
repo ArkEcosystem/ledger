@@ -34,6 +34,7 @@
 
 #include "utils/base58.h"
 #include "utils/print.h"
+#include "utils/str.h"
 #include "utils/utils.h"
 
 #include "display/context.h"
@@ -47,24 +48,20 @@ void SetUxTransfer(const Transaction *transaction) {
     SPRINTF(displayCtx.title[3], "%s:", UX_LABEL_FEE);
 
     // RecipientId
-    encodeBase58PublicKey((uint8_t *)transaction->asset.transfer.recipientId,
-                          ADDRESS_HASH_LEN,
-                          (uint8_t *)displayCtx.text[0],
-                          sizeof(displayCtx.text[0]),
-                          transaction->asset.transfer.recipientId[0],
-                          1U);
+    Base58CheckEncode(transaction->asset.transfer.recipientId, ADDRESS_HASH_LEN,
+                      displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // Expiration
     UintToString(transaction->asset.transfer.expiration,
                  displayCtx.text[1], sizeof(displayCtx.text[1]));
 
     // Amount
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->asset.transfer.amount,
                         displayCtx.text[2], sizeof(displayCtx.text[2]));
 
     // Fee
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->fee,
                         displayCtx.text[3], sizeof(displayCtx.text[3]));
 

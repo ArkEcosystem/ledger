@@ -31,6 +31,7 @@
 #include "operations/transactions/transaction.h"
 
 #include "utils/hex.h"
+#include "utils/print.h"
 #include "utils/utils.h"
 
 #include "display/context.h"
@@ -46,7 +47,7 @@ void SetUxHtlcClaim(const Transaction *transaction) {
                displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // Secret
-    bytecpy(displayCtx.text[1],
+    MEMCOPY(displayCtx.text[1],
             transaction->asset.htlcClaim.secret,
             HASH_32_LEN);
 }

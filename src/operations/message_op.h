@@ -34,6 +34,7 @@
 #include "constants.h"
 
 #include "utils/print.h"
+#include "utils/str.h"
 #include "utils/utils.h"
 
 #include "display/context.h"
@@ -54,7 +55,7 @@ extern void SetUxDisplay(size_t steps, bool isExtended);
 //
 // ---
 bool handleMessage(const uint8_t *buffer, size_t length) {
-    explicit_bzero(&displayCtx, sizeof(displayCtx));
+    MEMSET_TYPE_BZERO(&displayCtx, DisplayContext);
 
     if (length == 0 || length > MAX_TEXT_LEN) {
         return false;
@@ -68,7 +69,7 @@ bool handleMessage(const uint8_t *buffer, size_t length) {
     UintToString(length, displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // Message Text
-    snprintf(displayCtx.text_ext, length + 1, "%s", buffer);
+    SNPRINTF(displayCtx.text_ext, length + 1, "%s", buffer);
 
     SetUxDisplay(UX_MESSAGE_STEPS, true);
 

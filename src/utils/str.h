@@ -24,31 +24,16 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#include "transactions/ux/second_signature_ux.h"
+#ifndef ARK_UTILS_STR_H
+#define ARK_UTILS_STR_H
 
-#include "constants.h"
+#include <stddef.h>
+#include <stdint.h>
 
-#include "operations/transactions/transaction.h"
+size_t UintToString(uint64_t value, char *dst, size_t maxLen);
 
-#include "utils/hex.h"
-#include "utils/print.h"
-#include "utils/utils.h"
+size_t TokenAmountToString(const char *token, size_t tokenLen, size_t decimals,
+                           uint64_t amount,
+                           char *dst, size_t maxLen);
 
-#include "display/context.h"
-
-////////////////////////////////////////////////////////////////////////////////
-void SetUxSecondSignature(const Transaction *transaction) {
-    SPRINTF(displayCtx.operation, "%s", UX_SECOND_SIGNATURE_LABELS[0]);
-    SPRINTF(displayCtx.title[0], "%s:", UX_SECOND_SIGNATURE_LABELS[1]);
-    SPRINTF(displayCtx.title[1], "%s:", UX_LABEL_FEE);
-
-    // PublicKey of Second Signature
-    BytesToHex(transaction->asset.secondSignature.publicKey,
-               PUBLICKEY_COMPRESSED_LEN,
-               displayCtx.text[0], sizeof(displayCtx.text[0]));
-
-    // Fee
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
-                        transaction->fee,
-                        displayCtx.text[1], sizeof(displayCtx.text[1]));
-}
+#endif  // ARK_UTILS_STR_H

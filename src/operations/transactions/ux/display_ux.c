@@ -30,12 +30,13 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "platform.h"
+
 #include "transactions/transaction.h"
 
 #include "transactions/types/types.h"
 
 #include "transactions/ux/transfer_ux.h"
-#include "transactions/ux/second_signature_ux.h"
 #include "transactions/ux/vote_ux.h"
 #include "transactions/ux/ipfs_ux.h"
 #include "transactions/ux/htlc_lock_ux.h"
@@ -45,12 +46,14 @@
 #include "display/context.h"
 #include "display/display.h"
 
+#include "utils/utils.h"
+
 ////////////////////////////////////////////////////////////////////////////////
 extern void SetUxDisplay(size_t steps, bool isExtended);
 
 ////////////////////////////////////////////////////////////////////////////////
 void SetUx(const Transaction *transaction) {
-    explicit_bzero(&displayCtx, sizeof(displayCtx));
+    MEMSET_TYPE_BZERO(&displayCtx, DisplayContext);
 
     const bool hasVendorField = transaction->vendorFieldLength > 0;
 
@@ -60,15 +63,13 @@ void SetUx(const Transaction *transaction) {
             SetUxDisplay(UX_TRANSFER_STEPS + hasVendorField,hasVendorField);
             break;
 
-        case SECOND_SIGNATURE_TYPE:
-            SetUxSecondSignature(transaction);
-            SetUxDisplay(UX_SECOND_SIGNATURE_STEPS, false);
-            break;
-
         case VOTE_TYPE:
             SetUxVote(transaction);
-            SetUxDisplay(UX_VOTE_STEPS, false);
+            SetUxDisplay(UX_VOTE_BASE_STEPS + transaction->asset.vote.count,
+                         false);
             break;
+
+        // case MULTI_SIGNATURE_TYPE:
 
         case IPFS_TYPE:
             SetUxIpfs(transaction);

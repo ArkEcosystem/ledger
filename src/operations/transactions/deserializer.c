@@ -32,6 +32,7 @@
 #include <string.h>
 
 #include "constants.h"
+#include "platform.h"
 
 #include "transactions/transaction.h"
 
@@ -77,7 +78,7 @@ Transaction transaction;
 // - transaction->nonce = U8LE(&buffer[9]);
 //
 // SenderPublicKey - 33 Bytes:
-// - bytecpy(transaction->senderPublicKey, &buffer[17], 33);
+// - MEMCOPY(transaction->senderPublicKey, &buffer[17], 33);
 //
 // Fee - 8 bytes
 // - transaction->fee = U8LE(buffer, 50);
@@ -95,7 +96,7 @@ static void deserializeCommon(Transaction *transaction, const uint8_t *buffer) {
     transaction->network            = buffer[NETWORK_OFFSET];       // 1 Byte
     transaction->type               = U2LE(buffer, TYPE_OFFSET);    // 2 Bytes
 
-    bytecpy(transaction->senderPublicKey,                           // 33 Bytes
+    MEMCOPY(transaction->senderPublicKey,                           // 33 Bytes
             &buffer[SENDER_PUBLICKEY_OFFSET],
             PUBLICKEY_COMPRESSED_LEN);
 
@@ -131,7 +132,7 @@ static void deserializeCommon(Transaction *transaction, const uint8_t *buffer) {
 // - data->timestamp = unpack4LE(buffer, 4);
 //
 // SenderPublicKey - 33 Bytes:
-// - std::copy_n(&buffer.at(8), 33, data->senderPublicKey.begin());
+// - MEMCOPY(&buffer.at(8), data->senderPublicKey, 33);
 //
 // Fee - 8 bytes
 // - data->fee = unpack8LE(buffer, 41);
@@ -150,7 +151,7 @@ static void deserializeCommonV1(Transaction *transaction,
     transaction->network            = buffer[NETWORK_OFFSET];       // 1 Byte
     transaction->type               = buffer[TYPE_OFFSET_V1];       // 1 Byte
 
-    bytecpy(transaction->senderPublicKey,                           // 33 Bytes
+    MEMCOPY(transaction->senderPublicKey,                           // 33 Bytes
             &buffer[SENDER_PUBLICKEY_OFFSET_V1],
             PUBLICKEY_COMPRESSED_LEN);
 
@@ -174,7 +175,6 @@ static void deserializeCommonV1(Transaction *transaction,
 // Internals:
 //
 // - case TRANSFER
-// - case SECOND_SIGNATURE
 // - case VOTE
 // - case IPFS
 // - case HTLC_LOCK
@@ -191,32 +191,17 @@ static bool deserializeAsset(Transaction *transaction,
             return deserializeTransfer(
                     &transaction->asset.transfer, buffer, size);
 
-        // Second Signature Registration
-        case SECOND_SIGNATURE_TYPE:
-            return deserializeSecondSignature(
-                    &transaction->asset.secondSignature, buffer, size);
-
-        // Delegate Registration
-        /* case DELEGATE_REGISTRATION_TYPE: */      // <- Not Supported
-
         // Vote
         case VOTE_TYPE:
             return deserializeVote(
                     &transaction->asset.vote, buffer, size);
 
-        // MultiSignature Registration
-        /* case MULTI_SIGNATURE_TYPE: */            // <- Under Development
+        // case MULTI_SIGNATURE_TYPE:
 
         // Ipfs
         case IPFS_TYPE:
             return deserializeIpfs(
                     &transaction->asset.ipfs, buffer, size);
-
-        // MultiPayment
-        /* case MULTI_PAYMENT_TYPE: */              // <- Not Supported
-
-        // Delegate Resignation
-        /* case DELEGATE_RESIGNATION_TYPE: */       // <- Not Supported
 
         // Htlc Lock
         case HTLC_LOCK_TYPE:
@@ -299,7 +284,7 @@ bool deserialize(const uint8_t *buffer, size_t size) {
             : internalDeserializeLegacy(&transaction, buffer, size);
 
     if (!successful) {
-        explicit_bzero(&transaction, sizeof(transaction));
+        MEMSET_TYPE_BZERO(&transaction, Transaction);
     }
 
     return successful;

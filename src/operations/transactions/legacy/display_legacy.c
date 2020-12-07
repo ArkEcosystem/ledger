@@ -43,6 +43,7 @@
 
 #include "utils/base58.h"
 #include "utils/print.h"
+#include "utils/str.h"
 #include "utils/utils.h"
 
 #include "display/context.h"
@@ -59,23 +60,20 @@ void setTransferLegacy(const Transaction *transaction) {
     SPRINTF(displayCtx.title[2], "Fee:");
 
     // RecipientId
-    encodeBase58PublicKey((uint8_t*)transaction->recipientId,
-                          ADDRESS_HASH_LEN,
-                          (uint8_t*)displayCtx.text[0],
-                          sizeof(displayCtx.text[0]),
-                          transaction->recipientId[0],
-                          1U);
+    Base58CheckEncode(transaction->recipientId, ADDRESS_HASH_LEN,
+                      displayCtx.text[0], sizeof(displayCtx.text[0]));
+
     // somehow prevents displaying bad chars?
     // legacy, so let's not spend too much time on it.
     displayCtx.text[0][ADDRESS_LEN]  = ' ';
 
     // Amount
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->amount,
                         displayCtx.text[1], sizeof(displayCtx.text[1]));
 
     // Fee
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->fee,
                         displayCtx.text[2], sizeof(displayCtx.text[2]));
 
@@ -92,16 +90,16 @@ static void setVoteLegacy(const Transaction *transaction) {
     SPRINTF(displayCtx.title[1], "Fee:");
 
     const size_t voteOffset = 67;
-    bytecpy((char*)displayCtx.text[0], transaction->assetPtr, voteOffset);
+    MEMCOPY(displayCtx.text[0], transaction->assetPtr, voteOffset);
 
-    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_SIZE, TOKEN_DECIMALS,
+    TokenAmountToString(TOKEN_NAME, TOKEN_NAME_LEN, TOKEN_DECIMALS,
                         transaction->fee,
                         displayCtx.text[1], sizeof(displayCtx.text[1]));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void SetUxLegacy(const Transaction *transaction) {
-    explicit_bzero(&displayCtx, sizeof(displayCtx));
+    MEMSET_TYPE_BZERO(&displayCtx, DisplayContext);
 
     switch (transaction->type) {
         case TRANSFER_TYPE:
