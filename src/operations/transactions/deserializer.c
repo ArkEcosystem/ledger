@@ -68,7 +68,7 @@ Transaction transaction;
 // Network Version - 1 Byte:
 // - transaction->network = buffer[2];
 //
-// TypeGroup - 4 Bytes: Not Currently Needed
+// TypeGroup - 4 Bytes:
 // - transaction->typeGroup = U4LE(&buffer[3]);
 //
 // Transaction Type - 2 Bytes:
@@ -91,18 +91,19 @@ Transaction transaction;
 //
 // ---
 static void deserializeCommon(Transaction *transaction, const uint8_t *buffer) {
-    transaction->header             = buffer[HEADER_OFFSET];        // 1 Byte
-    transaction->version            = buffer[VERSION_OFFSET];       // 1 Byte
-    transaction->network            = buffer[NETWORK_OFFSET];       // 1 Byte
-    transaction->type               = U2LE(buffer, TYPE_OFFSET);    // 2 Bytes
+    transaction->header         = buffer[HEADER_OFFSET];            // 1 Byte
+    transaction->version        = buffer[VERSION_OFFSET];           // 1 Byte
+    transaction->network        = buffer[NETWORK_OFFSET];           // 1 Byte
+    transaction->typeGroup      = U4LE(buffer, TYPEGROUP_OFFSET);   // 4 Bytes
+    transaction->type           = U2LE(buffer, TYPE_OFFSET);        // 2 Bytes
 
     MEMCOPY(transaction->senderPublicKey,                           // 33 Bytes
             &buffer[SENDER_PUBLICKEY_OFFSET],
             PUBLICKEY_COMPRESSED_LEN);
 
-    transaction->fee                = U8LE(buffer, FEE_OFFSET);     // 8 Bytes
+    transaction->fee            = U8LE(buffer, FEE_OFFSET);         // 8 Bytes
 
-    transaction->vendorFieldLength  = buffer[VF_LEN_OFFSET];        // 1 Byte
+    transaction->vendorFieldLength = buffer[VF_LEN_OFFSET];         // 1 Byte
     // 0 <=> 64 Bytes
     transaction->vendorField = (uint8_t *)&buffer[VF_OFFSET];
 }
