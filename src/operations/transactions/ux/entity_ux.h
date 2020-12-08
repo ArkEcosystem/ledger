@@ -24,37 +24,32 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
-#define ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
+#ifndef ARK_OPERATIONS_TRANSACTION_UX_ENTITY_UX_H
+#define ARK_OPERATIONS_TRANSACTION_UX_ENTITY_UX_H
 
-#include "transactions/types/transfer.h"
-#include "transactions/types/vote.h"
-#include "transactions/types/ipfs.h"
-#include "transactions/types/htlc_lock.h"
-#include "transactions/types/htlc_claim.h"
-#include "transactions/types/htlc_refund.h"
+#include <stddef.h>
 
-#include "transactions/types/entity.h"
-
-#include "platform.h"
+#include "operations/transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-typedef union tx_asset_t {
-    // TypeGroup 1: Core
-    Transfer                    transfer;               // Type 0
-/*  SecondSignatureRegistration secondSignature;        // Type 1 */
-/*  Delegate Registration                               // Type 2 */
-    Vote                        vote;                   // Type 3
-/*  MultiSignature              multiSignature;         // Type 4 */
-    Ipfs                        ipfs;                   // Type 5
-/*  MultiPayment                                        // Type 6 */
-/*  Delegate Resignation                                // Type 7 */
-    HtlcLock                    htlcLock;               // Type 8
-    HtlcClaim                   htlcClaim;              // Type 9
-    HtlcRefund                  htlcRefund;             // Type 10
+static const char *const UX_ENTITY_TYPE_LABELS[]    = { "Business",
+                                                        "Product",
+                                                        "Plugin",
+                                                        "Module",
+                                                        "Delegate" };
+static const char *const UX_ENTITY_ACTION_LABELS[]  = { "Reg.",
+                                                        "Update",
+                                                        "Res." };
+static const char *const UX_ENTITY_PAGE_LABELS[]    = { "SubType",
+                                                        "Name",
+                                                        "Ipfs",
+                                                        "RegistrationId" };     
+static const size_t UX_ENTITY_BASE_STEPS            = 2U;
 
-    // TypeGroup 2: Magistrate
-    Entity                      entity;                 // Type 6
-} tx_asset_t;
+////////////////////////////////////////////////////////////////////////////////
+void SetUxEntity(const Transaction *transaction);
 
-#endif  // ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
+////////////////////////////////////////////////////////////////////////////////
+size_t getEntitySteps(const Transaction *transaction);
+
+#endif  // #define ARK_OPERATIONS_TRANSACTION_UX_ENTITY_UX_H

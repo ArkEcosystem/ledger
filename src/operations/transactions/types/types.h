@@ -62,4 +62,22 @@ enum TransactionTypes {
     HTLC_REFUND_TYPE                = 10
 };
 
+////////////////////////////////////////////////////////////////////////////////
+enum MagistrateTransactionType {
+/*  BusinessRegistration            = 0, */
+/*  BusinessResignation             = 1, */
+/*  BusinessUpdate                  = 2, */
+/*  BridgechainRegistration         = 3, */
+/*  BridgechainResignation          = 4, */
+/*  BridgechainUpdate               = 5, */
+    ENTITY_TYPE                     = 6,
+};      
+
+////////////////////////////////////////////////////////////////////////////////
+enum TransactionTypeGroup {
+/*  TEST_TYPE          = 0, */
+    CORE_TYPE          = 1,
+    MAGISTRATE_TYPE    = 2,
+};
+
 #endif  // ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H

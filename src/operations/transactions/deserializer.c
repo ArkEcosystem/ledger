@@ -183,9 +183,9 @@ static void deserializeCommonV1(Transaction *transaction,
 // - case HTLC_REFUND
 //
 // ---
-static bool deserializeAsset(Transaction *transaction,
-                                     const uint8_t *buffer,
-                                     size_t size) {
+static bool deserializeCoreAsset(Transaction *transaction,
+                                 const uint8_t *buffer,
+                                 size_t size) {
     switch (transaction->type) {
         // Transfer
         case TRANSFER_TYPE:
@@ -225,10 +225,37 @@ static bool deserializeAsset(Transaction *transaction,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+static bool deserializeMagistrateAsset(Transaction *transaction,
+                                       const uint8_t *buffer,
+                                       size_t size) {
+    switch(transaction->type) {
+        case ENTITY_TYPE:
+            return deserializeEntity(&transaction->asset.entity, buffer, size);
+
+        default: return false;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+static bool deserializeAsset(Transaction *transaction,
+                             const uint8_t *buffer,
+                             size_t size) {
+    switch(transaction->typeGroup) {
+        case CORE_TYPE:
+            return deserializeCoreAsset(transaction, buffer, size);
+
+        case MAGISTRATE_TYPE:
+            return deserializeMagistrateAsset(transaction, buffer, size);
+
+        default: return false;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // v2 and v1 Transactions
 static bool internalDeserialize(Transaction *transaction,
-                                        const uint8_t *buffer,
-                                        size_t size) {
+                                const uint8_t *buffer,
+                                size_t size) {
     size_t assetOffset = 0;
     switch (buffer[VERSION_OFFSET]) {
         // v2
@@ -280,6 +307,8 @@ static bool internalDeserializeLegacy(Transaction *transaction,
 
 ////////////////////////////////////////////////////////////////////////////////
 bool deserialize(const uint8_t *buffer, size_t size) {
+    MEMSET_BZERO(&transaction, sizeof(Transaction));
+
     bool successful = buffer[HEADER_OFFSET] == TRANSACTION_HEADER
             ? internalDeserialize(&transaction, buffer, size)
             : internalDeserializeLegacy(&transaction, buffer, size);

@@ -24,37 +24,51 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
-#define ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
+#ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_ENTITY_H
+#define ARK_OPERATIONS_TRANSACTIONS_TYPES_ENTITY_H
 
-#include "transactions/types/transfer.h"
-#include "transactions/types/vote.h"
-#include "transactions/types/ipfs.h"
-#include "transactions/types/htlc_lock.h"
-#include "transactions/types/htlc_claim.h"
-#include "transactions/types/htlc_refund.h"
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
-#include "transactions/types/entity.h"
-
-#include "platform.h"
+#include "constants.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-typedef union tx_asset_t {
-    // TypeGroup 1: Core
-    Transfer                    transfer;               // Type 0
-/*  SecondSignatureRegistration secondSignature;        // Type 1 */
-/*  Delegate Registration                               // Type 2 */
-    Vote                        vote;                   // Type 3
-/*  MultiSignature              multiSignature;         // Type 4 */
-    Ipfs                        ipfs;                   // Type 5
-/*  MultiPayment                                        // Type 6 */
-/*  Delegate Resignation                                // Type 7 */
-    HtlcLock                    htlcLock;               // Type 8
-    HtlcClaim                   htlcClaim;              // Type 9
-    HtlcRefund                  htlcRefund;             // Type 10
+static const size_t ENTITY_NAME_MAX_LEN = 40;
 
-    // TypeGroup 2: Magistrate
-    Entity                      entity;                 // Type 6
-} tx_asset_t;
+////////////////////////////////////////////////////////////////////////////////
+enum EntityType {
+    BUSINESS    = 0,
+    PRODUCT     = 1,
+    PLUGIN      = 2,
+    MODULE      = 3,
+    DELEGATE    = 4,
+};
 
-#endif  // ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
+////////////////////////////////////////////////////////////////////////////////
+enum EntityAction {
+    ENTITY_REGISTER = 0,
+    ENTITY_UPDATE   = 1,
+    ENTITY_RESIGN   = 2,
+};
+
+////////////////////////////////////////////////////////////////////////////////
+typedef struct entity_data_t {
+    uint8_t length;
+    const uint8_t *data;
+} EntityData;
+
+////////////////////////////////////////////////////////////////////////////////
+typedef struct entity_asset_t {
+    uint8_t         type;
+    uint8_t         subType;
+    uint8_t         action;
+    EntityData      name;
+    EntityData      ipfs;
+    EntityData      registrationId;
+} Entity;
+
+////////////////////////////////////////////////////////////////////////////////
+bool deserializeEntity(Entity *entity, const uint8_t *buffer, size_t size);
+
+#endif  // #define ARK_OPERATIONS_TRANSACTIONS_TYPES_ENTITY_H
