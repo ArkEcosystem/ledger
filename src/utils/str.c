@@ -26,12 +26,45 @@
 
 #include "utils/str.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
 
 #include "utils/utils.h"
+
+////////////////////////////////////////////////////////////////////////////////
+#define PRINTABLE_CHAR_MIN 32
+#define PRINTABLE_CHAR_MAX 126
+
+////////////////////////////////////////////////////////////////////////////////
+// Verifies that a string of a given length contains printable Ascii text.
+//
+// e.g.
+// - IsPrintableAscii("AbCd", 5, true) == true
+// - IsPrintableAscii((char[]){ 'A', 'b', 'C', 'd'}, 4, false) == true
+// - IsPrintableAscii("\
+//  ", 50, false) == false
+//
+// @param const char *str:          the string to be checked.
+// @param size_t length:            string length.
+// @param bool isNullTerminated:    whether to account for the null-terminator.
+//
+// @return bool: true if valid.
+//
+// ---
+bool IsPrintableAscii(const char *str, size_t length, bool isNullTerminated) {
+    const int target = length - (int)isNullTerminated;
+    for (int i = 0; i < target; ++i) {
+      int c = (int)str[i];
+      if ((c - PRINTABLE_CHAR_MIN) * (PRINTABLE_CHAR_MAX - c) < 0) {
+        return false;
+      }
+    }
+
+    return isNullTerminated ? (str[target] == '\0') : true;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Copy a Number-String, inserting a decimal '.' at a given location.
