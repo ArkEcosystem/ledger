@@ -27,13 +27,14 @@
 #ifndef ARK_OPERATIONS_TRANSACTIONS_DESERIALIZE_LEGACY_H
 #define ARK_OPERATIONS_TRANSACTIONS_DESERIALIZE_LEGACY_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include "transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void deserializeCommonLegacy(Transaction *transaction,
+bool deserializeCommonLegacy(Transaction *transaction,
                              const uint8_t *buffer,
                              size_t size);
 

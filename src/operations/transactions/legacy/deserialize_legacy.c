@@ -26,6 +26,7 @@
 
 #include "transactions/legacy/deserialize_legacy.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -35,10 +36,11 @@
 #include "transactions/offsets.h"
 
 #include "utils/unpack.h"
+#include "utils/str.h"
 #include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void deserializeCommonLegacy(Transaction *transaction,
+bool deserializeCommonLegacy(Transaction *transaction,
                              const uint8_t *buffer,
                              size_t size) {
     // Deserialize Common
@@ -49,15 +51,19 @@ void deserializeCommonLegacy(Transaction *transaction,
             &buffer[RECIPIENT_OFFSET_LEGACY],
             ADDRESS_HASH_LEN);
 
+
     transaction->vendorField = (uint8_t *)&buffer[VF_OFFSET];
-    if (buffer[VF_OFFSET] != 0) {
-        uint8_t *ptr = transaction->vendorField;
-        while (*ptr++) {
-            ++transaction->vendorFieldLength;
-        }
+    transaction->vendorFieldLength = 0U;
+
+    uint8_t *ptr = transaction->vendorField;
+    while (*ptr++ && transaction->vendorFieldLength < V1_VENDORFIELD_MAX_LEN) {
+        ++transaction->vendorFieldLength;
     }
-    else {
-        transaction->vendorFieldLength = 0U;
+
+    if (!IsPrintableAscii((const char*)transaction->vendorField,
+                          transaction->vendorFieldLength,
+                          false)) {
+        return false;
     }
 
     transaction->amount         = U8LE(buffer, AMOUNT_OFFSET_LEGACY);
@@ -65,4 +71,6 @@ void deserializeCommonLegacy(Transaction *transaction,
 
     transaction->assetOffset    = ASSET_OFFSET_LEGACY;
     transaction->assetSize      = size - transaction->assetOffset;
+
+    return true;
 }
