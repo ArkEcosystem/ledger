@@ -74,10 +74,6 @@ static const size_t SIG_ECDSA_MAX_LEN   = 72;
 static const size_t SIG_SCHNORR_LEN     = HASH_64_LEN;
 
 ////////////////////////////////////////////////////////////////////////////////
-// Strings
-static const size_t UINT64_MAX_STRING_SIZE = 20U;
-
-////////////////////////////////////////////////////////////////////////////////
 // Token
 static const size_t TOKEN_AMOUNT_MAX_CHARS  = 25U;
 static const size_t TOKEN_DECIMALS          = 8U;

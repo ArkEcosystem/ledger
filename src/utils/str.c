@@ -180,54 +180,55 @@ static size_t adjustDecimals(const char *src, size_t srcSize,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// Convert a Unsigned Integer to a String using a Token Name and Decimal count.
+static void reverseString(char *str, size_t length) {
+    char tmp;
+    char *begin = str;
+    char *end = str + length - 1ULL;
+
+    while(end > begin) {
+        tmp = *end;
+        *end-- = *begin;
+        *begin++ = tmp;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Convert a Unsigned Integer to a String using a Token Name.
 //
-// e.g.
-// - UintToString(1ULL, (char[])buffer, 25);
-// - "1"
+// @param uint64_t value:   unsigned, to be converted.
+// @param char *dst:        buffer for the result.
+// @param size_t maxLen:    of writable space.
 //
-// @param uint64_t value:   unsigned value to be converted.
-// @param char *dst:        destination char buffer.
-// @param size_t maxLen:    max length of writable space.
-//
-// @return size_t: final length w/null-terminator if successful, otherwise '0'.
+// @return size_t: length w/null-terminator if successful, otherwise 0.
 //
 // ---
 size_t UintToString(uint64_t value, char *dst, size_t maxLen) {
-    if (dst == NULL || maxLen < 2U) {
-        return 0U;
+    size_t n = 0UL;
+
+    if (value == 0) {
+        dst[n++] = '0';
+        dst[n] = '\0';
+        return n + 1UL;
     }
 
-    if (value == 0U) {
-        dst[0] = '0';
-        dst[1] = '\0';
-        return 2U;
+    while (value != 0ULL) {
+        int c = value % UINT64_BASE_10;
+        dst[n++] = (c > UINT64_BASE_10 - 1ULL)
+                ? (c - UINT64_BASE_10) + 'a'
+                : c + '0';
+        value = value / UINT64_BASE_10;
     }
-
-    uint64_t base = 1U;
-    size_t n = 0U;
-    size_t i = 0U;
-
-    // count how many characters are needed
-    while (base <= value && n <= UINT64_MAX_STRING_SIZE) {
-        base *= UINT64_BASE_10;
-        n++;
-    }
-
-    if (n > maxLen - 1U) {
+    
+    if (n > maxLen - 1ULL) {
         dst[0] = '\0';
-        return 0U;
+        return 0UL;
     }
 
-    base /= UINT64_BASE_10;
-    while (i < n) {
-        dst[i++] = '0' + ((value / base) % UINT64_BASE_10);
-        base /= UINT64_BASE_10;
-    }
+    dst[n] = '\0';
 
-    dst[i] = '\0';
+    reverseString(dst, n);
 
-    return n + 1U;
+    return n + 1UL;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
