@@ -145,22 +145,29 @@ static void handlePublicKeyContext(volatile unsigned int *tx) {
 
     tmpCtx.publicKey.needsChainCode = (p2Chain == P2_CHAINCODE);
 
-    // Derive the privateKey using the HD path.
-    os_perso_derive_node_bip32(curve,
-                               bip32Path,
-                               bip32PathLength,
-                               privateKeyData,
-                               (tmpCtx.publicKey.needsChainCode
-                                        ? tmpCtx.publicKey.chainCode
-                                        : NULL));
+    BEGIN_TRY {
+        TRY {
+            // Derive the privateKey using the HD path.
+            os_perso_derive_node_bip32(curve,
+                                       bip32Path, bip32PathLength,
+                                       privateKeyData,
+                                       (tmpCtx.publicKey.needsChainCode
+                                                ? tmpCtx.publicKey.chainCode
+                                                : NULL));
 
-    // Initialize the privateKey to generate the publicKey,
-    // clearing the private data sources after each respective use.
-    cx_ecfp_init_private_key(curve, privateKeyData, HASH_32_LEN, &privateKey);
-    MEMSET_BZERO(&privateKeyData, sizeof(privateKeyData));
+            // Initialize the privateKey to generate the publicKey,
+            cx_ecfp_init_private_key(curve,
+                                     privateKeyData, HASH_32_LEN,
+                                     &privateKey);
+            cx_ecfp_generate_pair(curve, &publicKey, &privateKey, 1U);
+        }
 
-    cx_ecfp_generate_pair(curve, &publicKey, &privateKey, 1U);
-    MEMSET_TYPE_BZERO(&privateKey, cx_ecfp_private_key_t);
+        FINALLY {
+            MEMSET_BZERO(&privateKeyData, sizeof(privateKeyData));
+            MEMSET_TYPE_BZERO(&privateKey, cx_ecfp_private_key_t);
+        }
+    }
+    END_TRY;
 
     // Compress and write the publicKey to the APDU buffer.
     // (compressedPublicKeyLength(33) + publicKey)
