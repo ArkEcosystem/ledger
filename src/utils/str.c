@@ -39,6 +39,12 @@
 #define PRINTABLE_CHAR_MAX 126
 
 ////////////////////////////////////////////////////////////////////////////////
+// Verifies that a given character is within the printable Ascii range.
+static bool IsValidAsciiChar(char c) {
+    return (c - PRINTABLE_CHAR_MIN) * (PRINTABLE_CHAR_MAX - c) >= 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Verifies that a string of a given length contains printable Ascii text.
 //
 // e.g.
@@ -46,6 +52,14 @@
 // - IsPrintableAscii((char[]){ 'A', 'b', 'C', 'd'}, 4, false) == true
 // - IsPrintableAscii("\
 //  ", 50, false) == false
+// - IsPrintableAscii(((char[]){ '\0' }), 1, false) == false
+// - IsPrintableAscii(((char[]){ '\0' }), 1, true) == false
+// - IsPrintableAscii(((char[]){ 'A' }), 1, false) == true
+// - IsPrintableAscii(((char[]){ 'A' }), 1, true) == false
+// - IsPrintableAscii("a", 1, false) == true
+// - IsPrintableAscii("a", 1, true) == false
+// - IsPrintableAscii("a", 2, false) == false
+// - IsPrintableAscii("a", 2, true) == true
 //
 // @param const char *str:          the string to be checked.
 // @param size_t length:            string length.
@@ -55,12 +69,12 @@
 //
 // ---
 bool IsPrintableAscii(const char *str, size_t length, bool isNullTerminated) {
+    if (length == 0U || (!IsValidAsciiChar(str[0]))) { return false; }
+
     const int target = length - (int)isNullTerminated;
     for (int i = 0; i < target; ++i) {
       int c = (int)str[i];
-      if ((c - PRINTABLE_CHAR_MIN) * (PRINTABLE_CHAR_MAX - c) < 0) {
-        return false;
-      }
+      if (!IsValidAsciiChar(c)) { return false; }
     }
 
     return isNullTerminated ? (str[target] == '\0') : true;
