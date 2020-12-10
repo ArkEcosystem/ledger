@@ -93,7 +93,7 @@ static const uint8_t TRANSACTION_VERSION_LEGACY     = 0;
 static const uint8_t TRANSACTION_VERSION_TYPE_1     = 1;
 static const uint8_t TRANSACTION_VERSION_TYPE_2     = 2;
 
-static const uint8_t V1_VENDORFIELD_MAX_LEN = 64;
-static const uint8_t V2_VENDORFIELD_MAX_LEN = 255;
+static const uint8_t VENDORFIELD_V1_MAX_LEN = 64;
+static const uint8_t VENDORFIELD_V2_MAX_LEN = 255;
 
 #endif  // #define ARK_CONSTANTS_H

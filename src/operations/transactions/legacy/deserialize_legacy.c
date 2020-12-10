@@ -51,18 +51,18 @@ bool deserializeCommonLegacy(Transaction *transaction,
             &buffer[RECIPIENT_OFFSET_LEGACY],
             ADDRESS_HASH_LEN);
 
-
     transaction->vendorField = (uint8_t *)&buffer[VF_OFFSET];
     transaction->vendorFieldLength = 0U;
 
     uint8_t *ptr = transaction->vendorField;
-    while (*ptr++ && transaction->vendorFieldLength < V1_VENDORFIELD_MAX_LEN) {
+    while (*ptr++ && transaction->vendorFieldLength < VENDORFIELD_V1_MAX_LEN) {
         ++transaction->vendorFieldLength;
     }
 
-    if (!IsPrintableAscii((const char*)transaction->vendorField,
+    if (transaction->vendorFieldLength > 0U &&
+        IsPrintableAscii((const char*)transaction->vendorField,
                           transaction->vendorFieldLength,
-                          false)) {
+                          false) == false) {
         return false;
     }
 
