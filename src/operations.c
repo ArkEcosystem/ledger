@@ -200,6 +200,10 @@ static void handleSigningContext() {
     // - Set the curve-type.
     if (p1 == P1_FIRST) {
         // Set and check the path length.
+        if (dataLength < 1) {
+            // Not enough data
+            THROW(0x6A80);
+        }
         tmpCtx.signing.pathLength = workBuffer[0];
         if (tmpCtx.signing.pathLength < 1 ||
             tmpCtx.signing.pathLength > ADDRESS_MAX_BIP32_PATH) {
@@ -212,6 +216,10 @@ static void handleSigningContext() {
 
         // Unpack the path.
         for (uint32_t i = 0U; i < tmpCtx.signing.pathLength; ++i) {
+            if (dataLength < 4) {
+                // Not enough data
+                THROW(0x6A80);
+            }
             tmpCtx.signing.bip32Path[i] = U4BE(workBuffer, 0U);
             workBuffer += 4U;
             dataLength -= 4U;
@@ -232,6 +240,9 @@ static void handleSigningContext() {
 
     // Iff first payload, copy to the signing context data.
     if (p1 == P1_FIRST) {
+        if (dataLength > MAX_RAW_OPERATION) {
+            THROW(0x6A80);
+        }
         tmpCtx.signing.dataLength = dataLength;
         MEMCOPY(tmpCtx.signing.data, workBuffer, dataLength);
     }
