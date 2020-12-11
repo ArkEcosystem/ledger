@@ -217,11 +217,11 @@ size_t UintToString(uint64_t value, char *dst, size_t maxLen) {
                 ? (c - UINT64_BASE_10) + 'a'
                 : c + '0';
         value = value / UINT64_BASE_10;
-    }
-    
-    if (n > maxLen - 1ULL) {
-        dst[0] = '\0';
-        return 0UL;
+
+        if (n > maxLen - 1ULL) {
+            dst[0] = '\0';
+            return 0UL;
+        }
     }
 
     dst[n] = '\0';
