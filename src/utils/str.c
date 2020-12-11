@@ -272,7 +272,7 @@ size_t TokenAmountToString(const char *token, size_t tokenLen, size_t decimals,
     }
 
     decimals == 0UL
-      ? MEMCOPY(dst + prefixLen, tmp, prefixLen + amountStrLen)
+      ? MEMCOPY(dst + prefixLen, tmp, amountStrLen)
       : (void)(amountStrLen = adjustDecimals(tmp, amountStrLen,
                                              dst + prefixLen,
                                              maxLen - amountStrLen,
