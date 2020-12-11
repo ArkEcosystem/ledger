@@ -34,6 +34,7 @@
 static const size_t HEADER_OFFSET               = 0;
 static const size_t VERSION_OFFSET              = 1;
 static const size_t NETWORK_OFFSET              = 2;
+static const size_t TYPEGROUP_OFFSET            = 3;
 static const size_t TYPE_OFFSET                 = 7;
 static const size_t SENDER_PUBLICKEY_OFFSET     = 17;
 static const size_t FEE_OFFSET                  = 50;

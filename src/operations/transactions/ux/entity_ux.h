@@ -24,43 +24,32 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
-#define ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
+#ifndef ARK_OPERATIONS_TRANSACTION_UX_ENTITY_UX_H
+#define ARK_OPERATIONS_TRANSACTION_UX_ENTITY_UX_H
+
+#include <stddef.h>
+
+#include "operations/transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-// ARK Transaction TypeGroups
-enum TransactionTypeGroup {
-/*  TEST_TYPE           = 0, */
-    CORE_TYPE           = 1,
-    MAGISTRATE_TYPE     = 2,
-};
+static const char *const UX_ENTITY_TYPE_LABELS[]    = { "Business",
+                                                        "Product",
+                                                        "Plugin",
+                                                        "Module",
+                                                        "Delegate" };
+static const char *const UX_ENTITY_ACTION_LABELS[]  = { "Reg.",
+                                                        "Update",
+                                                        "Res." };
+static const char *const UX_ENTITY_PAGE_LABELS[]    = { "SubType",
+                                                        "Name",
+                                                        "Ipfs",
+                                                        "RegistrationId" };
+static const size_t UX_ENTITY_BASE_STEPS            = 2U;
 
 ////////////////////////////////////////////////////////////////////////////////
-// ARK Transaction Types
-enum TransactionTypes {
-    TRANSFER_TYPE                   = 0,
-/*  SECOND_SIGNATURE_TYPE           = 1, */
-/*  DELEGATE_REGISTRATION_TYPE      = 2, */
-    VOTE_TYPE                       = 3,
-/*  MULTI_SIGNATURE_TYPE            = 4, */
-    IPFS_TYPE                       = 5,
-/*  MULTI_PAYMENT_TYPE              = 6, */
-/*  DELEGATE_RESIGNATION_TYPE       = 7, */
-    HTLC_LOCK_TYPE                  = 8,
-    HTLC_CLAIM_TYPE                 = 9,
-    HTLC_REFUND_TYPE                = 10
-};
+void SetUxEntity(const Transaction *transaction);
 
 ////////////////////////////////////////////////////////////////////////////////
-// ARK Magistrate Transaction Types
-enum MagistrateTransactionType {
-/*  BusinessRegistration            = 0, */
-/*  BusinessResignation             = 1, */
-/*  BusinessUpdate                  = 2, */
-/*  BridgechainRegistration         = 3, */
-/*  BridgechainResignation          = 4, */
-/*  BridgechainUpdate               = 5, */
-    ENTITY_TYPE                     = 6,
-};
+size_t getEntitySteps(const Transaction *transaction);
 
-#endif  // ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
+#endif  // #define ARK_OPERATIONS_TRANSACTION_UX_ENTITY_UX_H

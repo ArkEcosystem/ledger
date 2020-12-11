@@ -34,10 +34,13 @@
 #include "transactions/types/htlc_claim.h"
 #include "transactions/types/htlc_refund.h"
 
+#include "transactions/types/entity.h"
+
 #include "platform.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 typedef union tx_asset_t {
+    // TypeGroup 1: Core
     Transfer                    transfer;               // Type 0
 /*  SecondSignatureRegistration secondSignature;        // Type 1 */
 /*  Delegate Registration                               // Type 2 */
@@ -49,6 +52,9 @@ typedef union tx_asset_t {
     HtlcLock                    htlcLock;               // Type 8
     HtlcClaim                   htlcClaim;              // Type 9
     HtlcRefund                  htlcRefund;             // Type 10
+
+    // TypeGroup 2: Magistrate
+    Entity                      entity;                 // Type 6
 } tx_asset_t;
 
 #endif  // ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H

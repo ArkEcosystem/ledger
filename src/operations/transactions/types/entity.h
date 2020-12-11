@@ -24,43 +24,54 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
-#define ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
+#ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_ENTITY_H
+#define ARK_OPERATIONS_TRANSACTIONS_TYPES_ENTITY_H
+
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+#include "constants.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-// ARK Transaction TypeGroups
-enum TransactionTypeGroup {
-/*  TEST_TYPE           = 0, */
-    CORE_TYPE           = 1,
-    MAGISTRATE_TYPE     = 2,
+static const size_t ENTITY_NAME_MAX_LEN = 40;
+
+////////////////////////////////////////////////////////////////////////////////
+// Describes the Type of Entity that will be performing an action.
+enum EntityType {
+    BUSINESS        = 0,
+    PRODUCT         = 1,
+    PLUGIN          = 2,
+    MODULE          = 3,
+    DELEGATE        = 4,
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// ARK Transaction Types
-enum TransactionTypes {
-    TRANSFER_TYPE                   = 0,
-/*  SECOND_SIGNATURE_TYPE           = 1, */
-/*  DELEGATE_REGISTRATION_TYPE      = 2, */
-    VOTE_TYPE                       = 3,
-/*  MULTI_SIGNATURE_TYPE            = 4, */
-    IPFS_TYPE                       = 5,
-/*  MULTI_PAYMENT_TYPE              = 6, */
-/*  DELEGATE_RESIGNATION_TYPE       = 7, */
-    HTLC_LOCK_TYPE                  = 8,
-    HTLC_CLAIM_TYPE                 = 9,
-    HTLC_REFUND_TYPE                = 10
+// Describes the Entity Action taking place.
+enum EntityAction {
+    ENTITY_REGISTER     = 0,
+    ENTITY_UPDATE       = 1,
+    ENTITY_RESIGN       = 2,
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// ARK Magistrate Transaction Types
-enum MagistrateTransactionType {
-/*  BusinessRegistration            = 0, */
-/*  BusinessResignation             = 1, */
-/*  BusinessUpdate                  = 2, */
-/*  BridgechainRegistration         = 3, */
-/*  BridgechainResignation          = 4, */
-/*  BridgechainUpdate               = 5, */
-    ENTITY_TYPE                     = 6,
-};
+// Generic Data container.
+typedef struct entity_data_t {
+    uint8_t         length;
+    const uint8_t   *data;
+} EntityData;
 
-#endif  // ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
+////////////////////////////////////////////////////////////////////////////////
+typedef struct entity_asset_t {
+    uint8_t         type;
+    uint8_t         subType;
+    uint8_t         action;
+    EntityData      name;
+    EntityData      ipfs;
+    EntityData      registrationId;
+} Entity;
+
+////////////////////////////////////////////////////////////////////////////////
+bool deserializeEntity(Entity *entity, const uint8_t *buffer, size_t size);
+
+#endif  // #define ARK_OPERATIONS_TRANSACTIONS_TYPES_ENTITY_H

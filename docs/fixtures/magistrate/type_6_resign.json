@@ -1,0 +1,20 @@
+{
+    "version": 2,
+    "type": 6,
+    "fee": "5000000000",
+    "senderPublicKey": "034151a3ec46b5670a682b0a63394f863587d1bc97483b1b6c70eb58e7f0aed192",
+    "network": 30,
+    "typeGroup": 2,
+    "nonce": "3",
+    "amount": "0",
+    "asset": {
+        "type": 0,
+        "subType": 0,
+        "action": 2,
+        "registrationId": "d314a63646283885acc3326fa41418a27a66c7f33d78850537bf385b8344af22",
+        "data": {}
+    },
+    "id": "8282ea0dede7349127d6c97247dc73d4ed092fff50e487fafb20991cffead8fb",
+    "signature": "841e3ce6e0ec42b22b6ae29fcddddc984445dd8626d6e4627afa4e86cd9505d13d00eab1a115714ee46ce3f2c83355549704eb63cfa6f533f2e9597e937639c3",
+    "serialized": "ff021e0200000006000300000000000000034151a3ec46b5670a682b0a63394f863587d1bc97483b1b6c70eb58e7f0aed19200f2052a010000000000000220d314a63646283885acc3326fa41418a27a66c7f33d78850537bf385b8344af220000841e3ce6e0ec42b22b6ae29fcddddc984445dd8626d6e4627afa4e86cd9505d13d00eab1a115714ee46ce3f2c83355549704eb63cfa6f533f2e9597e937639c3"
+}

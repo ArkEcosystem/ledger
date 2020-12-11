@@ -39,6 +39,7 @@ typedef struct transaction_t {
     uint8_t     header;
     uint8_t     version;
     uint8_t     network;
+    uint32_t    typeGroup;
     uint16_t    type;
     uint8_t     senderPublicKey[PUBLICKEY_COMPRESSED_LEN];
     uint64_t    fee;

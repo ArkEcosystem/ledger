@@ -1,0 +1,22 @@
+{
+    "version": 2,
+    "type": 6,
+    "fee": "5000000000",
+    "senderPublicKey": "034151a3ec46b5670a682b0a63394f863587d1bc97483b1b6c70eb58e7f0aed192",
+    "network": 30,
+    "typeGroup": 2,
+    "nonce": "1",
+    "amount": "0",
+    "asset": {
+        "type": 0,
+        "subType": 0,
+        "action": 0,
+        "data": {
+            "name": "some_business_registration_name",
+            "ipfsData": "QmR45FmbVVrixReBwJkhEKde2qwHYaQzGxu4ZoDeswuF9w"
+        }
+    },
+    "id": "d314a63646283885acc3326fa41418a27a66c7f33d78850537bf385b8344af22",
+    "signature": "e1eec9c02bcecfd0052d7e9e88559e032b8f5abe28443282f00dbeef7b6a1cdda16e43a9cfa2fc8f13eacfc9cf8be3057e3ea169f32bd4e871b3c142ac3a926f",
+    "serialized": "ff021e0200000006000100000000000000034151a3ec46b5670a682b0a63394f863587d1bc97483b1b6c70eb58e7f0aed19200f2052a0100000000000000001f736f6d655f627573696e6573735f726567697374726174696f6e5f6e616d652e516d523435466d625656726978526542774a6b68454b6465327177485961517a477875345a6f4465737775463977e1eec9c02bcecfd0052d7e9e88559e032b8f5abe28443282f00dbeef7b6a1cdda16e43a9cfa2fc8f13eacfc9cf8be3057e3ea169f32bd4e871b3c142ac3a926f"
+}

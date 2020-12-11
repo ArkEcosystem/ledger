@@ -43,6 +43,8 @@
 #include "transactions/ux/htlc_claim_ux.h"
 #include "transactions/ux/htlc_refund_ux.h"
 
+#include "transactions/ux/entity_ux.h"
+
 #include "display/context.h"
 #include "display/display.h"
 
@@ -52,9 +54,7 @@
 extern void SetUxDisplay(size_t steps, bool isExtended);
 
 ////////////////////////////////////////////////////////////////////////////////
-void SetUx(const Transaction *transaction) {
-    MEMSET_TYPE_BZERO(&displayCtx, DisplayContext);
-
+static void SetUxCore(const Transaction *transaction) {
     const bool hasVendorField = transaction->vendorFieldLength > 0;
 
     switch (transaction->type) {
@@ -93,4 +93,27 @@ void SetUx(const Transaction *transaction) {
 
         default: break;
     };
+}
+
+////////////////////////////////////////////////////////////////////////////////
+static void SetUxMagistrate(const Transaction *transaction) {
+    switch(transaction->type) {
+        case ENTITY_TYPE:
+            SetUxEntity(transaction);
+            SetUxDisplay(getEntitySteps(transaction), false);
+            break;
+
+        default: break;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void SetUx(const Transaction *transaction) {
+    MEMSET_TYPE_BZERO(&displayCtx, DisplayContext);
+
+    switch(transaction->typeGroup) {
+        case CORE_TYPE:         SetUxCore(transaction); break;
+        case MAGISTRATE_TYPE:   SetUxMagistrate(transaction); break;
+        default: break;
+    }
 }
