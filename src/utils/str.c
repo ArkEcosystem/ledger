@@ -212,7 +212,7 @@ size_t UintToString(uint64_t value, char *dst, size_t maxLen) {
     }
 
     while (value != 0ULL) {
-        int c = value % UINT64_BASE_10;
+        uint64_t c = value % UINT64_BASE_10;
         dst[n++] = (c > UINT64_BASE_10 - 1ULL)
                 ? (c - UINT64_BASE_10) + 'a'
                 : c + '0';
@@ -235,46 +235,48 @@ size_t UintToString(uint64_t value, char *dst, size_t maxLen) {
 // Convert an Amount to a String using a Token Name and Decimal count.
 //
 // e.g.
-// - TokenAmountToString("ARK ", 4, 8, 1ULL, 25);
-// - "ARK: 0.00000001"
+// - TokenAmountToString("ARK", 3, 8, 1ULL, dst, 25);
+// - "ARK: 0.00000001"[16]
 //
 // @param const char *token:    token/ticker name.
-// @param size_t tokenLen:      length of token, excluding the null-terminator.
-// @param size_t decimals:      decimal precision / how many values after '.'.
-// @param uint64_t amount:      unsigned value to be converted.
-// @param char *dst:            destination char buffer.
-// @param size_t maxLen:        max length of writable space.
+// @param size_t tokenLen:      excluding the null-terminator.
+// @param size_t decimals:      precision (how many zeros after the '.'.
+// @param uint64_t amount:      unsigned, to be converted.
+// @param char *dst:            buffer for result.
+// @param size_t maxLen:        of writable space.
 //
-// @return size_t: final length w/null-terminator if successful, otherwise '0'.
+// @return size_t: length w/null-terminator if successful, otherwise 0.
 //
 // ---
 size_t TokenAmountToString(const char *token, size_t tokenLen, size_t decimals,
                            uint64_t amount,
                            char *dst, size_t maxLen) {
-    if (dst == NULL) {
-        return 0U;
-    }
+    if (dst == NULL) { return 0U; }
 
-    size_t prefixLen = tokenLen;
+    char tmp[64];
+    int prefixLen = tokenLen;
 
-    if (prefixLen > 0U) {
+    if (prefixLen > 0) {
         const char *const separator = ": ";
-        const size_t separatorLen = 2U;
-
         MEMCOPY(dst, token, tokenLen);
-        MEMCOPY(dst + tokenLen, separator, separatorLen);
-        prefixLen += separatorLen;
+        MEMCOPY(dst + tokenLen, separator, 2);
+        prefixLen += 2;
+    }
+  
+    size_t amountStrLen = UintToString(amount, tmp, maxLen);
+
+    if (amountStrLen == 0UL || prefixLen < 0 ||
+        prefixLen + amountStrLen + decimals > maxLen) {
+        dst[0] = '\0';
+        return 0;
     }
 
-    if (decimals == 0U) {
-        return prefixLen + UintToString(amount, dst + prefixLen, maxLen);
-    }
-    else {
-        char buffer[25];
-        const size_t len = UintToString(amount, buffer, maxLen);
-        return prefixLen +
-               adjustDecimals(buffer, len,
-                              dst + prefixLen, maxLen,
-                              decimals + 1U);
-    }
+    decimals == 0UL
+      ? MEMCOPY(dst + prefixLen, tmp, prefixLen + amountStrLen)
+      : (void)(amountStrLen = adjustDecimals(tmp, amountStrLen,
+                                             dst + prefixLen,
+                                             maxLen - amountStrLen,
+                                             decimals + 1UL));
+
+    return prefixLen + amountStrLen;
 }

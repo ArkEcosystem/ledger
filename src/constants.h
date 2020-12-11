@@ -75,7 +75,6 @@ static const size_t SIG_SCHNORR_LEN     = HASH_64_LEN;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Token
-static const size_t TOKEN_AMOUNT_MAX_CHARS  = 25U;
 static const size_t TOKEN_DECIMALS          = 8U;
 static const char *const TOKEN_NAME         = "ARK";
 static const size_t TOKEN_NAME_LEN          = 3U;       // strlen("ARK")
