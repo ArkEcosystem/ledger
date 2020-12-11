@@ -28,26 +28,15 @@
 #define ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
 
 ////////////////////////////////////////////////////////////////////////////////
+// ARK Transaction TypeGroups
+enum TransactionTypeGroup {
+/*  TEST_TYPE           = 0, */
+    CORE_TYPE           = 1,
+    MAGISTRATE_TYPE     = 2,
+};
+
+////////////////////////////////////////////////////////////////////////////////
 // ARK Transaction Types
-//
-// Supported Tx Types:
-// - Transfer                           (type 0)
-// - Vote/Unvote                        (type 3)
-// - Ipfs                               (type 5)
-// - Htlc Lock                          (type 8)
-// - Htlc Claim                         (type 9)
-// - Htlc Refund                        (type 10)
-//
-// ---
-//
-// Unsupported Tx Types:
-// - Second Signature Registration      (type 1)
-// - Delegate Registration              (type 2)
-// - MultiSignature Registration        (type 4)
-// - MultiPayment                       (type 6)
-// - Delegate Resignation               (type 7)
-//
-// ---
 enum TransactionTypes {
     TRANSFER_TYPE                   = 0,
 /*  SECOND_SIGNATURE_TYPE           = 1, */
@@ -63,6 +52,7 @@ enum TransactionTypes {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+// ARK Magistrate Transaction Types
 enum MagistrateTransactionType {
 /*  BusinessRegistration            = 0, */
 /*  BusinessResignation             = 1, */
@@ -71,13 +61,6 @@ enum MagistrateTransactionType {
 /*  BridgechainResignation          = 4, */
 /*  BridgechainUpdate               = 5, */
     ENTITY_TYPE                     = 6,
-};      
-
-////////////////////////////////////////////////////////////////////////////////
-enum TransactionTypeGroup {
-/*  TEST_TYPE          = 0, */
-    CORE_TYPE          = 1,
-    MAGISTRATE_TYPE    = 2,
 };
 
 #endif  // ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
