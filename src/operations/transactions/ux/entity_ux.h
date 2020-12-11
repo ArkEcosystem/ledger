@@ -43,7 +43,7 @@ static const char *const UX_ENTITY_ACTION_LABELS[]  = { "Reg.",
 static const char *const UX_ENTITY_PAGE_LABELS[]    = { "SubType",
                                                         "Name",
                                                         "Ipfs",
-                                                        "RegistrationId" };     
+                                                        "RegistrationId" };
 static const size_t UX_ENTITY_BASE_STEPS            = 2U;
 
 ////////////////////////////////////////////////////////////////////////////////

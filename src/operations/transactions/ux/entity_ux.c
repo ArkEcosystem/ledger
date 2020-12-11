@@ -41,32 +41,36 @@
 #include "display/context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-// Passing the type/action vars to LABELS[] doesn't currently work,
-// so we need to be verbose here.
+// Set the Primary Operation Label for this Transaction.
+//
+// note: highly verbose, type/action vars don't work for an idx value.
+//
+// ---
 void setEntityOperationLabel(const Transaction *transaction) {
     char type[9] = { '\0' };
     char action[8] = { '\0' };
+    const char *FMT = "%s";
 
     switch (transaction->asset.entity.type) {
-        case BUSINESS:  SPRINTF(type, "%s", UX_ENTITY_TYPE_LABELS[0]); break;
-        case PRODUCT:   SPRINTF(type, "%s", UX_ENTITY_TYPE_LABELS[1]); break;
-        case PLUGIN:    SPRINTF(type, "%s", UX_ENTITY_TYPE_LABELS[2]); break;
-        case MODULE:    SPRINTF(type, "%s", UX_ENTITY_TYPE_LABELS[3]); break;
-        case DELEGATE:  SPRINTF(type, "%s", UX_ENTITY_TYPE_LABELS[4]); break;
+        case BUSINESS:  SPRINTF(type, FMT, UX_ENTITY_TYPE_LABELS[0]); break;
+        case PRODUCT:   SPRINTF(type, FMT, UX_ENTITY_TYPE_LABELS[1]); break;
+        case PLUGIN:    SPRINTF(type, FMT, UX_ENTITY_TYPE_LABELS[2]); break;
+        case MODULE:    SPRINTF(type, FMT, UX_ENTITY_TYPE_LABELS[3]); break;
+        case DELEGATE:  SPRINTF(type, FMT, UX_ENTITY_TYPE_LABELS[4]); break;
         default: break;
     }
 
     switch(transaction->asset.entity.action) {
         case ENTITY_REGISTER:
-            SPRINTF(action, "%s", UX_ENTITY_ACTION_LABELS[0]);
+            SPRINTF(action, FMT, UX_ENTITY_ACTION_LABELS[0]);
             break;
         
         case ENTITY_UPDATE:
-            SPRINTF(action, "%s", UX_ENTITY_ACTION_LABELS[1]);
+            SPRINTF(action, FMT, UX_ENTITY_ACTION_LABELS[1]);
             break;
         
         case ENTITY_RESIGN:
-            SPRINTF(action, "%s", UX_ENTITY_ACTION_LABELS[2]);
+            SPRINTF(action, FMT, UX_ENTITY_ACTION_LABELS[2]);
             break;
         
         default: break;
