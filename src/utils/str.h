@@ -27,8 +27,11 @@
 #ifndef ARK_UTILS_STR_H
 #define ARK_UTILS_STR_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+
+bool IsPrintableAscii(const char *str, size_t length, bool isNullTerminated);
 
 size_t UintToString(uint64_t value, char *dst, size_t maxLen);
 

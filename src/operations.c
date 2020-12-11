@@ -145,22 +145,29 @@ static void handlePublicKeyContext(volatile unsigned int *tx) {
 
     tmpCtx.publicKey.needsChainCode = (p2Chain == P2_CHAINCODE);
 
-    // Derive the privateKey using the HD path.
-    os_perso_derive_node_bip32(curve,
-                               bip32Path,
-                               bip32PathLength,
-                               privateKeyData,
-                               (tmpCtx.publicKey.needsChainCode
-                                        ? tmpCtx.publicKey.chainCode
-                                        : NULL));
+    BEGIN_TRY {
+        TRY {
+            // Derive the privateKey using the HD path.
+            os_perso_derive_node_bip32(curve,
+                                       bip32Path, bip32PathLength,
+                                       privateKeyData,
+                                       (tmpCtx.publicKey.needsChainCode
+                                                ? tmpCtx.publicKey.chainCode
+                                                : NULL));
 
-    // Initialize the privateKey to generate the publicKey,
-    // clearing the private data sources after each respective use.
-    cx_ecfp_init_private_key(curve, privateKeyData, HASH_32_LEN, &privateKey);
-    MEMSET_BZERO(&privateKeyData, sizeof(privateKeyData));
+            // Initialize the privateKey to generate the publicKey,
+            cx_ecfp_init_private_key(curve,
+                                     privateKeyData, HASH_32_LEN,
+                                     &privateKey);
+            cx_ecfp_generate_pair(curve, &publicKey, &privateKey, 1U);
+        }
 
-    cx_ecfp_generate_pair(curve, &publicKey, &privateKey, 1U);
-    MEMSET_TYPE_BZERO(&privateKey, cx_ecfp_private_key_t);
+        FINALLY {
+            MEMSET_BZERO(&privateKeyData, sizeof(privateKeyData));
+            MEMSET_TYPE_BZERO(&privateKey, cx_ecfp_private_key_t);
+        }
+    }
+    END_TRY;
 
     // Compress and write the publicKey to the APDU buffer.
     // (compressedPublicKeyLength(33) + publicKey)
@@ -200,6 +207,10 @@ static void handleSigningContext() {
     // - Set the curve-type.
     if (p1 == P1_FIRST) {
         // Set and check the path length.
+        if (dataLength < 1) {
+            // Not enough data
+            THROW(0x6A80);
+        }
         tmpCtx.signing.pathLength = workBuffer[0];
         if (tmpCtx.signing.pathLength < 1 ||
             tmpCtx.signing.pathLength > ADDRESS_MAX_BIP32_PATH) {
@@ -212,6 +223,10 @@ static void handleSigningContext() {
 
         // Unpack the path.
         for (uint32_t i = 0U; i < tmpCtx.signing.pathLength; ++i) {
+            if (dataLength < 4) {
+                // Not enough data
+                THROW(0x6A80);
+            }
             tmpCtx.signing.bip32Path[i] = U4BE(workBuffer, 0U);
             workBuffer += 4U;
             dataLength -= 4U;
@@ -232,6 +247,9 @@ static void handleSigningContext() {
 
     // Iff first payload, copy to the signing context data.
     if (p1 == P1_FIRST) {
+        if (dataLength > MAX_RAW_OPERATION) {
+            THROW(0x6A80);
+        }
         tmpCtx.signing.dataLength = dataLength;
         MEMCOPY(tmpCtx.signing.data, workBuffer, dataLength);
     }
