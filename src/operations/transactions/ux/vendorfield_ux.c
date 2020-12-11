@@ -39,7 +39,6 @@
 void setVendorField(const Transaction *transaction) {
     SPRINTF(displayCtx.title_ext, "%s:", UX_VENDORFIELD_LABEL);
 
-    SNPRINTF(displayCtx.text_ext,
-             transaction->vendorFieldLength + 1,
-             "%s", transaction->vendorField);
+    SNPRINTF(displayCtx.text_ext, sizeof(displayCtx.text_ext), "%.*s",
+             (int)transaction->vendorFieldLength, transaction->vendorField);
 }
