@@ -37,25 +37,28 @@
 static const size_t ENTITY_NAME_MAX_LEN = 40;
 
 ////////////////////////////////////////////////////////////////////////////////
+// Describes the Type of Entity that will be performing an action.
 enum EntityType {
-    BUSINESS    = 0,
-    PRODUCT     = 1,
-    PLUGIN      = 2,
-    MODULE      = 3,
-    DELEGATE    = 4,
+    BUSINESS        = 0,
+    PRODUCT         = 1,
+    PLUGIN          = 2,
+    MODULE          = 3,
+    DELEGATE        = 4,
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+// Describes the Entity Action taking place.
 enum EntityAction {
-    ENTITY_REGISTER = 0,
-    ENTITY_UPDATE   = 1,
-    ENTITY_RESIGN   = 2,
+    ENTITY_REGISTER     = 0,
+    ENTITY_UPDATE       = 1,
+    ENTITY_RESIGN       = 2,
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+// Generic Data container.
 typedef struct entity_data_t {
-    uint8_t length;
-    const uint8_t *data;
+    uint8_t         length;
+    const uint8_t   *data;
 } EntityData;
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -36,9 +36,9 @@
 // Magistrate Transaction (TypeGroup 2)
 // Entity (Type 6)
 //
-// @param Entity *entity
-// @param uint8_t *buffer: The serialized buffer at the Assets offset.
-// @param size_t size: The Asset Buffer Size.
+// @param Entity *entity            asset object prt.
+// @param const uint8_t *buffer:    of the serialized transaction[asset offset].
+// @param size_t size:              of the buffer.
 //
 // @return bool: true if deserialization was successful.
 //
