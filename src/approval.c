@@ -88,8 +88,6 @@ unsigned int ioApprove(const bagl_element_t *e) {
                                     HASH_32_LEN,
                                     &privateKey);
 
-            MEMSET_BZERO(privateKeyData, sizeof(privateKeyData));
-
             if (tmpCtx.signing.curve == CX_CURVE_256K1) {
                 uint8_t hash[CX_SHA256_SIZE];
                 hash256(tmpCtx.signing.data,
@@ -104,6 +102,7 @@ unsigned int ioApprove(const bagl_element_t *e) {
         }
 
         FINALLY {
+            MEMSET_BZERO(privateKeyData, sizeof(privateKeyData));
             MEMSET_TYPE_BZERO(&privateKey, cx_ecfp_private_key_t);
             MEMSET_BZERO(&tmpCtx, sizeof(tmpCtx));
         }
