@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.1] - 2020-12-11
+
+### Added
+-   merged LedgerHQ downstream changes ([#102])
+
+### Fixed
+-   various bounds checking, value handling, and safety improvements ([#cb7f1ef])
+
 ## [2.2.0] - 2020-11-06
 
 ### Added
@@ -59,3 +67,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#94]: https://github.com/ArkEcosystem/ledger/pull/94
 [#97]: https://github.com/ArkEcosystem/ledger/pull/97
 [2.2.0]: https://github.com/ArkEcosystem/ledger/compare/2.1.0...2.2.0
+[#102]: https://github.com/ArkEcosystem/ledger/pull/102
+[#cb7f1ef]: https://github.com/ArkEcosystem/ledger/compare/7ed7885605453bd67af14e62bce17c2ca6f17a26...cb7f1efc5a362fe618731e122afc728da53370ba
+[2.2.1]: https://github.com/ArkEcosystem/ledger/compare/2.2.0...2.2.1
