@@ -112,8 +112,8 @@ void SetUx(const Transaction *transaction) {
     MEMSET_TYPE_BZERO(&displayCtx, DisplayContext);
 
     switch(transaction->typeGroup) {
-        case CORE_TYPE: SetUxCore(transaction); break;
-        case MAGISTRATE_TYPE: SetUxMagistrate(transaction); break;
+        case CORE_TYPE:         SetUxCore(transaction); break;
+        case MAGISTRATE_TYPE:   SetUxMagistrate(transaction); break;
         default: break;
     }
 }
