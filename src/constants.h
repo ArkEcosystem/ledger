@@ -74,12 +74,7 @@ static const size_t SIG_ECDSA_MAX_LEN   = 72;
 static const size_t SIG_SCHNORR_LEN     = HASH_64_LEN;
 
 ////////////////////////////////////////////////////////////////////////////////
-// Strings
-static const size_t UINT64_MAX_STRING_SIZE = 20U;
-
-////////////////////////////////////////////////////////////////////////////////
 // Token
-static const size_t TOKEN_AMOUNT_MAX_CHARS  = 25U;
 static const size_t TOKEN_DECIMALS          = 8U;
 static const char *const TOKEN_NAME         = "ARK";
 static const size_t TOKEN_NAME_LEN          = 3U;       // strlen("ARK")
@@ -92,5 +87,8 @@ static const uint8_t TRANSACTION_HEADER             = 0xFF;
 static const uint8_t TRANSACTION_VERSION_LEGACY     = 0;
 static const uint8_t TRANSACTION_VERSION_TYPE_1     = 1;
 static const uint8_t TRANSACTION_VERSION_TYPE_2     = 2;
+
+static const uint8_t VENDORFIELD_V1_MAX_LEN = 64;
+static const uint8_t VENDORFIELD_V2_MAX_LEN = 255;
 
 #endif  // #define ARK_CONSTANTS_H

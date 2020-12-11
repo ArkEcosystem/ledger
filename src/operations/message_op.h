@@ -69,7 +69,11 @@ bool handleMessage(const uint8_t *buffer, size_t length) {
     UintToString(length, displayCtx.text[0], sizeof(displayCtx.text[0]));
 
     // Message Text
-    SNPRINTF(displayCtx.text_ext, length + 1, "%s", buffer);
+    if (!IsPrintableAscii((const char*)buffer, length, false)) {
+        return false;
+    }
+
+    SNPRINTF(displayCtx.text_ext, length + 1, "%.*s", (int)length, buffer);
 
     SetUxDisplay(UX_MESSAGE_STEPS, true);
 
