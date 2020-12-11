@@ -176,16 +176,16 @@ static bool deserializeCommonV1(Transaction *transaction,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Deserialize v2 and v1 Transaction Core Assets.
+// Deserialize v2 and v1 Core Transaction Assets.
 //
-// @param Transaction *transaction
-// @param uint8_t *buffer: The serialized buffer at the asset offset.
-// @param size_t size: The Asset Buffer Size.
+// @param Transaction *transaction: transaction object ptr.
+// @param const uint8_t *buffer:    of the serialized transaction[asset offset].
+// @param size_t size:              of the current buffer.
 //
-// @return bool: true if successful
+// @return bool: true if deserialization was successful.
 //
 // ---
-// Internals:
+// Supported:
 //
 // - case TRANSFER
 // - case VOTE
@@ -237,6 +237,20 @@ static bool deserializeCoreAsset(Transaction *transaction,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// Deserialize v2 Magistrate Transaction Assets.
+//
+// @param Transaction *transaction: transaction object ptr.
+// @param const uint8_t *buffer:    of the serialized transaction[asset offset].
+// @param size_t size:              of the current buffer.
+//
+// @return bool: true if deserialization was successful.
+//
+// ---
+// Support:
+//
+// - case ENTITY_TYPE
+//
+// ---
 static bool deserializeMagistrateAsset(Transaction *transaction,
                                        const uint8_t *buffer,
                                        size_t size) {
@@ -249,6 +263,15 @@ static bool deserializeMagistrateAsset(Transaction *transaction,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// Deserialize Core and Magistrate Assets.
+//
+// @param Transaction *transaction: transaction object ptr.
+// @param const uint8_t *buffer:    of the serialized transaction[asset offset].
+// @param size_t size:              of the current buffer.
+//
+// @return bool: true if deserialization was successful.
+//
+// ---
 static bool deserializeAsset(Transaction *transaction,
                              const uint8_t *buffer,
                              size_t size) {
@@ -264,12 +287,15 @@ static bool deserializeAsset(Transaction *transaction,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// v2 and v1 Transactions
-static bool internalDeserialize(Transaction *transaction,
-                                const uint8_t *buffer,
-                                size_t size) {
-    size_t assetOffset = 0;
 // Deserialize v2 and v1 Transaction Headers.
+//
+// @param Transaction *transaction: transaction object ptr.
+// @param const uint8_t *buffer:    of the serialized transaction.
+// @param size_t size:              of the buffer.
+//
+// @return bool: true if deserialization was successful.
+//
+// ---
 static size_t deserializeHeader(Transaction *transaction,
                                 const uint8_t *buffer,
                                 size_t size) {
@@ -302,6 +328,14 @@ static size_t deserializeHeader(Transaction *transaction,
 
 ////////////////////////////////////////////////////////////////////////////////
 // Deserialize v2 and v1 Transactions
+//
+// @param Transaction *transaction: transaction object ptr.
+// @param const uint8_t *buffer:    of the serialized transaction.
+// @param size_t size:              of the buffer.
+//
+// @return bool: true if deserialization was successful.
+//
+// ---
 static bool internalDeserialize(Transaction *transaction,
                                 const uint8_t *buffer,
                                 size_t size) {
@@ -345,8 +379,15 @@ static bool internalDeserializeLegacy(Transaction *transaction,
 
 ////////////////////////////////////////////////////////////////////////////////
 // Deserialize v2, v1, or Legacy Transactions.
+//
+// @param const uint8_t *buffer:    of the serialized transaction.
+// @param size_t size:              of the buffer.
+//
+// @return bool: true if deserialization was successful.
+//
+// ---
 bool deserialize(const uint8_t *buffer, size_t size) {
-    MEMSET_BZERO(&transaction, sizeof(Transaction));
+    MEMSET_TYPE_BZERO(&transaction, Transaction);
 
     bool successful = buffer[HEADER_OFFSET] == TRANSACTION_HEADER
             ? internalDeserialize(&transaction, buffer, size)
