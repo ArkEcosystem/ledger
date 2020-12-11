@@ -41,7 +41,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Verifies that a given character is within the printable Ascii range.
 static bool IsValidAsciiChar(char c) {
-    return (c - PRINTABLE_CHAR_MIN) * (PRINTABLE_CHAR_MAX - c) >= 0;
+    return (PRINTABLE_CHAR_MIN <= c) && (c <= PRINTABLE_CHAR_MAX);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
