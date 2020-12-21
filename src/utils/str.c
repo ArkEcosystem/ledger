@@ -26,12 +26,59 @@
 
 #include "utils/str.h"
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
 
 #include "utils/utils.h"
+
+////////////////////////////////////////////////////////////////////////////////
+#define PRINTABLE_CHAR_MIN 32
+#define PRINTABLE_CHAR_MAX 126
+
+////////////////////////////////////////////////////////////////////////////////
+// Verifies that a given character is within the printable Ascii range.
+static bool IsValidAsciiChar(char c) {
+    return (PRINTABLE_CHAR_MIN <= c) && (c <= PRINTABLE_CHAR_MAX);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Verifies that a string of a given length contains printable Ascii text.
+//
+// e.g.
+// - IsPrintableAscii("AbCd", 5, true) == true
+// - IsPrintableAscii((char[]){ 'A', 'b', 'C', 'd'}, 4, false) == true
+// - IsPrintableAscii("\
+//  ", 50, false) == false
+// - IsPrintableAscii(((char[]){ '\0' }), 1, false) == false
+// - IsPrintableAscii(((char[]){ '\0' }), 1, true) == false
+// - IsPrintableAscii(((char[]){ 'A' }), 1, false) == true
+// - IsPrintableAscii(((char[]){ 'A' }), 1, true) == false
+// - IsPrintableAscii("a", 1, false) == true
+// - IsPrintableAscii("a", 1, true) == false
+// - IsPrintableAscii("a", 2, false) == false
+// - IsPrintableAscii("a", 2, true) == true
+//
+// @param const char *str:          the string to be checked.
+// @param size_t length:            string length.
+// @param bool isNullTerminated:    whether to account for the null-terminator.
+//
+// @return bool: true if valid.
+//
+// ---
+bool IsPrintableAscii(const char *str, size_t length, bool isNullTerminated) {
+    if (length == 0U || (!IsValidAsciiChar(str[0]))) { return false; }
+
+    const int target = length - (int)isNullTerminated;
+    for (int i = 0; i < target; ++i) {
+      int c = (int)str[i];
+      if (!IsValidAsciiChar(c)) { return false; }
+    }
+
+    return isNullTerminated ? (str[target] == '\0') : true;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Copy a Number-String, inserting a decimal '.' at a given location.
@@ -133,100 +180,103 @@ static size_t adjustDecimals(const char *src, size_t srcSize,
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// Convert a Unsigned Integer to a String using a Token Name and Decimal count.
+static void reverseString(char *str, size_t length) {
+    char tmp;
+    char *begin = str;
+    char *end = str + length - 1ULL;
+
+    while(end > begin) {
+        tmp = *end;
+        *end-- = *begin;
+        *begin++ = tmp;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Convert a Unsigned Integer to a String using a Token Name.
 //
-// e.g.
-// - UintToString(1ULL, (char[])buffer, 25);
-// - "1"
+// @param uint64_t value:   unsigned, to be converted.
+// @param char *dst:        buffer for the result.
+// @param size_t maxLen:    of writable space.
 //
-// @param uint64_t value:   unsigned value to be converted.
-// @param char *dst:        destination char buffer.
-// @param size_t maxLen:    max length of writable space.
-//
-// @return size_t: final length w/null-terminator if successful, otherwise '0'.
+// @return size_t: length w/null-terminator if successful, otherwise 0.
 //
 // ---
 size_t UintToString(uint64_t value, char *dst, size_t maxLen) {
-    if (dst == NULL || maxLen < 2U) {
-        return 0U;
+    size_t n = 0UL;
+
+    if (value == 0) {
+        dst[n++] = '0';
+        dst[n] = '\0';
+        return n + 1UL;
     }
 
-    if (value == 0U) {
-        dst[0] = '0';
-        dst[1] = '\0';
-        return 2U;
+    while (value != 0ULL) {
+        uint64_t c = value % UINT64_BASE_10;
+        dst[n++] = (c > UINT64_BASE_10 - 1ULL)
+                ? (c - UINT64_BASE_10) + 'a'
+                : c + '0';
+        value = value / UINT64_BASE_10;
+
+        if (n > maxLen - 1ULL) {
+            dst[0] = '\0';
+            return 0UL;
+        }
     }
 
-    uint64_t base = 1U;
-    size_t n = 0U;
-    size_t i = 0U;
+    dst[n] = '\0';
 
-    // count how many characters are needed
-    while (base <= value && n <= UINT64_MAX_STRING_SIZE) {
-        base *= UINT64_BASE_10;
-        n++;
-    }
+    reverseString(dst, n);
 
-    if (n > maxLen - 1U) {
-        dst[0] = '\0';
-        return 0U;
-    }
-
-    base /= UINT64_BASE_10;
-    while (i < n) {
-        dst[i++] = '0' + ((value / base) % UINT64_BASE_10);
-        base /= UINT64_BASE_10;
-    }
-
-    dst[i] = '\0';
-
-    return n + 1U;
+    return n + 1UL;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Convert an Amount to a String using a Token Name and Decimal count.
 //
 // e.g.
-// - TokenAmountToString("ARK ", 4, 8, 1ULL, 25);
-// - "ARK: 0.00000001"
+// - TokenAmountToString("ARK", 3, 8, 1ULL, dst, 25);
+// - "ARK: 0.00000001"[16]
 //
 // @param const char *token:    token/ticker name.
-// @param size_t tokenLen:      length of token, excluding the null-terminator.
-// @param size_t decimals:      decimal precision / how many values after '.'.
-// @param uint64_t amount:      unsigned value to be converted.
-// @param char *dst:            destination char buffer.
-// @param size_t maxLen:        max length of writable space.
+// @param size_t tokenLen:      excluding the null-terminator.
+// @param size_t decimals:      precision (how many zeros after the '.'.
+// @param uint64_t amount:      unsigned, to be converted.
+// @param char *dst:            buffer for result.
+// @param size_t maxLen:        of writable space.
 //
-// @return size_t: final length w/null-terminator if successful, otherwise '0'.
+// @return size_t: length w/null-terminator if successful, otherwise 0.
 //
 // ---
 size_t TokenAmountToString(const char *token, size_t tokenLen, size_t decimals,
                            uint64_t amount,
                            char *dst, size_t maxLen) {
-    if (dst == NULL) {
-        return 0U;
-    }
+    if (dst == NULL) { return 0U; }
 
-    size_t prefixLen = tokenLen;
+    char tmp[64];
+    int prefixLen = tokenLen;
 
-    if (prefixLen > 0U) {
+    if (prefixLen > 0) {
         const char *const separator = ": ";
-        const size_t separatorLen = 2U;
-
         MEMCOPY(dst, token, tokenLen);
-        MEMCOPY(dst + tokenLen, separator, separatorLen);
-        prefixLen += separatorLen;
+        MEMCOPY(dst + tokenLen, separator, 2);
+        prefixLen += 2;
+    }
+  
+    size_t amountStrLen = UintToString(amount, tmp, maxLen);
+
+    if (amountStrLen == 0UL || prefixLen < 0 ||
+        prefixLen + amountStrLen + decimals > maxLen) {
+        dst[0] = '\0';
+        return 0;
     }
 
-    if (decimals == 0U) {
-        return prefixLen + UintToString(amount, dst + prefixLen, maxLen);
-    }
-    else {
-        char buffer[25];
-        const size_t len = UintToString(amount, buffer, maxLen);
-        return prefixLen +
-               adjustDecimals(buffer, len,
-                              dst + prefixLen, maxLen,
-                              decimals + 1U);
-    }
+    decimals == 0UL
+      ? MEMCOPY(dst + prefixLen, tmp, amountStrLen)
+      : (void)(amountStrLen = adjustDecimals(tmp, amountStrLen,
+                                             dst + prefixLen,
+                                             maxLen - amountStrLen,
+                                             decimals + 1UL));
+
+    return prefixLen + amountStrLen;
 }

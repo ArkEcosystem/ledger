@@ -39,6 +39,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 typedef union tx_asset_t {
+    // TypeGroup 1: Core
     Transfer                    transfer;               // Type 0
 /*  SecondSignatureRegistration secondSignature;        // Type 1 */
 /*  Delegate Registration                               // Type 2 */

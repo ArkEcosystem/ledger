@@ -75,32 +75,39 @@ unsigned int ioApprove(const bagl_element_t *e) {
     uint8_t                 privateKeyData[HASH_32_LEN];
     cx_ecfp_private_key_t   privateKey;
 
-    os_perso_derive_node_bip32(CX_CURVE_256K1,
-                               tmpCtx.signing.bip32Path,
-                               tmpCtx.signing.pathLength,
-                               privateKeyData,
-                               NULL);
+    BEGIN_TRY {
+        TRY {
+            os_perso_derive_node_bip32(CX_CURVE_256K1,
+                                    tmpCtx.signing.bip32Path,
+                                    tmpCtx.signing.pathLength,
+                                    privateKeyData,
+                                    NULL);
 
-    cx_ecfp_init_private_key(tmpCtx.signing.curve,
-                             privateKeyData,
-                             HASH_32_LEN,
-                             &privateKey);
+            cx_ecfp_init_private_key(tmpCtx.signing.curve,
+                                    privateKeyData,
+                                    HASH_32_LEN,
+                                    &privateKey);
 
-    MEMSET_BZERO(privateKeyData, sizeof(privateKeyData));
+            if (tmpCtx.signing.curve == CX_CURVE_256K1) {
+                uint8_t hash[CX_SHA256_SIZE];
+                hash256(tmpCtx.signing.data,
+                        tmpCtx.signing.dataLength,
+                        hash);
 
-    if (tmpCtx.signing.curve == CX_CURVE_256K1) {
-        uint8_t hash[CX_SHA256_SIZE];
-        hash256(tmpCtx.signing.data,
-                tmpCtx.signing.dataLength,
-                hash);
+                tx = tmpCtx.signing.isSchnorr
+                    ? signSchnorr(&privateKey, hash, G_io_apdu_buffer)
+                    : signEcdsa(&privateKey, hash,
+                                G_io_apdu_buffer, SIG_ECDSA_MAX_LEN);
+            }
+        }
 
-        tx = tmpCtx.signing.isSchnorr
-            ? signSchnorr(&privateKey, hash, G_io_apdu_buffer)
-            : signEcdsa(&privateKey, hash, G_io_apdu_buffer, SIG_ECDSA_MAX_LEN);
+        FINALLY {
+            MEMSET_BZERO(privateKeyData, sizeof(privateKeyData));
+            MEMSET_TYPE_BZERO(&privateKey, cx_ecfp_private_key_t);
+            MEMSET_BZERO(&tmpCtx, sizeof(tmpCtx));
+        }
     }
-
-    MEMSET_TYPE_BZERO(&privateKey, cx_ecfp_private_key_t);
-    MEMSET_BZERO(&tmpCtx, sizeof(tmpCtx));
+    END_TRY;
 
     G_io_apdu_buffer[tx++] = 0x90;
     G_io_apdu_buffer[tx++] = 0x00;

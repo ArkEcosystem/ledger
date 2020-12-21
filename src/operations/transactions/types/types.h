@@ -29,25 +29,6 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 // ARK Transaction Types
-//
-// Supported Tx Types:
-// - Transfer                           (type 0)
-// - Vote/Unvote                        (type 3)
-// - MultiSignature Registration        (type 4)
-// - Ipfs                               (type 5)
-// - Htlc Lock                          (type 8)
-// - Htlc Claim                         (type 9)
-// - Htlc Refund                        (type 10)
-//
-// ---
-//
-// Unsupported Tx Types:
-// - Second Signature Registration      (type 1)
-// - Delegate Registration              (type 2)
-// - MultiPayment                       (type 6)
-// - Delegate Resignation               (type 7)
-//
-// ---
 enum TransactionTypes {
     TRANSFER_TYPE                   = 0,
 /*  SECOND_SIGNATURE_TYPE           = 1, */

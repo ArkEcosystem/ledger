@@ -16,7 +16,7 @@ sh ./examples/all.sh
 ## Running individual examples
 
 ```shell
-sh ./examples/legacy.sh
+sh ./examples/v1.sh  # DEPRECATED
 sh ./examples/v2.sh
 sh ./examples/message.sh
 ```

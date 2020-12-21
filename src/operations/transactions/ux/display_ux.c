@@ -55,9 +55,7 @@
 extern void SetUxDisplay(size_t steps, size_t extendedStep);
 
 ////////////////////////////////////////////////////////////////////////////////
-void SetUx(const Transaction *transaction) {
-    MEMSET_TYPE_BZERO(&displayCtx, DisplayContext);
-
+static void SetUxCore(const Transaction *transaction) {
     size_t steps = 0U;
     size_t extendedStep = 0U;
     const bool hasVendorField = transaction->vendorFieldLength > 0U;
@@ -106,15 +104,16 @@ void SetUx(const Transaction *transaction) {
     };
 
 #if defined(SUPPORTS_MULTISIGNATURE)
-    if (transaction->signatures.count > 0U &&
-        transaction->type != MULTI_SIG_REGISTRATION_TYPE) {
-        SetUxMultiSignature(transaction);
-    }
-
     if (transaction->signatures.count > 0U) {
         steps += SetUxSignatures(transaction, steps);
     }
 #endif  // SUPPORTS_MULTISIGNATURE
 
     SetUxDisplay(steps, extendedStep);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void SetUx(const Transaction *transaction) {
+    MEMSET_TYPE_BZERO(&displayCtx, DisplayContext);
+    SetUxCore(transaction);
 }

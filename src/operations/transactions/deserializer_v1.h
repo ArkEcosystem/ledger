@@ -24,12 +24,18 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTIONS_DISPLAY_LEGACY_H
-#define ARK_OPERATIONS_TRANSACTIONS_DISPLAY_LEGACY_H
+#ifndef ARK_OPERATIONS_TRANSACTIONS_DESERIALIZER_V1_H
+#define ARK_OPERATIONS_TRANSACTIONS_DESERIALIZER_V1_H
+
+#include <stddef.h>
+#include <stdint.h>
 
 #include "transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void SetUxLegacy(const Transaction *transaction);
+// !DEPRECATED
+size_t deserializeHeaderV1(Transaction *transaction,
+                           const uint8_t *buffer,
+                           size_t size);
 
-#endif  // #define ARK_OPERATIONS_TRANSACTIONS_DISPLAY_LEGACY_H
+#endif  // #define ARK_OPERATIONS_TRANSACTIONS_DESERIALIZER_V1_H

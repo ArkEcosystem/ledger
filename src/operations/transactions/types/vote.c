@@ -54,11 +54,13 @@
 //
 // ---
 size_t deserializeVote(Vote *vote, const uint8_t *buffer, size_t size) {
-    if (size < VOTE_LEN || buffer[0] > VOTE_MAX_COUNT) {
+    vote->count = buffer[0];
+    const size_t expectedLen = sizeof(uint8_t) + (vote->count * VOTE_LEN);
+
+    if (vote->count == 0U || vote->count > VOTE_MAX_COUNT ||
+        size < expectedLen) {
         return 0U;
     }
-
-    vote->count = buffer[0];
 
     for (uint8_t i = 0U; i < vote->count; ++i) {
         MEMCOPY(vote->data[i],                                  // 34 Bytes
@@ -66,5 +68,5 @@ size_t deserializeVote(Vote *vote, const uint8_t *buffer, size_t size) {
                 VOTE_LEN);        
     }
 
-    return sizeof(uint8_t) + vote->count * VOTE_LEN;
+    return expectedLen;
 }
