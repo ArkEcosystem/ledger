@@ -28,14 +28,6 @@
 #define ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H
 
 ////////////////////////////////////////////////////////////////////////////////
-// ARK Transaction TypeGroups
-enum TransactionTypeGroup {
-/*  TEST_TYPE           = 0, */
-    CORE_TYPE           = 1,
-    MAGISTRATE_TYPE     = 2,
-};
-
-////////////////////////////////////////////////////////////////////////////////
 // ARK Transaction Types
 enum TransactionTypes {
     TRANSFER_TYPE                   = 0,
@@ -49,18 +41,6 @@ enum TransactionTypes {
     HTLC_LOCK_TYPE                  = 8,
     HTLC_CLAIM_TYPE                 = 9,
     HTLC_REFUND_TYPE                = 10
-};
-
-////////////////////////////////////////////////////////////////////////////////
-// ARK Magistrate Transaction Types
-enum MagistrateTransactionType {
-/*  BusinessRegistration            = 0, */
-/*  BusinessResignation             = 1, */
-/*  BusinessUpdate                  = 2, */
-/*  BridgechainRegistration         = 3, */
-/*  BridgechainResignation          = 4, */
-/*  BridgechainUpdate               = 5, */
-    ENTITY_TYPE                     = 6,
 };
 
 #endif  // ARK_OPERATIONS_TRANSACTIONS_ASSETS_TYPES_H

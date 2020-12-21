@@ -237,56 +237,6 @@ static bool deserializeCoreAsset(Transaction *transaction,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Deserialize v2 Magistrate Transaction Assets.
-//
-// @param Transaction *transaction: transaction object ptr.
-// @param const uint8_t *buffer:    of the serialized transaction[asset offset].
-// @param size_t size:              of the current buffer.
-//
-// @return bool: true if deserialization was successful.
-//
-// ---
-// Support:
-//
-// - case ENTITY_TYPE
-//
-// ---
-static bool deserializeMagistrateAsset(Transaction *transaction,
-                                       const uint8_t *buffer,
-                                       size_t size) {
-    switch(transaction->type) {
-        case ENTITY_TYPE:
-            return deserializeEntity(&transaction->asset.entity, buffer, size);
-
-        default: return false;
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Deserialize Core and Magistrate Assets.
-//
-// @param Transaction *transaction: transaction object ptr.
-// @param const uint8_t *buffer:    of the serialized transaction[asset offset].
-// @param size_t size:              of the current buffer.
-//
-// @return bool: true if deserialization was successful.
-//
-// ---
-static bool deserializeAsset(Transaction *transaction,
-                             const uint8_t *buffer,
-                             size_t size) {
-    switch(transaction->typeGroup) {
-        case CORE_TYPE:
-            return deserializeCoreAsset(transaction, buffer, size);
-
-        case MAGISTRATE_TYPE:
-            return deserializeMagistrateAsset(transaction, buffer, size);
-
-        default: return false;
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // Deserialize v2 and v1 Transaction Headers.
 //
 // @param Transaction *transaction: transaction object ptr.
@@ -342,9 +292,9 @@ static bool internalDeserialize(Transaction *transaction,
     const size_t cursor = deserializeHeader(transaction, buffer, size);
 
     if (cursor == 0U ||
-        deserializeAsset(transaction,
-                         &buffer[cursor],
-                         size - cursor) == false) {
+        deserializeCoreAsset(transaction,
+                             &buffer[cursor],
+                             size - cursor) == false) {
 
         return false;
     }

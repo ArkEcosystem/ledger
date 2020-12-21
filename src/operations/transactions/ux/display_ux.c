@@ -43,8 +43,6 @@
 #include "transactions/ux/htlc_claim_ux.h"
 #include "transactions/ux/htlc_refund_ux.h"
 
-#include "transactions/ux/entity_ux.h"
-
 #include "display/context.h"
 #include "display/display.h"
 
@@ -96,24 +94,7 @@ static void SetUxCore(const Transaction *transaction) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-static void SetUxMagistrate(const Transaction *transaction) {
-    switch(transaction->type) {
-        case ENTITY_TYPE:
-            SetUxEntity(transaction);
-            SetUxDisplay(getEntitySteps(transaction), false);
-            break;
-
-        default: break;
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////
 void SetUx(const Transaction *transaction) {
     MEMSET_TYPE_BZERO(&displayCtx, DisplayContext);
-
-    switch(transaction->typeGroup) {
-        case CORE_TYPE:         SetUxCore(transaction); break;
-        case MAGISTRATE_TYPE:   SetUxMagistrate(transaction); break;
-        default: break;
-    }
+    SetUxCore(transaction);
 }
