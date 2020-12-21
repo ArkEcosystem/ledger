@@ -27,7 +27,7 @@
   * [137 Characters](#message-signing-137-characters)
   * [255 Characters](#message-signing-255-characters)
 
-## V1
+## V1 - (DEPRECATED)
 
 ### v1 Transfer (Type 0)
 

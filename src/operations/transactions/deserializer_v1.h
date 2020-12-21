@@ -24,30 +24,18 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_TRANSACTIONS_DEFAULTS_OFFSETS_HPP
-#define ARK_TRANSACTIONS_DEFAULTS_OFFSETS_HPP
+#ifndef ARK_OPERATIONS_TRANSACTIONS_DESERIALIZER_V1_H
+#define ARK_OPERATIONS_TRANSACTIONS_DESERIALIZER_V1_H
 
 #include <stddef.h>
+#include <stdint.h>
 
-////////////////////////////////////////////////////////////////////////////////
-// v2 Transaction Offsets
-static const size_t HEADER_OFFSET               = 0;
-static const size_t VERSION_OFFSET              = 1;
-static const size_t NETWORK_OFFSET              = 2;
-static const size_t TYPEGROUP_OFFSET            = 3;
-static const size_t TYPE_OFFSET                 = 7;
-static const size_t SENDER_PUBLICKEY_OFFSET     = 17;
-static const size_t FEE_OFFSET                  = 50;
-static const size_t VF_LEN_OFFSET               = 58;
-static const size_t VF_OFFSET                   = 59;
+#include "transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // !DEPRECATED
-// v1 Transaction Offsets
-static const size_t TYPE_OFFSET_V1                  = 3;
-static const size_t SENDER_PUBLICKEY_OFFSET_V1      = 8;
-static const size_t FEE_OFFSET_V1                   = 41;
-static const size_t VF_LEN_OFFSET_V1                = 49;
-static const size_t VF_OFFSET_V1                    = 50;
+size_t deserializeHeaderV1(Transaction *transaction,
+                           const uint8_t *buffer,
+                           size_t size);
 
-#endif
+#endif  // #define ARK_OPERATIONS_TRANSACTIONS_DESERIALIZER_V1_H
