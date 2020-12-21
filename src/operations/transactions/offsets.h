@@ -49,12 +49,4 @@ static const size_t FEE_OFFSET_V1                   = 41;
 static const size_t VF_LEN_OFFSET_V1                = 49;
 static const size_t VF_OFFSET_V1                    = 50;
 
-////////////////////////////////////////////////////////////////////////////////
-// Legacy Ledger Transaction Asset Offset
-static const size_t TYPE_OFFSET_LEGACY          = 0;
-static const size_t RECIPIENT_OFFSET_LEGACY     = 38;
-static const size_t AMOUNT_OFFSET_LEGACY        = 123;
-static const size_t FEE_OFFSET_LEGACY           = 131;
-static const size_t ASSET_OFFSET_LEGACY         = 139;
-
 #endif

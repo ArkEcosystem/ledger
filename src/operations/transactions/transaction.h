@@ -45,18 +45,7 @@ typedef struct transaction_t {
     uint64_t    fee;
     size_t      vendorFieldLength;
     uint8_t     *vendorField;
-    union {
-        struct {  // v2
-            tx_asset_t  asset;
-        };
-        struct {  // Legacy
-            uint8_t     recipientId[ADDRESS_HASH_LEN];
-            uint64_t    amount;
-            size_t      assetOffset;
-            size_t      assetSize;
-            uint8_t     *assetPtr;
-        };
-    };
+    tx_asset_t  asset;
 } Transaction;
 
 #endif  // #define ARK_OPERATIONS_TRANSACTION_H

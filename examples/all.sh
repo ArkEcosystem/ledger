@@ -8,7 +8,7 @@ fi
 TEST_DIR="$(dirname "$0")"
 
 printf "\n\n%s\n\n" "Running all ARK Ledger Examples.."
-bash ./"${TEST_DIR}"/legacy.sh
+bash ./"${TEST_DIR}"/v1.sh
 bash ./"${TEST_DIR}"/v2.sh "${NANOX}"
 bash ./"${TEST_DIR}"/message.sh
 printf "\n"

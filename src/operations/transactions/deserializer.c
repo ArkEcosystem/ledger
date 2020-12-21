@@ -39,9 +39,6 @@
 #include "transactions/offsets.h"
 #include "transactions/types/types.h"
 
-#include "transactions/legacy/deserialize_legacy.h"
-#include "transactions/legacy/display_legacy.h"
-
 #include "utils/str.h"
 #include "utils/unpack.h"
 #include "utils/utils.h"
@@ -279,57 +276,6 @@ static size_t deserializeHeader(Transaction *transaction,
 ////////////////////////////////////////////////////////////////////////////////
 // Deserialize v2 and v1 Transactions
 //
-// @param Transaction *transaction: transaction object ptr.
-// @param const uint8_t *buffer:    of the serialized transaction.
-// @param size_t size:              of the buffer.
-//
-// @return bool: true if deserialization was successful.
-//
-// ---
-static bool internalDeserialize(Transaction *transaction,
-                                const uint8_t *buffer,
-                                size_t size) {
-    const size_t cursor = deserializeHeader(transaction, buffer, size);
-
-    if (cursor == 0U ||
-        deserializeCoreAsset(transaction,
-                             &buffer[cursor],
-                             size - cursor) == false) {
-
-        return false;
-    }
-
-    SetUx(transaction);
-
-    return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Deserialize Legacy Transactions.
-static bool internalDeserializeLegacy(Transaction *transaction,
-                                      const uint8_t *buffer,
-                                      size_t size) {
-    if (buffer[HEADER_OFFSET] == TRANSFER_TYPE ||
-        buffer[HEADER_OFFSET] == VOTE_TYPE) {
-        if (deserializeCommonLegacy(transaction, buffer, size) == false) {
-            return false;
-        }
-
-        transaction->assetOffset = ASSET_OFFSET_LEGACY;
-        transaction->assetPtr = (uint8_t*)&buffer[transaction->assetOffset];
-
-        SetUxLegacy(transaction);
-
-        return true;
-    }
-
-    // Unknown Transaction Version and Type
-    return false;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Deserialize v2, v1, or Legacy Transactions.
-//
 // @param const uint8_t *buffer:    of the serialized transaction.
 // @param size_t size:              of the buffer.
 //
@@ -339,13 +285,17 @@ static bool internalDeserializeLegacy(Transaction *transaction,
 bool deserialize(const uint8_t *buffer, size_t size) {
     MEMSET_TYPE_BZERO(&transaction, Transaction);
 
-    bool successful = buffer[HEADER_OFFSET] == TRANSACTION_HEADER
-            ? internalDeserialize(&transaction, buffer, size)
-            : internalDeserializeLegacy(&transaction, buffer, size);
+    const size_t cursor = deserializeHeader(&transaction, buffer, size);
 
-    if (!successful) {
+    if (cursor == 0U ||
+        deserializeCoreAsset(&transaction,
+                             &buffer[cursor],
+                             size - cursor) == false) {
         MEMSET_TYPE_BZERO(&transaction, Transaction);
+        return false;
     }
 
-    return successful;
+    SetUx(&transaction);
+
+    return true;
 }
