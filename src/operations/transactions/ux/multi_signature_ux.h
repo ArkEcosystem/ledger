@@ -24,43 +24,25 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_DISPLAY_CONTEXT_H
-#define ARK_DISPLAY_CONTEXT_H
-
-#include <stddef.h>
+#ifndef ARK_OPERATIONS_TRANSACTIONS_UX_MULTI_SIGNATURE_UX_H
+#define ARK_OPERATIONS_TRANSACTIONS_UX_MULTI_SIGNATURE_UX_H
 
 #include "platform.h"
 
-////////////////////////////////////////////////////////////////////////////////
-static const size_t DISPLAY_CTX_TEXT_SIZE_EXT   = 256;
+#if defined(SUPPORTS_MULTISIGNATURE)
 
-#if defined(SUPPORTS_LARGE_OPERATIONS)
-    static const size_t DISPLAY_CTX_OP_SIZE     = 21;
-    static const size_t DISPLAY_CTX_STEP_COUNT  = 40;
-    static const size_t DISPLAY_CTX_TITLE_SIZE  = DISPLAY_CTX_OP_SIZE - 1;
-    static const size_t DISPLAY_CTX_TEXT_SIZE   = 130;
-#else
-    static const size_t DISPLAY_CTX_OP_SIZE     = 18;
-    static const size_t DISPLAY_CTX_STEP_COUNT  = 5;
-    static const size_t DISPLAY_CTX_TITLE_SIZE  = DISPLAY_CTX_OP_SIZE - 3;
-    static const size_t DISPLAY_CTX_TEXT_SIZE   = 68;
-#endif
+#include <stddef.h>
+
+#include "operations/transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-typedef struct display_context_t {
-    char    operation   [DISPLAY_CTX_OP_SIZE];
-    char    title       [DISPLAY_CTX_STEP_COUNT] [DISPLAY_CTX_TITLE_SIZE];
-    char    text        [DISPLAY_CTX_STEP_COUNT] [DISPLAY_CTX_TEXT_SIZE];
-
-    // For large display texts.
-    // Should always be the last step in a UX display flow.
-    //
-    // e.g. Message, VendorField, IPFS DAG
-    char    title_ext   [DISPLAY_CTX_TITLE_SIZE];
-    char    text_ext    [DISPLAY_CTX_TEXT_SIZE_EXT];
-} DisplayContext;
+static const char *const MULTI_SIG_LABELS[] = { "MultiSig",
+                                                "Reg.",
+                                                "PublicKey" };
+static const size_t MULTI_SIG_BASE_STEPS    = 1U;
 
 ////////////////////////////////////////////////////////////////////////////////
-extern DisplayContext displayCtx;
+size_t SetUxMultiSignature(const Transaction *transaction);
 
-#endif  // ARK_DISPLAY_CONTEXT_H
+#endif  // SUPPORTS_MULTISIGNATURE
+#endif  // ARK_OPERATIONS_TRANSACTIONS_UX_MULTI_SIGNATURE_UX_H

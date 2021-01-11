@@ -26,7 +26,6 @@
 
 #include "transactions/types/vote.h"
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -41,7 +40,8 @@
 // @param const uint8_t *buffer: The serialized buffer at the Assets offset.
 // @param size_t size: The Asset Buffer Size.
 //
-// @return bool: true if deserialization was successful.
+// @return   0: error
+// @return > 0: asset size
 //
 // ---
 // Internals:
@@ -53,13 +53,13 @@
 // - MEMCOPY(vote->data, &buffer[1 + 34N], 34);
 //
 // ---
-bool deserializeVote(Vote *vote, const uint8_t *buffer, size_t size) {
+size_t deserializeVote(Vote *vote, const uint8_t *buffer, size_t size) {
     vote->count = buffer[0];
     const size_t expectedLen = sizeof(uint8_t) + (vote->count * VOTE_LEN);
 
     if (vote->count == 0U || vote->count > VOTE_MAX_COUNT ||
         size < expectedLen) {
-        return false;
+        return 0U;
     }
 
     for (uint8_t i = 0U; i < vote->count; ++i) {
@@ -68,5 +68,5 @@ bool deserializeVote(Vote *vote, const uint8_t *buffer, size_t size) {
                 VOTE_LEN);        
     }
 
-    return true;
+    return expectedLen;
 }

@@ -26,7 +26,6 @@
 
 #include "transactions/types/htlc_refund.h"
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -41,7 +40,8 @@
 // @param uint8_t *buffer: The serialized buffer at the Assets offset.
 // @param size_t size: The Asset Buffer Size.
 //
-// @return bool: true if deserialization was successful.
+// @return   0: error
+// @return > 0: asset size
 //
 // ---
 // Internals:
@@ -50,14 +50,14 @@
 // - MEMCOPY(refund->id, &buffer[0], 32);
 //
 // ---
-bool deserializeHtlcRefund(HtlcRefund *refund,
-                           const uint8_t *buffer,
-                           size_t size) {
-    if (size != HASH_32_LEN) {
-        return false;
+size_t deserializeHtlcRefund(HtlcRefund *refund,
+                             const uint8_t *buffer,
+                             size_t size) {
+    if (size < HASH_32_LEN) {
+        return 0U;
     }
 
     MEMCOPY(refund->id, &buffer[0], HASH_32_LEN);               // 32 Bytes
 
-    return true;
+    return HASH_32_LEN;
 }

@@ -146,6 +146,11 @@ UX_STEP_NOCB(ux_step_32, bnnn_paging, UX_STEP_VAR(31));
 UX_STEP_NOCB(ux_step_33, bnnn_paging, UX_STEP_VAR(32));
 UX_STEP_NOCB(ux_step_34, bnnn_paging, UX_STEP_VAR(33));
 UX_STEP_NOCB(ux_step_35, bnnn_paging, UX_STEP_VAR(34));
+UX_STEP_NOCB(ux_step_36, bnnn_paging, UX_STEP_VAR(35));
+UX_STEP_NOCB(ux_step_37, bnnn_paging, UX_STEP_VAR(36));
+UX_STEP_NOCB(ux_step_38, bnnn_paging, UX_STEP_VAR(37));
+UX_STEP_NOCB(ux_step_39, bnnn_paging, UX_STEP_VAR(38));
+UX_STEP_NOCB(ux_step_40, bnnn_paging, UX_STEP_VAR(39));
 #endif  // SUPPORTS_LARGE_OPERATIONS
 
 UX_STEP_NOCB(ux_step_ext, bnnn_paging, UX_STEP_EXT);
@@ -173,6 +178,7 @@ const ux_flow_step_t* const ux_flow_container_[1 + DISPLAY_CTX_STEP_COUNT] = {
     &ux_step_21, &ux_step_22, &ux_step_23, &ux_step_24, &ux_step_25,
     &ux_step_26, &ux_step_27, &ux_step_28, &ux_step_29, &ux_step_30,
     &ux_step_31, &ux_step_32, &ux_step_33, &ux_step_34, &ux_step_35,
+    &ux_step_36, &ux_step_37, &ux_step_38, &ux_step_39, &ux_step_40,
 #endif  // SUPPORTS_LARGE_OPERATIONS
 };
 
@@ -181,15 +187,15 @@ ux_flow_step_t* ux_flow_container[UX_FLOW_CONTAINTER_MAX];
 
 ////////////////////////////////////////////////////////////////////////////////
 // Initialize the Flow Container
-void ux_flow_container_init(size_t steps, bool isExtended) {
+void ux_flow_container_init(size_t steps, size_t extendedStep) {
     MEMSET_BZERO(ux_flow_container, sizeof(ux_flow_container));
 
     // copy all UX Flow steps to the Flow Container
     os_memmove(ux_flow_container, ux_flow_container_, sizeof(ux_flow_container_));
 
-    if (isExtended) {
+    if (extendedStep > 0U) {
         // assign the final step as extended
-        ux_flow_container[steps] = (ux_flow_step_t *)&ux_step_ext;
+        ux_flow_container[extendedStep] = (ux_flow_step_t *)&ux_step_ext;
     }
 
     // set the final approval steps  
@@ -199,8 +205,8 @@ void ux_flow_container_init(size_t steps, bool isExtended) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void SetUxDisplay(size_t steps, bool isExtended) {
-    ux_flow_container_init(steps, isExtended);
+void SetUxDisplay(size_t steps, size_t extendedStep) {
+    ux_flow_container_init(steps, extendedStep);
     ux_flow_init(0U, (const ux_flow_step_t *const *)ux_flow_container, NULL);
 }
 

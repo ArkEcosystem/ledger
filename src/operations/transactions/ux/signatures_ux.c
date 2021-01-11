@@ -24,35 +24,34 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
-#define ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
-
-#include "transactions/types/transfer.h"
-#include "transactions/types/vote.h"
-#include "transactions/types/multi_signature.h"
-#include "transactions/types/ipfs.h"
-#include "transactions/types/htlc_lock.h"
-#include "transactions/types/htlc_claim.h"
-#include "transactions/types/htlc_refund.h"
-
 #include "platform.h"
 
-////////////////////////////////////////////////////////////////////////////////
-typedef union tx_asset_t {
-    // TypeGroup 1: Core
-    Transfer                    transfer;               // Type 0
-/*  SecondSignatureRegistration secondSignature;        // Type 1 */
-/*  Delegate Registration                               // Type 2 */
-    Vote                        vote;                   // Type 3
 #if defined(SUPPORTS_MULTISIGNATURE)
-    MultiSignature              multiSignature;         // Type 4 */
-#endif  // SUPPORTS_MULTISIGNATURE
-    Ipfs                        ipfs;                   // Type 5
-/*  MultiPayment                                        // Type 6 */
-/*  Delegate Resignation                                // Type 7 */
-    HtlcLock                    htlcLock;               // Type 8
-    HtlcClaim                   htlcClaim;              // Type 9
-    HtlcRefund                  htlcRefund;             // Type 10
-} tx_asset_t;
 
-#endif  // ARK_OPERATIONS_TRANSACTIONS_TYPES_ASSETS_H
+#include "transactions/ux/signatures_ux.h"
+
+#include "operations/transactions/transaction.h"
+
+#include "utils/hex.h"
+#include "utils/print.h"
+
+#include "constants.h"
+
+#include "display/context.h"
+
+////////////////////////////////////////////////////////////////////////////////
+size_t SetUxSignatures(const Transaction *transaction, size_t offset) {
+    const char *FMT = "%s: %d/%d";
+    for (size_t i = 0; i < transaction->signatures.count; ++i) {
+        SPRINTF(displayCtx.title[offset + i], FMT,
+                UX_SIGNATURES_LABEL, i + 1U, transaction->signatures.count);
+
+        BytesToHex(transaction->signatures.data[i], SIG_SCHNORR_LEN,
+                   displayCtx.text[offset + i],
+                   sizeof(displayCtx.text[offset + i]));
+    }
+
+    return transaction->signatures.count;
+}
+
+#endif  // SUPPORTS_MULTISIGNATURE

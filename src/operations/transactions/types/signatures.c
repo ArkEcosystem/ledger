@@ -24,43 +24,58 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_DISPLAY_CONTEXT_H
-#define ARK_DISPLAY_CONTEXT_H
-
-#include <stddef.h>
-
 #include "platform.h"
 
-////////////////////////////////////////////////////////////////////////////////
-static const size_t DISPLAY_CTX_TEXT_SIZE_EXT   = 256;
+#if defined(SUPPORTS_MULTISIGNATURE)
 
-#if defined(SUPPORTS_LARGE_OPERATIONS)
-    static const size_t DISPLAY_CTX_OP_SIZE     = 21;
-    static const size_t DISPLAY_CTX_STEP_COUNT  = 40;
-    static const size_t DISPLAY_CTX_TITLE_SIZE  = DISPLAY_CTX_OP_SIZE - 1;
-    static const size_t DISPLAY_CTX_TEXT_SIZE   = 130;
-#else
-    static const size_t DISPLAY_CTX_OP_SIZE     = 18;
-    static const size_t DISPLAY_CTX_STEP_COUNT  = 5;
-    static const size_t DISPLAY_CTX_TITLE_SIZE  = DISPLAY_CTX_OP_SIZE - 3;
-    static const size_t DISPLAY_CTX_TEXT_SIZE   = 68;
-#endif
+#include "transactions/types/signatures.h"
+
+#include <stddef.h>
+#include <stdint.h>
+
+#include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-typedef struct display_context_t {
-    char    operation   [DISPLAY_CTX_OP_SIZE];
-    char    title       [DISPLAY_CTX_STEP_COUNT] [DISPLAY_CTX_TITLE_SIZE];
-    char    text        [DISPLAY_CTX_STEP_COUNT] [DISPLAY_CTX_TEXT_SIZE];
+// Deserialize Signatures - 65N bytes
+//
+// @param Signatures *signatures
+// @param uint8_t *buffer: The serialized buffer beginning at Signatures.
+// @param size_t size: The Asset Size.
+//
+// @return   0: error
+// @return > 0: asset size
+//
+// ---
+// Internals:
+//
+// Counts:
+// - signatures->count = size / TRANSACTION_SIGNATURES_SIZE;
+//
+// Signatures - 64N Bytes:
+// - MEMCOPY(transfer->signatures.data, &buffer[N], 64);
+//
+// ---
+size_t deserializeSignatures(Signatures *signatures,
+                             const uint8_t *buffer,
+                             size_t size) {
+    if (signatures == NULL ||
+        buffer == NULL ||
+        size % TRANSACTION_SIGNATURES_SIZE != 0) {
+        return 0U;
+    }
 
-    // For large display texts.
-    // Should always be the last step in a UX display flow.
-    //
-    // e.g. Message, VendorField, IPFS DAG
-    char    title_ext   [DISPLAY_CTX_TITLE_SIZE];
-    char    text_ext    [DISPLAY_CTX_TEXT_SIZE_EXT];
-} DisplayContext;
+    signatures->count = size / TRANSACTION_SIGNATURES_SIZE;
+    if (signatures->count > MULTI_SIG_MAX) {
+        return 0U;
+    }
 
-////////////////////////////////////////////////////////////////////////////////
-extern DisplayContext displayCtx;
+    for (size_t i = 0; i < signatures->count; ++i) {
+        MEMCOPY(signatures->data[i],
+                &buffer[sizeof(uint8_t) + (i * TRANSACTION_SIGNATURES_SIZE)],
+                SIG_SCHNORR_LEN);
+    }
 
-#endif  // ARK_DISPLAY_CONTEXT_H
+    return signatures->count * TRANSACTION_SIGNATURES_SIZE;
+}
+
+#endif  // SUPPORTS_MULTISIGNATURE

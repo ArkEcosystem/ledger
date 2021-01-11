@@ -30,9 +30,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "platform.h"
+
 #include "constants.h"
 
 #include "transactions/types/assets.h"
+
+#include "transactions/types/signatures.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 typedef struct transaction_t {
@@ -46,6 +50,9 @@ typedef struct transaction_t {
     size_t      vendorFieldLength;
     uint8_t     *vendorField;
     tx_asset_t  asset;
+#if defined(SUPPORTS_MULTISIGNATURE)
+    Signatures  signatures;
+#endif  // SUPPORTS_MULTISIGNATURE
 } Transaction;
 
 #endif  // #define ARK_OPERATIONS_TRANSACTION_H

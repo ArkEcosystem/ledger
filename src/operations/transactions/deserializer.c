@@ -143,22 +143,24 @@ static size_t deserializeHeader(Transaction *transaction,
 // @param const uint8_t *buffer:    of the serialized transaction[asset offset].
 // @param size_t size:              of the current buffer.
 //
-// @return bool: true if deserialization was successful.
+// @return   0: error
+// @return > 0: okay/asset size
 //
 // ---
 // Supported:
 //
 // - case TRANSFER
 // - case VOTE
+// - case MULTI_SIG_REGISTRATION_TYPE
 // - case IPFS
 // - case HTLC_LOCK
 // - case HTLC_CLAIM
 // - case HTLC_REFUND
 //
 // ---
-static bool deserializeCoreAsset(Transaction *transaction,
-                                 const uint8_t *buffer,
-                                 size_t size) {
+static size_t deserializeCoreAsset(Transaction *transaction,
+                                   const uint8_t *buffer,
+                                   size_t size) {
     switch (transaction->type) {
         // Transfer
         case TRANSFER_TYPE:
@@ -170,7 +172,12 @@ static bool deserializeCoreAsset(Transaction *transaction,
             return deserializeVote(
                     &transaction->asset.vote, buffer, size);
 
-        // case MULTI_SIGNATURE_TYPE:
+#if defined(SUPPORTS_MULTISIGNATURE)
+        // MultiSignature Registration
+        case MULTI_SIG_REGISTRATION_TYPE:
+            return deserializeMultiSignature(
+                    &transaction->asset.multiSignature, buffer, size);
+#endif  // SUPPORTS_MULTISIGNATURE
 
         // Ipfs
         case IPFS_TYPE:
@@ -193,10 +200,9 @@ static bool deserializeCoreAsset(Transaction *transaction,
                     &transaction->asset.htlcRefund, buffer, size);
 
         // Unknown Transaction Type
-        default: return false;
+        default: return 0U;
     };
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // Deserialize v2 and v1 (DEPRECATED) Transactions
@@ -210,23 +216,46 @@ static bool deserializeCoreAsset(Transaction *transaction,
 bool deserialize(const uint8_t *buffer, size_t size) {
     MEMSET_TYPE_BZERO(&transaction, Transaction);
 
-    size_t cursor = 0UL;
+    size_t headerSize = 0UL;
 
+    // Deserialize Header
     switch (buffer[VERSION_OFFSET]) {
         case TRANSACTION_VERSION_TYPE_1:  // !DEPRECATED
-            cursor = deserializeHeaderV1(&transaction, buffer, size); break;
+            headerSize = deserializeHeaderV1(&transaction, buffer, size); break;
         case TRANSACTION_VERSION_TYPE_2:
-            cursor = deserializeHeader(&transaction, buffer, size); break;
-        default: return false;
+            headerSize = deserializeHeader(&transaction, buffer, size); break;
+        default: break;
     }
 
-    if (cursor == 0U ||
-        deserializeCoreAsset(&transaction,
-                             &buffer[cursor],
-                             size - cursor) == false) {
+    if (headerSize == 0UL) {
         MEMSET_TYPE_BZERO(&transaction, Transaction);
         return false;
     }
+
+    // Deserialize Asset
+    const size_t assetSize = deserializeCoreAsset(&transaction,
+                                                  &buffer[headerSize],
+                                                  size - headerSize);
+
+    if (assetSize == 0U) {
+        MEMSET_TYPE_BZERO(&transaction, Transaction);
+        return false;
+    }
+
+    // Deserialize Signatures
+#if defined(SUPPORTS_MULTISIGNATURE)
+    if (headerSize + assetSize < size) {
+        const size_t signaturesSize = deserializeSignatures(
+            &transaction.signatures,
+            &buffer[headerSize + assetSize],
+            size - (headerSize + assetSize));
+
+        if (headerSize + assetSize + signaturesSize != size) {
+            MEMSET_TYPE_BZERO(&transaction, Transaction);
+            return false;
+        }
+    }
+#endif  // SUPPORTS_MULTISIGNATURE
 
     SetUx(&transaction);
 

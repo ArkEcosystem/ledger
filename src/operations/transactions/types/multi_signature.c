@@ -24,66 +24,75 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#include "transactions/types/htlc_lock.h"
+#include "platform.h"
+
+#if defined(SUPPORTS_MULTISIGNATURE)
+
+#include "transactions/types/multi_signature.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
 
-#include "utils/unpack.h"
 #include "utils/utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-// Htlc Lock (Type 8) - 66 Bytes
+// MultiSignature Asset / Registration (Type 4) - 68 <=> 530 Bytes
 //
-// @param HtlcLock *lock
+// @param MultiSignature *multiSignature
 // @param uint8_t *buffer: The serialized buffer at the Assets offset.
-// @param size_t size: The Asset Buffer Size.
+// @param int size: The Asset Buffer Size.
 //
 // @return   0: error
 // @return > 0: asset size
 //
+// This is a generic deserializer for the MultiSignature Asset.
+// All participant publicKeys are copied.
+//
+// The biggest difference between MultiSignature Registration & a Multi-Signed
+// Transaction is that a MultiSignature Registration is a 'Type 4';
+// The MultiSignature asset will always be at the end of the transaction payload
+// regardless.
+//
 // ---
 // Internals:
 //
-// Amount - 8 Bytes:
-// - lock->amount = U4LE(buffer, 0);
+// Minimum Participants - 1 Byte:
+// - multiSig->min = buffer[0];
 //
-// Secret Hash - 32 Bytes
-// - MEMCOPY(lock->secretHash, &buffer[8], 32);
+// Key Count
+// - multiSig->count = buffer[1];
 //
-// Expiration Type- 1 Byte
-// - lock->expirationType = buffer[40];
+// PublicKeys - 33N Bytes
+// - MEMCOPY(&multiSig->keys[i], &buffer[offset], 33);
 //
-// Expiration Value - 4 Bytes
-// - lock->expirationValue = U4LE(buffer, 41);
-//
-// RecipientId - 21 Bytes
-// - MEMCOPY(lock->recipientId, &buffer[45], 21);
+// Signatures - 66N Bytes
+// - MEMCOPY(&multiSig->keys[i], &buffer[ofsset + 1(idx)], 64);
 //
 // ---
-size_t deserializeHtlcLock(HtlcLock *lock, const uint8_t *buffer, size_t size) {
-    if (size < TRANSACTION_TYPE_HTLC_LOCK_SIZE) {
+size_t deserializeMultiSignature(MultiSignature *multiSig,
+                                 const uint8_t *buffer,
+                                 size_t size) {
+    if (multiSig == NULL || buffer == NULL || size == 0U) {
         return 0U;
     }
 
-    size_t offset = 0;
+    multiSig->min = buffer[0];
+    multiSig->count = buffer[1];
 
-    lock->amount = U8LE(buffer, offset);                            // 8 Bytes
-    offset += sizeof(uint64_t);
+    if (multiSig->min < MULTI_SIG_MIN || multiSig->min > MULTI_SIG_MAX ||
+        multiSig->count < multiSig->min || multiSig->count > MULTI_SIG_MAX) {
+        return 0U;
+    }
 
-    MEMCOPY(lock->secretHash, &buffer[offset], HASH_32_LEN);        // 32 Bytes
-    offset += HASH_32_LEN;
+    for (uint8_t i = 0U; i < multiSig->count; ++i) {
+        MEMCOPY(&multiSig->keys[i],
+                &buffer[2U + (i * PUBLICKEY_COMPRESSED_LEN)],
+                PUBLICKEY_COMPRESSED_LEN);
+    }
 
-    lock->expirationType = buffer[offset];                          // 1 Byte
-    offset += sizeof(uint8_t);
-
-    lock->expiration = U4LE(buffer, offset);                        // 4 Bytes
-    offset += sizeof(uint32_t);
-
-    MEMCOPY(lock->recipientId, &buffer[offset], ADDRESS_HASH_LEN);  // 21 Bytes
-
-    return TRANSACTION_TYPE_HTLC_LOCK_SIZE;
+    return 2U + (multiSig->count * PUBLICKEY_COMPRESSED_LEN);
 }
 
+#endif  // SUPPORTS_MULTISIGNATURE
