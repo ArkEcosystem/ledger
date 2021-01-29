@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2021-01-11
+
+### Added
+-   added multi-signature transaction support (NanoX-only) ([#100])
+
+### Changed
+-   removed legacy transaction support ([#8e636f5])
+-   deprecate v1 transaction support ([#41674a8])
+
 ## [2.2.1] - 2020-12-11
 
 ### Added
@@ -70,3 +79,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [#102]: https://github.com/ArkEcosystem/ledger/pull/102
 [#cb7f1ef]: https://github.com/ArkEcosystem/ledger/compare/7ed7885605453bd67af14e62bce17c2ca6f17a26...cb7f1efc5a362fe618731e122afc728da53370ba
 [2.2.1]: https://github.com/ArkEcosystem/ledger/compare/2.2.0...2.2.1
+[#8e636f5]: https://github.com/ArkEcosystem/ledger/compare/9b635f23cd7316c66c55a64838760fc811e14997...8e636f50602810fe07b0807d284b50d09989ab99
+[#41674a8]: https://github.com/ArkEcosystem/ledger/compare/8e636f50602810fe07b0807d284b50d09989ab99...41674a89f953c19ffb955d683ecac5069141390b
+[#100]: https://github.com/ArkEcosystem/ledger/pull/100
+[2.3.0]: https://github.com/ArkEcosystem/ledger/compare/2.2.1...2.3.0
