@@ -1,16 +1,11 @@
 
 # Payloads
 
-* [Legacy Transactions](#legacy)
-  * [Transfer (Type 0)](#legacy-transfer-type-0)
-    * [Transfer - No VendorField](#legacy-transfer-no-vendorfield)
-    * [Transfer - With VendorField](#legacy-transfer-with-vendorfield)
-  * [Vote (Type 3)](#legacy-vote-type-3)
 * [v1 Transactions](#v1)
   * [Transfer (Type 0)](#v1-transfer-type-0)
     * [Transfer - No VendorField](#v1-transfer-no-vendorfield)
     * [Transfer - With VendorField](#v1-transfer-with-vendorfield)
-  * [Vote (Type 3)](#legacy-vote-type-3)
+  * [Vote (Type 3)](#v1-vote-type-3)
 * [v2 Transactions](#v2)
   * [Transfer (Type 0)](#transfer-type-0)
     * [Transfer - No VendorField](#transfer-no-vendorfield)
@@ -32,25 +27,7 @@
   * [137 Characters](#message-signing-137-characters)
   * [255 Characters](#message-signing-255-characters)
 
-## Legacy
-
-### Legacy Transfer (Type 0)
-
-#### Legacy Transfer: No VendorField
-
-`python3 examples/example_helper.py --tx 0092ffd30002e012f0a7cac12a74bdc17d844cbc9f637177b470019c32a53cef94c7a56e2ea9178d4aa08afea30cfc61acd261306c67a87c3e1c2e00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000bac53949010000008096980000000000`
-
-#### Legacy Transfer: With VendorField
-
-`python3 examples/example_helper.py --tx 0092ffd30002e012f0a7cac12a74bdc17d844cbc9f637177b470019c32a53cef94c7a56e2ea9178d4aa08afea30cfc61acd261306c67a87c3e1c2e74686973206973206120746573740000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000bac53949010000008096980000000000`
-
-### Legacy Vote (Type 3)
-
-`python3 examples/example_helper.py --tx 035706d400025f81956d5826bad7d30daed2b5c8c98e72046c1ec8323da336445476183fb7ca17af33b082a81e338a36d9fb9127597d4fb4e6ef6c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000e1f505000000002b303263393536353264313665316335653337326531613234313233396663643834666236643261393564313930333063653861616138613635343638313530656439`
-
----
-
-## V1
+## V1 - (DEPRECATED)
 
 ### v1 Transfer (Type 0)
 

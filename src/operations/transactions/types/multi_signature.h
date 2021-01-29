@@ -24,53 +24,34 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#include "transactions/legacy/deserialize_legacy.h"
+#ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_MULTI_SIGNATURE_H
+#define ARK_OPERATIONS_TRANSACTIONS_TYPES_MULTI_SIGNATURE_H
 
-#include <stdbool.h>
+#include "platform.h"
+
+#if defined(SUPPORTS_MULTISIGNATURE)
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include "constants.h"
 
-#include "transactions/transaction.h"
-#include "transactions/offsets.h"
-
-#include "utils/unpack.h"
-#include "utils/str.h"
-#include "utils/utils.h"
+////////////////////////////////////////////////////////////////////////////////
+static const size_t MULTI_SIG_MIN       = 2U;
+static const size_t MULTI_SIG_MAX       = 16U;
+static const size_t MULTI_SIG_MAX_LEN   = MULTI_SIG_MAX * PUBLICKEY_COMPRESSED_LEN;
 
 ////////////////////////////////////////////////////////////////////////////////
-bool deserializeCommonLegacy(Transaction *transaction,
-                             const uint8_t *buffer,
-                             size_t size) {
-    // Deserialize Common
-    transaction->version        = TRANSACTION_VERSION_LEGACY;
-    transaction->type           = buffer[TYPE_OFFSET_LEGACY];
+typedef struct multi_signature_asset_t {
+    uint8_t     min;
+    uint8_t     count;
+    uint8_t     keys[MULTI_SIG_MAX][PUBLICKEY_COMPRESSED_LEN];
+} MultiSignature;
 
-    MEMCOPY(transaction->recipientId,
-            &buffer[RECIPIENT_OFFSET_LEGACY],
-            ADDRESS_HASH_LEN);
+////////////////////////////////////////////////////////////////////////////////
+size_t deserializeMultiSignature(MultiSignature *multiSig,
+                                 const uint8_t *buffer,
+                                 size_t size);
 
-    transaction->vendorField = (uint8_t *)&buffer[VF_OFFSET];
-    transaction->vendorFieldLength = 0U;
-
-    uint8_t *ptr = transaction->vendorField;
-    while (*ptr++ && transaction->vendorFieldLength < VENDORFIELD_V1_MAX_LEN) {
-        ++transaction->vendorFieldLength;
-    }
-
-    if (transaction->vendorFieldLength > 0U &&
-        IsPrintableAscii((const char*)transaction->vendorField,
-                          transaction->vendorFieldLength,
-                          false) == false) {
-        return false;
-    }
-
-    transaction->amount         = U8LE(buffer, AMOUNT_OFFSET_LEGACY);
-    transaction->fee            = U8LE(buffer, FEE_OFFSET_LEGACY);
-
-    transaction->assetOffset    = ASSET_OFFSET_LEGACY;
-    transaction->assetSize      = size - transaction->assetOffset;
-
-    return true;
-}
+#endif  // SUPPORTS_MULTISIGNATURE
+#endif  // ARK_OPERATIONS_TRANSACTIONS_TYPES_MULTI_SIGNATURE_H

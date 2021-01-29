@@ -45,7 +45,7 @@ static const char *const UX_MESSAGE_LABELS[]    = { "Message", "Length" };
 static const size_t UX_MESSAGE_STEPS            = 2;
 
 ////////////////////////////////////////////////////////////////////////////////
-extern void SetUxDisplay(size_t steps, bool isExtended);
+extern void SetUxDisplay(size_t steps, size_t extendedStep);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Prepare a Message Operation for Display.
@@ -75,7 +75,7 @@ bool handleMessage(const uint8_t *buffer, size_t length) {
 
     SNPRINTF(displayCtx.text_ext, length + 1, "%.*s", (int)length, buffer);
 
-    SetUxDisplay(UX_MESSAGE_STEPS, true);
+    SetUxDisplay(UX_MESSAGE_STEPS, UX_MESSAGE_STEPS);
 
     return true;
 }

@@ -84,7 +84,6 @@ static const uint8_t TOKEN_NETWORK_BYTE     = 0x1e;     // ARK Mainnet
 // Transactions
 static const uint8_t TRANSACTION_HEADER             = 0xFF;
 
-static const uint8_t TRANSACTION_VERSION_LEGACY     = 0;
 static const uint8_t TRANSACTION_VERSION_TYPE_1     = 1;
 static const uint8_t TRANSACTION_VERSION_TYPE_2     = 2;
 

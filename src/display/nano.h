@@ -45,11 +45,10 @@
 #ifndef ARK_DISPLAY_NANO_H
 #define ARK_DISPLAY_NANO_H
 
-#include <stdbool.h>
 #include <stdint.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-void SetUxDisplay(size_t steps, bool isExtended);
+void SetUxDisplay(size_t steps, size_t extendedStep);
 
 ////////////////////////////////////////////////////////////////////////////////
 void ui_idle(void);

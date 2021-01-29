@@ -27,7 +27,6 @@
 #ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_HTLC_CLAIM_H
 #define ARK_OPERATIONS_TRANSACTIONS_TYPES_HTLC_CLAIM_H
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -40,6 +39,6 @@ typedef struct htlc_claim_asset_t {
 } HtlcClaim;
 
 ////////////////////////////////////////////////////////////////////////////////
-bool deserializeHtlcClaim(HtlcClaim *claim, const uint8_t *buffer, size_t size);
+size_t deserializeHtlcClaim(HtlcClaim *claim, const uint8_t *buffer, size_t size);
 
 #endif  // #define ARK_OPERATIONS_TRANSACTIONS_TYPES_HTLC_CLAIM_H

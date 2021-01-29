@@ -30,32 +30,29 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "platform.h"
+
 #include "constants.h"
 
 #include "transactions/types/assets.h"
+
+#include "transactions/types/signatures.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 typedef struct transaction_t {
     uint8_t     header;
     uint8_t     version;
     uint8_t     network;
+    uint32_t    typeGroup;
     uint16_t    type;
     uint8_t     senderPublicKey[PUBLICKEY_COMPRESSED_LEN];
     uint64_t    fee;
     size_t      vendorFieldLength;
     uint8_t     *vendorField;
-    union {
-        struct {  // v2
-            tx_asset_t  asset;
-        };
-        struct {  // Legacy
-            uint8_t     recipientId[ADDRESS_HASH_LEN];
-            uint64_t    amount;
-            size_t      assetOffset;
-            size_t      assetSize;
-            uint8_t     *assetPtr;
-        };
-    };
+    tx_asset_t  asset;
+#if defined(SUPPORTS_MULTISIGNATURE)
+    Signatures  signatures;
+#endif  // SUPPORTS_MULTISIGNATURE
 } Transaction;
 
 #endif  // #define ARK_OPERATIONS_TRANSACTION_H

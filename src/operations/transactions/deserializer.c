@@ -36,11 +36,10 @@
 
 #include "transactions/transaction.h"
 
+#include "transactions/deserializer_v1.h"
+
 #include "transactions/offsets.h"
 #include "transactions/types/types.h"
-
-#include "transactions/legacy/deserialize_legacy.h"
-#include "transactions/legacy/display_legacy.h"
 
 #include "utils/str.h"
 #include "utils/unpack.h"
@@ -50,6 +49,37 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 Transaction transaction;
+
+////////////////////////////////////////////////////////////////////////////////
+// Deserialize v2 Transaction common header values.
+//
+// @param Transaction *transaction: transaction object ptr.
+// @param const uint8_t *buffer:    of the serialized transaction.
+// @param size_t *size:             of the buffer.
+//
+// @return bool: true if deserialization was successful.
+//
+// ---
+static bool deserializeCommon(Transaction *transaction,
+                              const uint8_t *buffer,
+                              size_t size) {
+    if (size < FEE_OFFSET + sizeof(uint64_t)) {
+        return false;
+    }
+
+    transaction->header     = buffer[HEADER_OFFSET];        // 1 Byte
+    transaction->version    = buffer[VERSION_OFFSET];       // 1 Byte
+    transaction->network    = buffer[NETWORK_OFFSET];       // 1 Byte
+    transaction->type       = U2LE(buffer, TYPE_OFFSET);    // 2 Bytes
+
+    MEMCOPY(transaction->senderPublicKey,                   // 33 Bytes
+            &buffer[SENDER_PUBLICKEY_OFFSET],
+            PUBLICKEY_COMPRESSED_LEN);
+
+    transaction->fee        = U8LE(buffer, FEE_OFFSET);     // 8 Bytes
+
+    return true;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Deserialize a v2 VendorField.
@@ -84,120 +114,53 @@ static bool deserializeVendorField(Transaction *transaction,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Deserialize a v1 VendorField.
+// Deserialize v2 Transaction Headers.
 //
 // @param Transaction *transaction: transaction object ptr.
 // @param const uint8_t *buffer:    of the serialized transaction.
-// @param size_t *size:             of the buffer.
+// @param size_t size:              of the buffer.
 //
 // @return bool: true if deserialization was successful.
 //
 // ---
-static bool deserializeVendorFieldV1(Transaction *transaction,
-                                     const uint8_t *buffer,
-                                     size_t size) {
-    if (size < buffer[0] || buffer[0] > VENDORFIELD_V1_MAX_LEN) {
-        return false;
-    }
-
-    transaction->vendorFieldLength = buffer[0];     // 1 Byte
-
-    if (transaction->vendorFieldLength > 0U &&
-        IsPrintableAscii((const char*)&buffer[1],
-                         transaction->vendorFieldLength,
-                         false) == false) {
-        return false;
-    }
-
-    // 0 <=> 64 Bytes
-    transaction->vendorField = (uint8_t*)&buffer[1];
-
-    return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Deserialize v2 Transaction common header values.
-//
-// @param Transaction *transaction: transaction object ptr.
-// @param const uint8_t *buffer:    of the serialized transaction.
-// @param size_t *size:             of the buffer.
-//
-// @return bool: true if deserialization was successful.
-//
-// ---
-static bool deserializeCommon(Transaction *transaction,
-                              const uint8_t *buffer,
-                              size_t size) {
-    if (size < FEE_OFFSET + sizeof(uint64_t)) {
-        return false;
-    }
-
-    transaction->header     = buffer[HEADER_OFFSET];        // 1 Byte
-    transaction->version    = buffer[VERSION_OFFSET];       // 1 Byte
-    transaction->network    = buffer[NETWORK_OFFSET];       // 1 Byte
-    transaction->type       = U2LE(buffer, TYPE_OFFSET);    // 2 Bytes
-
-    MEMCOPY(transaction->senderPublicKey,                   // 33 Bytes
-            &buffer[SENDER_PUBLICKEY_OFFSET],
-            PUBLICKEY_COMPRESSED_LEN);
-
-    transaction->fee        = U8LE(buffer, FEE_OFFSET);     // 8 Bytes
-
-    return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Deserialize v1 Transaction common header values.
-//
-// @param Transaction *transaction: transaction object ptr.
-// @param const uint8_t *buffer:    of the serialized transaction.
-// @param size_t *size:             of the buffer.
-//
-// @return bool: true if deserialization was successful.
-//
-// ---
-static bool deserializeCommonV1(Transaction *transaction,
+static size_t deserializeHeader(Transaction *transaction,
                                 const uint8_t *buffer,
                                 size_t size) {
-    if (size < FEE_OFFSET_V1 + sizeof(uint64_t)) { return false; }
+    if (deserializeCommon(transaction, buffer, size) == false ||
+        deserializeVendorField(transaction,
+                                &buffer[VF_LEN_OFFSET],
+                                size - VF_LEN_OFFSET) == false) {
+        return 0U;
+    }
 
-    transaction->header     = buffer[HEADER_OFFSET];        // 1 Byte
-    transaction->version    = buffer[VERSION_OFFSET];       // 1 Byte
-    transaction->network    = buffer[NETWORK_OFFSET];       // 1 Byte
-    transaction->type       = buffer[TYPE_OFFSET_V1];       // 1 Byte
-
-    MEMCOPY(transaction->senderPublicKey,                   // 33 Bytes
-            &buffer[SENDER_PUBLICKEY_OFFSET_V1],
-            PUBLICKEY_COMPRESSED_LEN);
-
-    transaction->fee        = U8LE(buffer, FEE_OFFSET_V1);  // 8 Bytes
-
-    return true;
+    return VF_OFFSET + transaction->vendorFieldLength;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Deserialize v2 and v1 Transaction Assets.
+// Deserialize v2 and v1 Core Transaction Assets.
 //
-// @param Transaction *transaction
-// @param uint8_t *buffer: The serialized buffer at the asset offset.
-// @param size_t size: The Asset Buffer Size.
+// @param Transaction *transaction: transaction object ptr.
+// @param const uint8_t *buffer:    of the serialized transaction[asset offset].
+// @param size_t size:              of the current buffer.
 //
-// @return bool: true if successful
+// @return   0: error
+// @return > 0: okay/asset size
 //
 // ---
-// Internals:
+// Supported:
 //
 // - case TRANSFER
 // - case VOTE
+// - case MULTI_SIG_REGISTRATION_TYPE
 // - case IPFS
 // - case HTLC_LOCK
 // - case HTLC_CLAIM
 // - case HTLC_REFUND
 //
 // ---
-static bool deserializeAsset(Transaction *transaction,
-                             const uint8_t *buffer,
-                             size_t size) {
+static size_t deserializeCoreAsset(Transaction *transaction,
+                                   const uint8_t *buffer,
+                                   size_t size) {
     switch (transaction->type) {
         // Transfer
         case TRANSFER_TYPE:
@@ -209,7 +172,12 @@ static bool deserializeAsset(Transaction *transaction,
             return deserializeVote(
                     &transaction->asset.vote, buffer, size);
 
-        // case MULTI_SIGNATURE_TYPE:
+#if defined(SUPPORTS_MULTISIGNATURE)
+        // MultiSignature Registration
+        case MULTI_SIG_REGISTRATION_TYPE:
+            return deserializeMultiSignature(
+                    &transaction->asset.multiSignature, buffer, size);
+#endif  // SUPPORTS_MULTISIGNATURE
 
         // Ipfs
         case IPFS_TYPE:
@@ -232,95 +200,64 @@ static bool deserializeAsset(Transaction *transaction,
                     &transaction->asset.htlcRefund, buffer, size);
 
         // Unknown Transaction Type
-        default: return false;
+        default: return 0U;
     };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Deserialize v2 and v1 Transaction Headers.
-static size_t deserializeHeader(Transaction *transaction,
-                                const uint8_t *buffer,
-                                size_t size) {
+// Deserialize v2 and v1 (DEPRECATED) Transactions
+//
+// @param const uint8_t *buffer:    of the serialized transaction.
+// @param size_t size:              of the buffer.
+//
+// @return bool: true if deserialization was successful.
+//
+// ---
+bool deserialize(const uint8_t *buffer, size_t size) {
+    MEMSET_TYPE_BZERO(&transaction, Transaction);
+
+    size_t headerSize = 0UL;
+
+    // Deserialize Header
     switch (buffer[VERSION_OFFSET]) {
-        // v2
+        case TRANSACTION_VERSION_TYPE_1:  // !DEPRECATED
+            headerSize = deserializeHeaderV1(&transaction, buffer, size); break;
         case TRANSACTION_VERSION_TYPE_2:
-            if (deserializeCommon(transaction, buffer, size) == false ||
-                deserializeVendorField(transaction,
-                                       &buffer[VF_LEN_OFFSET],
-                                       size - VF_LEN_OFFSET) == false) {
-                return 0U;
-            }
-
-            return VF_OFFSET + transaction->vendorFieldLength;
-
-        // v1
-        case TRANSACTION_VERSION_TYPE_1:
-            if (deserializeCommonV1(transaction, buffer, size) == false ||
-                deserializeVendorFieldV1(transaction,
-                                         &buffer[VF_LEN_OFFSET_V1],
-                                         size - VF_LEN_OFFSET_V1) == false) {
-                return 0U;
-            }
-
-            return VF_OFFSET_V1 + transaction->vendorFieldLength;
-
-        default: return 0U;
+            headerSize = deserializeHeader(&transaction, buffer, size); break;
+        default: break;
     }
-}
 
-////////////////////////////////////////////////////////////////////////////////
-// Deserialize v2 and v1 Transactions
-static bool internalDeserialize(Transaction *transaction,
-                                const uint8_t *buffer,
-                                size_t size) {
-    const size_t cursor = deserializeHeader(transaction, buffer, size);
-
-    if (cursor == 0U ||
-        deserializeAsset(transaction,
-                         &buffer[cursor],
-                         size - cursor) == false) {
-
+    if (headerSize == 0UL) {
+        MEMSET_TYPE_BZERO(&transaction, Transaction);
         return false;
     }
 
-    SetUx(transaction);
+    // Deserialize Asset
+    const size_t assetSize = deserializeCoreAsset(&transaction,
+                                                  &buffer[headerSize],
+                                                  size - headerSize);
 
-    return true;
-}
+    if (assetSize == 0U) {
+        MEMSET_TYPE_BZERO(&transaction, Transaction);
+        return false;
+    }
 
-////////////////////////////////////////////////////////////////////////////////
-// Deserialize Legacy Transactions.
-static bool internalDeserializeLegacy(Transaction *transaction,
-                                      const uint8_t *buffer,
-                                      size_t size) {
-    if (buffer[HEADER_OFFSET] == TRANSFER_TYPE ||
-        buffer[HEADER_OFFSET] == VOTE_TYPE) {
-        if (deserializeCommonLegacy(transaction, buffer, size) == false) {
+    // Deserialize Signatures
+#if defined(SUPPORTS_MULTISIGNATURE)
+    if (headerSize + assetSize < size) {
+        const size_t signaturesSize = deserializeSignatures(
+            &transaction.signatures,
+            &buffer[headerSize + assetSize],
+            size - (headerSize + assetSize));
+
+        if (headerSize + assetSize + signaturesSize != size) {
+            MEMSET_TYPE_BZERO(&transaction, Transaction);
             return false;
         }
-
-        transaction->assetOffset = ASSET_OFFSET_LEGACY;
-        transaction->assetPtr = (uint8_t*)&buffer[transaction->assetOffset];
-
-        SetUxLegacy(transaction);
-
-        return true;
     }
+#endif  // SUPPORTS_MULTISIGNATURE
 
-    // Unknown Transaction Version and Type
-    return false;
-}
+    SetUx(&transaction);
 
-////////////////////////////////////////////////////////////////////////////////
-// Deserialize v2, v1, or Legacy Transactions.
-bool deserialize(const uint8_t *buffer, size_t size) {
-    bool successful = buffer[HEADER_OFFSET] == TRANSACTION_HEADER
-            ? internalDeserialize(&transaction, buffer, size)
-            : internalDeserializeLegacy(&transaction, buffer, size);
-
-    if (!successful) {
-        MEMSET_TYPE_BZERO(&transaction, Transaction);
-    }
-
-    return successful;
+    return true;
 }

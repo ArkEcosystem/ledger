@@ -24,18 +24,22 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTIONS_DESERIALIZE_LEGACY_H
-#define ARK_OPERATIONS_TRANSACTIONS_DESERIALIZE_LEGACY_H
+#ifndef ARK_OPERATIONS_TRANSACTIONS_UX_SIGNATURES_UX_H
+#define ARK_OPERATIONS_TRANSACTIONS_UX_SIGNATURES_UX_H
 
-#include <stdbool.h>
+#include "platform.h"
+
+#if defined(SUPPORTS_MULTISIGNATURE)
+
 #include <stddef.h>
-#include <stdint.h>
 
 #include "transactions/transaction.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-bool deserializeCommonLegacy(Transaction *transaction,
-                             const uint8_t *buffer,
-                             size_t size);
+static const char *const UX_SIGNATURES_LABEL = "Signature";
 
-#endif  // #define ARK_OPERATIONS_TRANSACTIONS_DESERIALIZE_LEGACY_H
+////////////////////////////////////////////////////////////////////////////////
+size_t SetUxSignatures(const Transaction *transaction, size_t offset);
+
+#endif  // SUPPORTS_MULTISIGNATURE
+#endif  // #define ARK_OPERATIONS_TRANSACTIONS_UX_SIGNATURES_UX_H

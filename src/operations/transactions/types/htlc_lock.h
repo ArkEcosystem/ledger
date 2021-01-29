@@ -27,7 +27,6 @@
 #ifndef ARK_OPERATIONS_TRANSACTIONS_ASSETS_HTLC_LOCK_H
 #define ARK_OPERATIONS_TRANSACTIONS_ASSETS_HTLC_LOCK_H
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -46,6 +45,6 @@ typedef struct htlc_lock_asset_t {
 } HtlcLock;
 
 ////////////////////////////////////////////////////////////////////////////////
-bool deserializeHtlcLock(HtlcLock *lock, const uint8_t *buffer, size_t size);
+size_t deserializeHtlcLock(HtlcLock *lock, const uint8_t *buffer, size_t size);
 
 #endif  // #define ARK_OPERATIONS_TRANSACTIONS_ASSETS_HTLC_LOCK_H

@@ -26,7 +26,6 @@
 
 #include "transactions/types/ipfs.h"
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -41,7 +40,8 @@
 // @param uint8_t *buffer: The serialized buffer at the Assets offset.
 // @param size_t size: The Asset Buffer Size.
 //
-// @return bool: true if deserialization was successful.
+// @return   0: error
+// @return > 0: asset size
 //
 // ---
 // Internals:
@@ -53,7 +53,7 @@
 // - MEMCOPY(ipfs->dag, buffer, ipfs->length);
 //
 // ---
-bool deserializeIpfs(Ipfs *ipfs, const uint8_t *buffer, size_t size) {
+size_t deserializeIpfs(Ipfs *ipfs, const uint8_t *buffer, size_t size) {
     // 2nd byte of IPFS hash contains its len.
     //
     // byte[0] == hash-type (sha256).
@@ -63,11 +63,11 @@ bool deserializeIpfs(Ipfs *ipfs, const uint8_t *buffer, size_t size) {
 
     // Let's make sure the length isn't > 64,
     // and that the lengths match.
-    if (size > HASH_64_LEN || size != ipfs->length) {
-        return false;
+    if (size < ipfs->length) {
+        return 0U;
     }
 
-    MEMCOPY(ipfs->dag, buffer, size);                       // 0 <=> 64 Bytes
+    MEMCOPY(ipfs->dag, buffer, ipfs->length);       // 0 <=> 64 Bytes
 
-    return true;
+    return ipfs->length;
 }

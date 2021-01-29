@@ -24,12 +24,34 @@
  * SOFTWARE.
  ******************************************************************************/
 
-#ifndef ARK_OPERATIONS_TRANSACTIONS_DISPLAY_LEGACY_H
-#define ARK_OPERATIONS_TRANSACTIONS_DISPLAY_LEGACY_H
+#include "platform.h"
 
-#include "transactions/transaction.h"
+#if defined(SUPPORTS_MULTISIGNATURE)
+
+#include "transactions/ux/signatures_ux.h"
+
+#include "operations/transactions/transaction.h"
+
+#include "utils/hex.h"
+#include "utils/print.h"
+
+#include "constants.h"
+
+#include "display/context.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void SetUxLegacy(const Transaction *transaction);
+size_t SetUxSignatures(const Transaction *transaction, size_t offset) {
+    const char *FMT = "%s: %d/%d";
+    for (size_t i = 0; i < transaction->signatures.count; ++i) {
+        SPRINTF(displayCtx.title[offset + i], FMT,
+                UX_SIGNATURES_LABEL, i + 1U, transaction->signatures.count);
 
-#endif  // #define ARK_OPERATIONS_TRANSACTIONS_DISPLAY_LEGACY_H
+        BytesToHex(transaction->signatures.data[i], SIG_SCHNORR_LEN,
+                   displayCtx.text[offset + i],
+                   sizeof(displayCtx.text[offset + i]));
+    }
+
+    return transaction->signatures.count;
+}
+
+#endif  // SUPPORTS_MULTISIGNATURE

@@ -27,7 +27,6 @@
 #ifndef ARK_OPERATIONS_TRANSACTIONS_TYPES_TRANSFER_H
 #define ARK_OPERATIONS_TRANSACTIONS_TYPES_TRANSFER_H
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -44,6 +43,6 @@ typedef struct transfer_asset_t {
 } Transfer;
 
 ////////////////////////////////////////////////////////////////////////////////
-bool deserializeTransfer(Transfer *transfer, const uint8_t *buffer, size_t size);
+size_t deserializeTransfer(Transfer *transfer, const uint8_t *buffer, size_t size);
 
 #endif  // #define ARK_OPERATIONS_TRANSACTIONS_TYPES_TRANSFER_H
