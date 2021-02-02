@@ -47,6 +47,7 @@ typedef struct signing_context_t {
 } SigningContext;
 
 ////////////////////////////////////////////////////////////////////////////////
+// !DEPRECATED
 uint32_t signEcdsa(const cx_ecfp_private_key_t *privateKey,
                    const uint8_t *hash,
                    uint8_t *signature,
