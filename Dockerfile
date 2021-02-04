@@ -37,7 +37,7 @@ RUN \
 RUN mkdir /opt/bolos && mkdir /opt/bolos/SDK
 
 # Nano S SDK
-RUN cd /opt/bolos/SDK && git clone --branch nanos-1612 https://github.com/LedgerHQ/nanos-secure-sdk.git nanos-secure-sdk
+RUN cd /opt/bolos/SDK && git clone -c advice.detachedHead=false --branch nanos-1612 https://github.com/LedgerHQ/nanos-secure-sdk.git nanos-secure-sdk
 
 # Default SDK: NanoS
 ENV BOLOS_SDK=/opt/bolos/SDK/nanos-secure-sdk
