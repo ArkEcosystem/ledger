@@ -2,6 +2,7 @@
 .vscode
 
 # Ledger/BOLOS SDK
+app
 apps
 bin
 debug
