@@ -36,6 +36,7 @@
 #include "schnorr_bcrypto_410.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+// !DEPRECATED
 uint32_t signEcdsa(const cx_ecfp_private_key_t *privateKey,
                    const uint8_t *hash,
                    uint8_t *signature,

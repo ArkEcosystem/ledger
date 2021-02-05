@@ -90,7 +90,7 @@
 #define P1_FIRST        0x00
 #define P1_MORE         0x01
 #define P1_LAST         0x80
-#define P2_ECDSA        0x40
+#define P2_ECDSA        0x40  // !DEPRECATED
 #define P2_SCHNORR_LEG  0x50
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -232,7 +232,7 @@ static void handleSigningContext() {
             dataLength -= 4U;
         }
 
-        if (p2 != P2_ECDSA && p2 != P2_SCHNORR_LEG) {
+        if (p2 != P2_ECDSA && p2 != P2_SCHNORR_LEG) {  // !Ecdsa DEPRECATED
             // Ecdsa or Schnorr must be selected.
             THROW(0x6B00);
         }

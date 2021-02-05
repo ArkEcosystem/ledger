@@ -69,8 +69,8 @@ static const uint64_t UINT64_BASE_10 = 10U;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Signatures
-static const size_t SIG_ECDSA_MIN_LEN   = 64;
-static const size_t SIG_ECDSA_MAX_LEN   = 72;
+static const size_t SIG_ECDSA_MIN_LEN   = 64;  // !Ecdsa DEPRECATED
+static const size_t SIG_ECDSA_MAX_LEN   = 72;  // !Ecdsa DEPRECATED
 static const size_t SIG_SCHNORR_LEN     = HASH_64_LEN;
 
 ////////////////////////////////////////////////////////////////////////////////

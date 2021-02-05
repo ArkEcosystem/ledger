@@ -96,6 +96,7 @@ unsigned int ioApprove(const bagl_element_t *e) {
 
                 tx = tmpCtx.signing.isSchnorr
                     ? signSchnorr(&privateKey, hash, G_io_apdu_buffer)
+                    // !Ecdsa DEPRECATED
                     : signEcdsa(&privateKey, hash,
                                 G_io_apdu_buffer, SIG_ECDSA_MAX_LEN);
             }
