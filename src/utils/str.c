@@ -87,8 +87,8 @@ bool IsPrintableAscii(const char *str, size_t length, bool isNullTerminated) {
 // - adjustDecimals("10000", 5, buffer, 6, 2);
 // - "100.00"
 //
-// @param const char *src:      original string.
-// @param size_t srcSize:       size of the original string, w/null-terminator.
+// @param const char *src:      input string, must be initialized.
+// @param size_t srcSize:       size of the input string, w/null-terminator.
 // @param char *target:         destination where result will be copied.
 // @param size_t targetSize:    max length of writable space in destination.
 // @param size_t decimals:      decimal precision / how many values after '.'.
@@ -253,7 +253,7 @@ size_t TokenAmountToString(const char *token, size_t tokenLen, size_t decimals,
                            char *dst, size_t maxLen) {
     if (dst == NULL) { return 0U; }
 
-    char tmp[64];
+    char tmp[64] = { '\0' };
     int prefixLen = tokenLen;
 
     if (prefixLen > 0) {
