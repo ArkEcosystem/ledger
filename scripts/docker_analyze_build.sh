@@ -15,6 +15,6 @@ docker run -it --rm -v "${PWD}":/app ledger-app-builder:1.6.1-2 sh -c \
     cp -R ${WORSPACE_DIR}/* ${BUILD_DIR}                    &&  \
     cd ${BUILD_DIR}                                         &&  \
     make clean                                              &&  \
-    scan-build --use-cc=clang -analyze-headers                  \
+    scan-build --use-cc=clang --status-bugs -analyze-headers    \
     -o ${SCAN_BUILD_OUTPUT_DIR}                                 \
     make"
