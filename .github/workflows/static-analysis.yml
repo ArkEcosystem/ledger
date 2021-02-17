@@ -1,0 +1,21 @@
+name: Static Analysis
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'develop'
+  pull_request:
+    types: [ready_for_review, synchronize, opened]
+
+jobs:
+  clang-static-analyzer:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Running Build Analysis
+        run: |
+          docker build -t ledger-app-builder:1.6.1-2 '${{ github.workspace }}'
+          docker run -v '${{ github.workspace }}':/app ledger-app-builder:1.6.1-2 scan-build --use-cc=clang --status-bugs -analyze-headers make
