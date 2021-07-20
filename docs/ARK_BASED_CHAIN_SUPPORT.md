@@ -18,7 +18,7 @@ While not ideal for ARK-based chains, Ledger has opted to enforce this rule as a
 As a result, ARK-based chains have 2 options for being supported by Ledger:
 
 1. *Open a PR in the ARK App's Repo adding your network's Slip44.
-2. Fork the ARK App, customize it using your network's Slip44, and submit it to Ledger for [approval](https://developers.ledger.com/docs/nano-app/introduction/#submit-your-app-for-the-ledger-live-manager).
+2. Fork the ARK App, customize it using your network's Slip44 and branding, then submit it to Ledger for [approval](https://developers.ledger.com/docs/nano-app/introduction/#submit-your-app-for-the-ledger-live-manager).
 
 While an ARK-based chain _could_ technically reuse `111'` for their Slip44, it is not recommended as it's officially registered and reserved for ARK's Mainnet and could result in a loss of user funds.
 
