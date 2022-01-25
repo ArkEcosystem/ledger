@@ -47,21 +47,66 @@ ifeq ($(BOLOS_SDK),)
 endif
 include $(BOLOS_SDK)/Makefile.defines
 
-APPNAME = Ark
-APP_LOAD_PARAMS=--appFlags 0x240 --curve secp256k1 --path "44'/111'" --path "44'/1'" $(COMMON_LOAD_PARAMS)
+################################
+# IMPORTANT!
+#
+# This section is coded for rapid compilation of
+# an ARK-based Ledger App for DEVELOPMENT & TESTING PURPOSES ONLY!
+#
+# The Following variables MUST be hardcoded in this makefile BEFORE submission to Ledger:
+#
+# - 'APPNAME
+# - 'SIGN_PATH'
+# - 'APPVERSION_M'
+# - 'APPVERSION_N'
+# - 'APPVERSION_P'
+#
+#
+# !! Ledger will not sign apps whose BIP32 prefixes have not been properly set !!
+#
+#
+# Refer to this example for proper formatting
+# (i.e., replace the uncommented section below with the following using your own parameters):
+#
+# APPNAME = Ark
+# APP_LOAD_PARAMS=--appFlags 0x240 --curve secp256k1 --path "44'/111'" --path "44'/1'" $(COMMON_LOAD_PARAMS)
+#
+# APPVERSION_M=2
+# APPVERSION_N=3
+# APPVERSION_P=0
+# APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 
-APPVERSION_M=2
-APPVERSION_N=3
-APPVERSION_P=0
-APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
+ifndef $(APPNAME)
+    APPNAME = Ark
+endif
+
+APP_LOAD_PARAMS=--appFlags 0x240 --curve secp256k1 $(COMMON_LOAD_PARAMS)
+
+ifdef $(SIGN_PATH)	
+    APP_LOAD_PARAMS += --path "$(SIGN_PATH)"
+else
+    APP_LOAD_PARAMS += --path "44'/111'" --path "44'/1'"
+endif
+
+ifndef $(APPVERSION)
+    APPVERSION_M=2
+    APPVERSION_N=3
+    APPVERSION_P=0
+    APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
+endif
+
+
+############
+# App Icon #
+############
 
 ifeq ($(TARGET_NAME),TARGET_BLUE)
     ICONNAME=blue_app_ark.gif
 else
     ifeq ($(TARGET_NAME),TARGET_NANOX)
-        ICONNAME=icons/nanox_app_ark.gif
+        ICONNAME=icons/nanox_app.gif
     else
-        ICONNAME=icons/nanos_app_ark.gif
+        ICONNAME=icons/nanos_app.gif
     endif
 endif
 

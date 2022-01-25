@@ -75,10 +75,10 @@ static const size_t SIG_SCHNORR_LEN     = HASH_64_LEN;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Token
-static const size_t TOKEN_DECIMALS          = 8U;
-static const char *const TOKEN_NAME         = "ARK";
-static const size_t TOKEN_NAME_LEN          = 3U;       // strlen("ARK")
-static const uint8_t TOKEN_NETWORK_BYTE     = 0x1e;     // ARK Mainnet
+// static const size_t TOKEN_DECIMALS          = 8U;
+// static const char *const TOKEN_NAME         = "ARK";
+// static const size_t TOKEN_NAME_LEN          = 3U;
+// static const uint8_t TOKEN_NETWORK_BYTE     = 0x1e;     // ARK Mainnet
 
 ////////////////////////////////////////////////////////////////////////////////
 // Transactions
