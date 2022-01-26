@@ -47,7 +47,7 @@ ifeq ($(BOLOS_SDK),)
 endif
 include $(BOLOS_SDK)/Makefile.defines
 
-################################
+################################################################################
 # IMPORTANT!
 #
 # This section is coded for rapid compilation of
@@ -61,9 +61,7 @@ include $(BOLOS_SDK)/Makefile.defines
 # - 'APPVERSION_N'
 # - 'APPVERSION_P'
 #
-#
 # !! Ledger will not sign apps whose BIP32 prefixes have not been properly set !!
-#
 #
 # Refer to this example for proper formatting
 # (i.e., replace the uncommented section below with the following using your own parameters):
@@ -76,17 +74,17 @@ include $(BOLOS_SDK)/Makefile.defines
 # APPVERSION_P=0
 # APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 
-ifndef $(APPNAME)
-    APPNAME = Ark
-endif
-
 APP_LOAD_PARAMS=--appFlags 0x240 --curve secp256k1 $(COMMON_LOAD_PARAMS)
 
-ifdef $(SIGN_PATH)	
-    APP_LOAD_PARAMS += --path "$(SIGN_PATH)"
-else
-    APP_LOAD_PARAMS += --path "44'/111'" --path "44'/1'"
+ifndef $(APPNAME)
+#    APPNAME = Ark
 endif
+
+#ifdef $(SIGN_PATH)	
+    APP_LOAD_PARAMS += --path "$(SIGN_PATH)"
+#else
+  #  APP_LOAD_PARAMS += --path "44'/111'" --path "44'/1'"
+#endif
 
 ifndef $(APPVERSION)
     APPVERSION_M=2
@@ -94,6 +92,12 @@ ifndef $(APPVERSION)
     APPVERSION_P=0
     APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 endif
+
+# Compile-time Defines
+CFLAGS  += -DTOKEN_NAME=\"$(TOKEN_NAME)\"
+CFLAGS  += -DTOKEN_NAME_LEN=$(TOKEN_NAME_LEN)
+CFLAGS  += -DTOKEN_DECIMALS=$(TOKEN_DECIMALS)
+################################################################################
 
 
 ############
