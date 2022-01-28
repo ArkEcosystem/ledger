@@ -36,15 +36,15 @@ do
 done
 
 ######################
-# Example Build Call:
+# Example Build Call #
+######################
+# sudo bash scripts/brand_build.sh -a MyApp -s "44'/1'" -v "1.0.0" -n "MAPP" -l 4 -d 8 -b 30
 #
-# sudo bash scripts/brand_build.sh -a Dark -s "44'/1'" -v "1.0.0" -n "DARK" -l 4 -d 8 -b 30
-#
-# APPNAME = Dark
+# APPNAME = MyApp
 # SIGN_PATH="44'/1'"
 # APPVERSION="1.0.0"
 # 
-# TOKEN_NAME="DARK"
+# TOKEN_NAME="MAPP"
 # TOKEN_NAME_LEN=4
 # TOKEN_DECIMALS=8
 # TOKEN_NETWORK_BYTE=30
