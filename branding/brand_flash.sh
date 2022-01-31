@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 
-
+######################
+# Example Build Call #
+######################
+# bash branding/brand_flash.sh -a MyApp -s "44'/123'"
+#
+# APPNAME         = MyApp
+# SIGN_PATH       = "44'/123'"
+######################
 
 ##################
 # Required Flags #
-##################
-# APPNAME=text (Ark)
-# SIGN_PATH=string (e.g., "44'/1'")
 ##################
 while getopts a:s: flag
 do
@@ -15,15 +19,6 @@ do
         s) SIGN_PATH="${OPTARG}";;
     esac
 done
-
-######################
-# Example Flash Call #
-######################
-# bash scripts/brand_flash.sh -a MyApp -s "44'/1'"
-#
-# APPNAME = MyApp
-# SIGN_PATH="44'/1'"
-######################
 
 ################################
 # Flash the Ledger NanoS ARK App
