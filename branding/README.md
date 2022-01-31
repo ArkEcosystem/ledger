@@ -60,6 +60,7 @@ As for rebranding the ARK Ledger App itself, you'll specifically need to update 
     * Specifically, all values must be hardcoded; the bash script version is                     **not** acceptable for a production release
     * Refer to the ARK Makefile for proper formatting
 * **Icons**
+    * Update/replace icons in the `icons`, `glyphs`, and root directories
     * These need to be updated to match your network's brand/logo
     * Refer to Ledger's [Design Guidelines](https://developers.ledger.com/docs/nano-app/design-requirements/) for image requirements
 
