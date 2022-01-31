@@ -71,7 +71,7 @@ APP_LOAD_PARAMS=--appFlags 0x240 --curve secp256k1 --path "44'/111'" --path "44'
 ########################
 # Compile-time Defines #
 ########################
-CFLAGS  += -DTOKEN_NAME="ARK"
+CFLAGS  += -DTOKEN_NAME=\"ARK\"
 CFLAGS  += -DTOKEN_NAME_LEN=3
 CFLAGS  += -DTOKEN_DECIMALS=8
 
