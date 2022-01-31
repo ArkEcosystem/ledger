@@ -35,18 +35,18 @@ Not much needs to be changed if you'd like to build and flash your App for testi
 
 ```shell
 # from project root:
-bash branding/brand_build.sh -a MyApp -s "44'/123'" -t "MAPP" -l 4 -d 8
+bash branding/brand_build.sh -n MyApp -p "44'/123'" -t "MAPP" -l 4 -d 8
 ```
 
-* `-a` - APPNAME - The name of your app displayed on a Ledger Nano's dashboard
-* `-s` - SIGN_PATH - Your network’s BIP-32 signing path
+* `-n` - APP_NAME - The name of your app displayed on a Ledger Nano's dashboard
+* `-p` - SIGN_PATH - Your network’s BIP-32 signing path
 * `-t` - TOKEN_NAME - Your network token's in-app name
 * `-l` - TOKEN_NAME_LEN - The char count of your token name
 * `-d` - TOKEN_DECIMALS - Your tokens decimal count (e.g., 0.00000001 = 8)
 
 ```shell
 # from project root:
-bash branding/brand_flash.sh -a MyApp -s "44'/123'"
+bash branding/brand_flash.sh -n MyApp -p "44'/123'"
 ```
 
 ## Production

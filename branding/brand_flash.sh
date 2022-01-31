@@ -3,7 +3,7 @@
 ######################
 # Example Build Call #
 ######################
-# bash branding/brand_flash.sh -a MyApp -s "44'/123'"
+# bash branding/brand_flash.sh -n MyApp -p "44'/123'"
 #
 # APPNAME         = MyApp
 # SIGN_PATH       = "44'/123'"
@@ -12,11 +12,11 @@
 ##################
 # Required Flags #
 ##################
-while getopts a:s: flag
+while getopts n:p: flag
 do
     case "${flag}" in
-        a) APPNAME=${OPTARG};;
-        s) SIGN_PATH="${OPTARG}";;
+        n) APP_NAME=${OPTARG};;
+        p) SIGN_PATH="${OPTARG}";;
     esac
 done
 
@@ -27,9 +27,10 @@ done
 # - ledgerblue (pip3 install ledgerblue)
 python3 -m ledgerblue.loadApp \
     --fileName "${PWD}"/app/app.hex \
-    --appName "${APPNAME}" \
+    --appName ${APP_NAME} \
     --appFlags 0x240 \
     --curve secp256k1 \
+    --path "44'/1'" \
     --path "${SIGN_PATH}" \
     --targetId 0x31100004 \
     --targetVersion="1.6.1" \

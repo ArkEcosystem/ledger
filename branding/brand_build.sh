@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
+# Run this file from the project root directory
+
 ##################
 # local variables
-PROJECT_ROOT=$(dirname "$0")
+PROJECT_ROOT=${PWD}
 BRAND_DIR="${PROJECT_ROOT}"/branding
 
 WORSPACE_DIR="/app"
@@ -14,7 +16,8 @@ BUILD_BIN_DIR="${WORKDIR}/build/bin"
 ######################
 # Example Build Call #
 ######################
-# bash branding/brand_build.sh -a MyApp -s "44'/123'" -t "MAPP" -l 4 -d 8
+# from project root:
+# bash branding/brand_build.sh -n MyApp -p "44'/123'" -t "MAPP" -l 4 -d 8
 #
 # APPNAME         = MyApp
 # SIGN_PATH       = "44'/123'"
@@ -27,11 +30,11 @@ BUILD_BIN_DIR="${WORKDIR}/build/bin"
 ##################
 # Required Flags #
 ##################
-while getopts a:s:t:l:d: flag
+while getopts n:p:t:l:d: flag
 do
     case "${flag}" in
-        a) APPNAME=${OPTARG};;
-        s) SIGN_PATH="${OPTARG}";;
+        n) APP_NAME=${OPTARG};;
+        p) SIGN_PATH="${OPTARG}";;
         t) TOKEN_NAME="${OPTARG}";;
         l) TOKEN_NAME_LEN=${OPTARG};;
         d) TOKEN_DECIMALS=${OPTARG};;
@@ -41,7 +44,7 @@ done
 ##################
 # Prep Makefiles #
 ##################
-if [[ -d "${BRAND_DIR}/Makefile.brand" ]]; then
+if [[ -f "${BRAND_DIR}/Makefile.brand" ]]; then
   printf '%s\n' "Preparing Makefiles"
   mv "${PROJECT_ROOT}"/Makefile  "${BRAND_DIR}"/Makefile.ark
   mv "${BRAND_DIR}"/Makefile.brand  "${PROJECT_ROOT}"/Makefile
@@ -57,7 +60,7 @@ fi
 # execute the build command via docker run
 docker run -it --rm -v "${PWD}":/app ledger-app-builder:1.6.1-2 \
     sh -c "                                                     \
-    export APPNAME=${APPNAME}                               &&  \
+    export APP_NAME=${APP_NAME}                             &&  \
     export SIGN_PATH=\"${SIGN_PATH}\"                       &&  \
     export TOKEN_NAME=\"${TOKEN_NAME}\"                     &&  \
     export TOKEN_NAME_LEN=${TOKEN_NAME_LEN}                 &&  \
