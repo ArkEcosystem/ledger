@@ -47,7 +47,6 @@ ifeq ($(BOLOS_SDK),)
 endif
 include $(BOLOS_SDK)/Makefile.defines
 
-
 ############
 # App Name #
 ############
@@ -61,12 +60,10 @@ APPVERSION_N=3
 APPVERSION_P=0
 APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 
-
 ###############
 # Load Params #
 ###############
 APP_LOAD_PARAMS=--appFlags 0x240 --curve secp256k1 --path "44'/111'" --path "44'/1'" $(COMMON_LOAD_PARAMS)
-
 
 ########################
 # Compile-time Defines #
@@ -74,7 +71,6 @@ APP_LOAD_PARAMS=--appFlags 0x240 --curve secp256k1 --path "44'/111'" --path "44'
 CFLAGS  += -DTOKEN_NAME=\"ARK\"
 CFLAGS  += -DTOKEN_NAME_LEN=3
 CFLAGS  += -DTOKEN_DECIMALS=8
-
 
 #############
 # App Icons #
@@ -88,7 +84,6 @@ else
         ICONNAME=icons/nanos_app.gif
     endif
 endif
-
 
 ################
 # Default rule #

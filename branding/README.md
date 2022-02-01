@@ -1,7 +1,7 @@
 
 # Branding Guide
 
-Welcome to the ARK Ledger App Branding Guide. This document aims to assist ARK-based networks in rebranding, testing, and preparing the ARK Ledger App for production. Should any questions not be answered, feel free to [open an issue](https://github.com/ArkEcosystem/ledger/issues/new/choose) in our official ARK Ledger App repo.
+Welcome. This document aims to assist ARK-based networks in rebranding the ARK Ledger App. Should any questions not be answered, feel free to [open an issue](https://github.com/ArkEcosystem/ledger/issues/new/choose) in our official ARK Ledger App repo.
 
 ## Requirements
 
@@ -30,11 +30,13 @@ This is an important security measure to mitigate the risks associated with usin
 
 NOTE: If your ARK-based network uses the standard Devnet/Testnet path of `"44'/1'"`, the ARK Ledger App can _still_ be used for testing with your network's Devnet.
 
-### "What does the brand_build bash script do?"
+### "What do the `brand_` bash scripts do?"
 
-In short, this lets you quickly deploy the App for testing using your network's variables. These variables also indicate what needs to be hardcoded for your App before submission to Ledger.
+In short, these scripts let you quickly build and flash the App to a NanoS for testing using your network's custom variables.
 
-The `brand_build` script will also move the official ARK Makefile to the `branding` directory and the brand-script-compatible Makefile to the project's root directory.
+The `brand_build` script will back up the official ARK Makefile to the `branding` directory and print your chosen variables to a new Makefile in your project's root directory.
+
+The `brand_flash` script flashes your customized App to a Ledger NanoS using your your network's App Name and Signing Path parameters. Signing will fail if these variables are not passed as instructed in the flashing script.
 
 ## Development
 
@@ -58,18 +60,18 @@ bash branding/brand_flash.sh -n MyApp -p "44'/123'"
 
 ## Production
 
-If you'd like to prepare your App for production and submit it to LedgerHQ for review, you should first read their [Submission](https://developers.ledger.com/docs/nano-app/deliverables-checklist/) documentation and also make yourself familiar with their [Security Guidelines](https://developers.ledger.com/docs/nano-app/secure-app/).
+If you'd like to prepare your App for production and submit it to LedgerHQ for review, you should first familiarize yourself with their:
 
-As for rebranding the ARK Ledger App itself, you'll specifically need to update the following files:
+* [Submission](https://developers.ledger.com/docs/nano-app/deliverables-checklist/) documentation, and
+* [Security Guidelines](https://developers.ledger.com/docs/nano-app/secure-app/).
 
-* **Makefile**
-    * This needs to be correctly formatted
-    * Specifically, all values must be hardcoded; the bash script version is                     **not** acceptable for a production release
-    * Refer to the ARK Makefile for proper formatting
-* **Icons**
-    * Update/replace icons in the `icons`, `glyphs`, and root directories
-    * These need to be updated to match your network's brand/logo
-    * Refer to Ledger's [Design Guidelines](https://developers.ledger.com/docs/nano-app/design-requirements/) for image requirements
+Otherwise, the only other thing to consider before submitting to LedgerHQ is that you'll need to update/replace icons in the:
+
+* `icons`
+* `glyphs`, and
+* 'root' directories to match your network's brand/logo.
+
+**\*Refer to Ledger's [Design Guidelines](https://developers.ledger.com/docs/nano-app/design-requirements/) for image requirements**
 
 ---
 

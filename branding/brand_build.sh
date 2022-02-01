@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 # Run this file from the project root directory
+# Docker is Required
 
 ##################
 # local variables
@@ -44,11 +45,26 @@ done
 ##################
 # Prep Makefiles #
 ##################
-if [[ -f "${BRAND_DIR}/Makefile.brand" ]]; then
-  printf '%s\n' "Preparing Makefiles"
+printf '\n%s\n' "Preparing Makefiles..."
+
+if [[ ! -f "${BRAND_DIR}/Makefile.ark" ]]; then
   mv "${PROJECT_ROOT}"/Makefile  "${BRAND_DIR}"/Makefile.ark
-  mv "${BRAND_DIR}"/Makefile.brand  "${PROJECT_ROOT}"/Makefile
 fi
+
+cp -f "${BRAND_DIR}"/Makefile.brand  "${PROJECT_ROOT}"/Makefile
+
+printf '\n%s\n' "Adding vars..."
+sed -i'.progress' -e "53 i\ 
+APPNAME = ${APP_NAME}" "${PROJECT_ROOT}"/Makefile
+sed -i'.progress' -e "66 i\ 
+APP_LOAD_PARAMS=--appFlags 0x240 --curve secp256k1 --path \"44'\/1'\" --path \"${SIGN_PATH}\" \$(COMMON_LOAD_PARAMS)" "${PROJECT_ROOT}"/Makefile
+sed -i'.progress' -e "71 i\ 
+CFLAGS  += -DTOKEN_NAME=\"${TOKEN_NAME}\"" "${PROJECT_ROOT}"/Makefile
+sed -i'.progress' -e "72 i\ 
+CFLAGS  += -DTOKEN_NAME_LEN=${TOKEN_NAME_LEN}" "${PROJECT_ROOT}"/Makefile
+sed -i'.progress' -e "73 i\ 
+CFLAGS  += -DTOKEN_DECIMALS=${TOKEN_DECIMALS}" "${PROJECT_ROOT}"/Makefile
+rm "${PROJECT_ROOT}"/Makefile.progress
 
 ############################################
 # build docker image if not already present

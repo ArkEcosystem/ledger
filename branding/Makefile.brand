@@ -47,21 +47,9 @@ ifeq ($(BOLOS_SDK),)
 endif
 include $(BOLOS_SDK)/Makefile.defines
 
-
-################################################################################
-# IMPORTANT!
-#
-# This section is for DEVELOPMENT & TESTING PURPOSES ONLY!
-# Ledger will not accept this file for production purposes.
-# Refer to the ARK Makefile for proper formatting.
-#
-# **Refer to the Branding README for further branding information**
-
 ############
 # App Name #
 ############
-APPNAME = $(APP_NAME)
-
 
 ###############
 # App Version #
@@ -71,21 +59,13 @@ APPVERSION_N=3
 APPVERSION_P=0
 APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 
-
 ###############
 # Load Params #
 ###############
-APP_LOAD_PARAMS=--appFlags 0x240 --curve secp256k1 --path "44'/1'" --path "$(SIGN_PATH)" $(COMMON_LOAD_PARAMS)
-
 
 ########################
 # Compile-time Defines #
 ########################
-CFLAGS  += -DTOKEN_NAME=\"$(TOKEN_NAME)\"
-CFLAGS  += -DTOKEN_NAME_LEN=$(TOKEN_NAME_LEN)
-CFLAGS  += -DTOKEN_DECIMALS=$(TOKEN_DECIMALS)
-################################################################################
-
 
 #############
 # App Icons #
@@ -99,7 +79,6 @@ else
         ICONNAME=icons/nanos_app.gif
     endif
 endif
-
 
 ################
 # Default rule #
